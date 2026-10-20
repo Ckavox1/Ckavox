@@ -5,6 +5,7 @@ const heroDots = document.querySelectorAll('#hero-dots .dot');
 let heroInterval = setInterval(() => moveHeroSlide(1), 4000);
 
 function showHeroSlide(index) {
+    if(heroSlides.length === 0) return;
     heroSlides.forEach(slide => slide.classList.remove('active'));
     heroDots.forEach(dot => dot.classList.remove('active'));
     
@@ -13,7 +14,7 @@ function showHeroSlide(index) {
     else { currentHeroIndex = index; }
     
     heroSlides[currentHeroIndex].classList.add('active');
-    heroDots[currentHeroIndex].classList.add('active');
+    if(heroDots[currentHeroIndex]) heroDots[currentHeroIndex].classList.add('active');
 }
 
 function moveHeroSlide(direction) {
@@ -28,6 +29,7 @@ const musicSlides = document.querySelectorAll('.music-slide');
 let musicInterval = setInterval(() => moveMusicSlide(1), 4000);
 
 function showMusicSlide(index) {
+    if(musicSlides.length === 0) return;
     musicSlides.forEach(slide => slide.classList.remove('active'));
     if (index >= musicSlides.length) { currentMusicIndex = 0; }
     else if (index < 0) { currentMusicIndex = musicSlides.length - 1; }
@@ -47,6 +49,7 @@ const sportsSlides = document.querySelectorAll('.sports-slide');
 let sportsInterval = setInterval(() => moveSportsSlide(1), 4000);
 
 function showSportsSlide(index) {
+    if(sportsSlides.length === 0) return;
     sportsSlides.forEach(slide => slide.classList.remove('active'));
     if (index >= sportsSlides.length) { currentSportsIndex = 0; }
     else if (index < 0) { currentSportsIndex = sportsSlides.length - 1; }
@@ -58,44 +61,4 @@ function moveSportsSlide(direction) {
     clearInterval(sportsInterval);
     showSportsSlide(currentSportsIndex + direction);
     sportsInterval = setInterval(() => moveSportsSlide(1), 4000);
-}
-
-// --- MODAL CONTROLS ---
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-// --- ADMIN LOGIN & CONTROL ---
-function handleLogin(event) {
-    event.preventDefault();
-    if (document.getElementById('login-email').value === 'admin@ckavox.com' && document.getElementById('login-pass').value === 'adminckavox123') {
-        alert('Welcome CKAVOX Admin!');
-        document.getElementById('admin-dashboard').style.display = 'block';
-        closeModal('login-modal');
-    } else {
-        alert('Mwinjiye nka User usanzwe.');
-        closeModal('login-modal');
-    }
-}
-function logoutAdmin() { document.getElementById('admin-dashboard').style.display = 'none'; }
-
-function handleRecovery() {
-    alert('Code yo kugarura password yohererejwe kuri Email/Telefone washyizemo!');
-    closeModal('recovery-modal');
-}
-
-function addContentByAdmin() {
-    const type = document.getElementById('content-type').value;
-    const title = document.getElementById('content-title').value;
-    if (!title) return alert('Andika ikintu!');
-
-    if (type === 'music') {
-        document.getElementById('admin-music-section').innerHTML += `<p style="padding:5px; font-size:0.85rem;"><i class="fas fa-play-circle"></i> ${title} &bull; play</p>`;
-    } else if (type === 'sports') {
-        document.getElementById('admin-sports-section').innerHTML += `
-            <div class="match-card" style="margin-top:10px; height:auto; padding:10px;">
-                <div class="teams" style="font-size:0.9rem;">${title}</div>
-            </div>`;
-    }
-    alert('Byagenze neza!');
-    document.getElementById('content-title').value = '';
 }
