@@ -1,77 +1,930 @@
- * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-body { background-color: #050505; color: #ffffff; overflow-x: hidden; padding-bottom: 30px; }
-
-/* NAVBAR */
-.main-header {
-    background-color: #0b0c10; border-bottom: 1px solid #1f2833;
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 15px 5%; position: sticky; top: 0; z-index: 100;
+ :root {
+    --bg: #080808;
+    --surface: #151515;
+    --surface-light: #202020;
+    --gold: #f5c400;
+    --text: #ffffff;
+    --muted: #b8b8b8;
+    --green: #25d366;
 }
-.logo { font-size: 1.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; }
-.nav-links a { color: #888; text-decoration: none; margin: 0 12px; font-size: 0.85rem; font-weight: bold; }
-.nav-links a.active, .nav-links a:hover { color: #ffc107; }
-.nav-ig-icon { color: #e1306c; font-size: 1.4rem; text-decoration: none; }
 
-/* MOVIES HERO SLIDER (Hano hahishwe amashusho yose adakenewe) */
-.hero-slider-container { position: relative; width: 100%; height: 440px; overflow: hidden; background-color: #050505; }
-.hero-slides { width: 100%; height: 100%; position: relative; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-/* Uyu murongo ni wo ukosora amashusho azunditse hasi */
-.hero-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: flex-end; }
-.hero-slide.active { display: flex; } 
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 90px;
+}
 
-.slide-bg { position: absolute; top:0; left:0; width:100%; height:100%; background-size: cover; background-position: center; filter: blur(20px); opacity: 0.3; z-index: 1; }
-.featured-badge { position: absolute; top: 20px; left: 5%; background-color: #ffc107; color: #000; font-size: 0.65rem; font-weight: bold; padding: 3px 8px; border-radius: 3px; z-index: 5; }
-.hero-content { display: flex; gap: 20px; padding: 40px 5%; z-index: 5; align-items: center; width: 100%; background: linear-gradient(transparent, #050505 85%); }
-.poster-side { position: relative; width: 120px; flex-shrink: 0; }
-.poster-side img { width: 100%; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.9); display: block; }
-.poster-tag { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.8); font-size: 0.6rem; padding: 2px 5px; border-radius: 3px; z-index: 6; }
-.details-side { flex: 1; }
-.details-side h1 { font-size: 1.8rem; margin-bottom: 5px; line-height: 1.2; font-weight: bold; }
-.movie-meta { font-size: 0.75rem; color: #aaa; margin-bottom: 8px; }
-.movie-description { font-size: 0.8rem; color: #ccc; line-height: 1.4; margin-bottom: 12px; }
-.watch-btn { background-color: #ffc107; color: #000; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 0.85rem; }
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+}
 
-/* CONTROLS */
-.slider-controls { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; z-index: 10; }
-.ctrl-btn { background: rgba(255,255,255,0.1); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.slider-dots .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; display: inline-block; margin: 0 3px; }
-.slider-dots .dot.active { background: #ffc107; width: 16px; border-radius: 3px; }
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button {
+    cursor: pointer;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* HEADER */
+
+.main-header {
+    min-height: 76px;
+    padding: 15px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    background: #0b0b0b;
+    border-bottom: 1px solid #292929;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.logo > span:first-child,
+.logo-dot {
+    color: var(--gold);
+}
+
+.nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--gold);
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-create,
+.btn-signin {
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.btn-create {
+    background: var(--gold);
+    color: #000;
+    border: 1px solid var(--gold);
+}
+
+.btn-signin {
+    background: transparent;
+    color: white;
+    border: 1px solid #555;
+}
+
+/* GENERAL SECTIONS */
+
+main {
+    width: 100%;
+}
+
+.hero-section,
+.sports-section {
+    padding: 35px 5%;
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.section-heading h2 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.section-heading h2 i {
+    color: var(--gold);
+    margin-right: 6px;
+}
+
+.gold-line {
+    width: 5px;
+    height: 25px;
+    border-radius: 3px;
+    background: var(--gold);
+}
+
+/* MOVIE HERO SLIDER */
+
+.hero-slider-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 13px;
+    background: #111;
+}
+
+.hero-slides {
+    position: relative;
+    min-height: 440px;
+}
+
+.hero-slide {
+    position: absolute;
+    inset: 0;
+    min-height: 440px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.65s ease, visibility 0.65s;
+    overflow: hidden;
+}
+
+.hero-slide.active {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.hero-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.92) 0%,
+        rgba(0, 0, 0, 0.67) 48%,
+        rgba(0, 0, 0, 0.12) 100%
+    );
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    min-height: 440px;
+    padding: 55px 6% 75px;
+    display: flex;
+    align-items: center;
+}
+
+.details-side {
+    max-width: 620px;
+}
+
+.featured-badge,
+.content-category {
+    display: inline-block;
+    color: #000;
+    background: var(--gold);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 6px 10px;
+    border-radius: 3px;
+}
+
+.eyebrow {
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin: 20px 0 8px;
+}
+
+.details-side h1 {
+    font-size: clamp(30px, 5vw, 54px);
+    line-height: 1.12;
+    margin-bottom: 18px;
+    max-width: 650px;
+}
+
+.movie-description {
+    color: #dedede;
+    max-width: 550px;
+    font-size: 15px;
+    margin-bottom: 24px;
+}
+
+.watch-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 20px;
+    font-weight: 800;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.watch-btn:hover {
+    background: #ffda35;
+    transform: translateY(-2px);
+}
+
+.slider-controls {
+    position: absolute;
+    z-index: 5;
+    bottom: 18px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ctrl-btn,
+.inner-arrow {
+    width: 39px;
+    height: 39px;
+    border-radius: 50%;
+    border: 1px solid #777;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s;
+}
+
+.ctrl-btn:hover,
+.inner-arrow:hover {
+    background: var(--gold);
+    color: #000;
+}
+
+.slider-dots {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.dot {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #777;
+}
+
+.dot.active {
+    width: 24px;
+    border-radius: 8px;
+    background: var(--gold);
+}
 
 /* WHATSAPP BANNER */
-.whatsapp-banner { background-color: #071e16; border: 1px solid #0f3d2c; border-radius: 8px; margin: 25px 5%; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-.wp-left { display: flex; align-items: center; gap: 12px; }
-.wp-icon-box { color: #25d366; font-size: 1.6rem; }
-.wp-info h3 { font-size: 0.9rem; }
-.wp-info p { font-size: 0.75rem; color: #aaa; }
-.join-channel-btn { background-color: #25d366; color: #000; text-decoration: none; padding: 8px 16px; font-weight: bold; border-radius: 5px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
 
-/* SECTIONS GRID */
-.sections-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 10px 5%; }
-.grid-box { background-color: #111; border-radius: 8px; padding: 15px; border-top: 3px solid #ffc107; }
-.grid-box h3 { font-size: 0.85rem; margin-bottom: 12px; color: #ffc107; text-transform: uppercase; letter-spacing: 0.5px; }
+.whatsapp-banner,
+.instagram-banner-box {
+    margin: 5px 5% 35px;
+    padding: 22px 25px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
 
-/* INNER SLIDERS (Music & Sports) */
-.inner-slider-container { position: relative; width: 100%; height: 160px; overflow: hidden; border-radius: 6px; background-color: #000; }
-.music-slide, .sports-slide { position: absolute; top:0; left:0; width: 100%; height: 100%; display: none; }
-.music-slide.active, .sports-slide.active { display: block; }
-.music-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.slide-tag-text { position: absolute; bottom: 0; background: rgba(0,0,0,0.85); width: 100%; padding: 7px; font-size: 0.75rem; text-align: center; }
-.inner-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: none; color: #fff; padding: 6px 10px; cursor: pointer; z-index: 5; }
-.prev { left: 5px; } .next { right: 5px; }
+.whatsapp-banner {
+    background: #10271a;
+    border: 1px solid #1f5e38;
+}
 
-/* SPORTS CARD */
-.match-card { height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; background: #161a1d; }
-.live-badge { background: #ff3333; font-size: 0.6rem; padding: 2px 5px; border-radius: 3px; font-weight: bold; margin-bottom: 6px; }
-.finished-badge { background: #555; font-size: 0.6rem; padding: 2px 5px; border-radius: 3px; font-weight: bold; margin-bottom: 6px; }
-.teams { font-size: 1.1rem; font-weight: bold; }
-.score { color: #ffc107; margin: 0 8px; }
-.match-details { font-size: 0.7rem; color: #aaa; }
+.wp-left,
+.ig-left-side {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
 
-/* INSTAGRAM BANNER BOX */
-.instagram-banner-box { background-color: #111; margin: 20px 5%; padding: 15px 20px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid #e1306c; flex-wrap: wrap; gap: 15px; }
-.ig-left-side { display: flex; align-items: center; gap: 15px; }
-.instagram-banner-box i { font-size: 1.8rem; color: #e1306c; }
-.ig-info h4 { font-size: 0.85rem; }
-.ig-info p { font-size: 0.75rem; color: #aaa; }
-.ig-link-btn { background: #0077b6; color: #fff; text-decoration: none; padding: 8px 16px; font-weight: bold; border-radius: 4px; font-size: 0.75rem; }
+.wp-icon-box {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    background: var(--green);
+    color: #000;
+    border-radius: 50%;
+    font-size: 27px;
+}
+
+.wp-info h3,
+.ig-info h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.wp-info p,
+.ig-info p {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.join-channel-btn,
+.ig-link-btn {
+    flex-shrink: 0;
+    padding: 11px 16px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.join-channel-btn {
+    background: var(--green);
+    color: #001b09;
+}
+
+/* MUSIC AND NEWS GRID */
+
+.sections-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 25px;
+    padding: 15px 5% 40px;
+}
+
+.grid-box {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid #292929;
+    border-radius: 10px;
+    background: var(--surface);
+}
+
+.inner-slider-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #101010;
+}
+
+.music-slides,
+.news-slides {
+    position: relative;
+    min-height: 280px;
+}
+
+.music-slide,
+.news-slide {
+    position: absolute;
+    inset: 0;
+    min-height: 280px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.55s ease, visibility 0.55s;
+    overflow: hidden;
+}
+
+.music-slide.active,
+.news-slide.active {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.music-slide > img,
+.news-slide > img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    object-position: center;
+}
+
+.music-slide::after,
+.news-slide::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        transparent 20%,
+        rgba(0, 0, 0, 0.9) 100%
+    );
+    pointer-events: none;
+}
+
+.slide-tag-text {
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+}
+
+.slide-tag-text .content-category {
+    margin-bottom: 10px;
+}
+
+.slide-tag-text h3 {
+    font-size: 19px;
+    margin-bottom: 5px;
+}
+
+.slide-tag-text p {
+    color: #dedede;
+    font-size: 13px;
+}
+
+.inner-arrow {
+    position: absolute;
+    z-index: 5;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.inner-arrow.prev {
+    left: 10px;
+}
+
+.inner-arrow.next {
+    right: 10px;
+}
+
+/* SPORTS */
+
+.sports-card {
+    position: relative;
+    min-height: 280px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #111;
+}
+
+.sports-card > img {
+    width: 100%;
+    height: 330px;
+    object-fit: cover;
+}
+
+.sports-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.9),
+        rgba(0, 0, 0, 0.12)
+    );
+}
+
+.sports-card-content {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 5%;
+    transform: translateY(-50%);
+    max-width: 500px;
+}
+
+.sports-card-content h3 {
+    font-size: clamp(23px, 4vw, 38px);
+    margin: 12px 0;
+}
+
+.sports-card-content p {
+    color: #dedede;
+}
+
+/* INSTAGRAM */
+
+.instagram-banner-box {
+    background: #211326;
+    border: 1px solid #52305e;
+}
+
+.ig-left-side > i {
+    color: #e668a5;
+    font-size: 38px;
+}
+
+.ig-link-btn {
+    background: #e668a5;
+    color: #160711;
+}
+
+/* ADMIN DASHBOARD */
+
+.admin-dashboard {
+    margin: 30px 5%;
+    padding: 25px;
+    background: var(--surface);
+    border: 1px solid #333;
+    border-radius: 10px;
+}
+
+.admin-warning,
+.modal-note {
+    color: #ffd56a;
+    font-size: 13px;
+    margin: 12px 0;
+}
+
+.admin-form {
+    display: grid;
+    gap: 10px;
+    max-width: 650px;
+}
+
+.admin-form label,
+.modal-content label {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea,
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    color: white;
+    background: #0b0b0b;
+    border: 1px solid #454545;
+    border-radius: 5px;
+    outline: none;
+}
+
+.admin-form input:focus,
+.admin-form textarea:focus,
+.admin-form select:focus,
+.modal-content input:focus {
+    border-color: var(--gold);
+}
+
+.admin-form textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.submit-btn {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 5px;
+    background: var(--gold);
+    color: #000;
+    font-weight: 800;
+    margin-top: 10px;
+}
+
+.logout-btn {
+    padding: 10px 16px;
+    margin-top: 15px;
+    border: 1px solid #aa3434;
+    border-radius: 5px;
+    background: #451313;
+    color: white;
+}
+
+/* MODALS */
+
+.modal {
+    position: fixed;
+    z-index: 200;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    padding: 30px;
+    border: 1px solid #3b3b3b;
+    border-radius: 12px;
+    background: #151515;
+}
+
+.modal-content h2 {
+    color: var(--gold);
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+}
+
+.modal-content form {
+    display: grid;
+    gap: 10px;
+}
+
+.modal-content form .submit-btn {
+    margin-top: 12px;
+}
+
+/* FOOTER */
+
+.site-footer {
+    padding: 35px 5%;
+    text-align: center;
+    border-top: 1px solid #292929;
+    background: #050505;
+}
+
+.site-footer > p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.site-footer > a:not(.logo) {
+    display: inline-block;
+    color: var(--gold);
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.copyright {
+    margin-top: 20px !important;
+}
+
+/* WHATSAPP FLOATING BUTTON */
+
+.whatsapp-float {
+    position: fixed;
+    z-index: 150;
+    right: 18px;
+    bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 16px;
+    border-radius: 30px;
+    background: var(--green);
+    color: #001b09;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.45);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.whatsapp-float i {
+    font-size: 22px;
+}
+
+/* TABLETS */
+
+@media (max-width: 900px) {
+    .main-header {
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .nav-links {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .sections-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-slides,
+    .hero-slide,
+    .hero-content {
+        min-height: 390px;
+    }
+
+    .details-side h1 {
+        font-size: 38px;
+    }
+}
+
+/* PHONES */
+
+@media (max-width: 600px) {
+    .main-header {
+        padding: 12px 4%;
+        gap: 12px;
+    }
+
+    .logo {
+        font-size: 23px;
+    }
+
+    .auth-buttons {
+        gap: 6px;
+    }
+
+    .btn-create,
+    .btn-signin {
+        padding: 8px 10px;
+        font-size: 10px;
+    }
+
+    .nav-links {
+        gap: 15px;
+        justify-content: flex-start;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .nav-links a {
+        font-size: 11px;
+    }
+
+    .hero-section,
+    .sports-section {
+        padding: 25px 4%;
+    }
+
+    .section-heading h2 {
+        font-size: 15px;
+    }
+
+    .hero-slides,
+    .hero-slide,
+    .hero-content {
+        min-height: 390px;
+    }
+
+    .hero-content {
+        padding: 40px 22px 75px;
+        align-items: flex-end;
+    }
+
+    .hero-overlay {
+        background: linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.96) 0%,
+            rgba(0, 0, 0, 0.6) 60%,
+            rgba(0, 0, 0, 0.15) 100%
+        );
+    }
+
+    .details-side h1 {
+        font-size: 32px;
+    }
+
+    .movie-description {
+        font-size: 13px;
+    }
+
+    .slider-controls {
+        right: 15px;
+        bottom: 12px;
+        gap: 8px;
+    }
+
+    .ctrl-btn {
+        width: 33px;
+        height: 33px;
+    }
+
+    .whatsapp-banner,
+    .instagram-banner-box {
+        margin: 5px 4% 25px;
+        padding: 17px;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .wp-left,
+    .ig-left-side {
+        align-items: flex-start;
+    }
+
+    .wp-info h3,
+    .ig-info h3 {
+        font-size: 14px;
+    }
+
+    .wp-info p,
+    .ig-info p {
+        font-size: 12px;
+    }
+
+    .sections-grid {
+        padding: 10px 4% 30px;
+        gap: 20px;
+    }
+
+    .grid-box {
+        padding: 13px;
+    }
+
+    .music-slides,
+    .news-slides,
+    .music-slide,
+    .news-slide {
+        min-height: 240px;
+    }
+
+    .music-slide > img,
+    .news-slide > img {
+        height: 240px;
+    }
+
+    .slide-tag-text {
+        padding: 15px;
+    }
+
+    .slide-tag-text h3 {
+        font-size: 17px;
+    }
+
+    .sports-card > img {
+        height: 270px;
+    }
+
+    .admin-dashboard {
+        margin: 20px 4%;
+        padding: 17px;
+    }
+
+    .modal-content {
+        padding: 25px 20px;
+    }
+
+    .whatsapp-float {
+        right: 12px;
+        bottom: 12px;
+        padding: 11px 13px;
+    }
+}
+
+/* ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
