@@ -1,79 +1,196 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="rw">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKAVOX Official Website</title>
-    <!-- Gukoresha Tailwind CSS na FontAwesome n'izindi mbuga -->
+    <title>CKAVOX - Log In, Media & Socials</title>
+    <!-- Gukurura Supabase Library -->
     <script src="https://jsdelivr.net"></script>
-    <script src="https://tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cloudflare.com">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root { --primary: #1db954; --dark: #121212; --card: #1e1e1e; --text: #ffffff; --whatsapp: #25D366; --instagram: #E1306C; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--dark); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        header { text-align: center; padding: 20px 0; border-bottom: 2px solid var(--primary); }
+        h1 { color: var(--primary); margin: 0; font-size: 32px; }
+        .card { background: var(--card); padding: 20px; border-radius: 8px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #aaa; }
+        input[type="email"], input[type="password"], input[type="text"], select { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #444; background: #333; color: #fff; box-sizing: border-box; }
+        button { background: var(--primary); color: #fff; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; }
+        button:hover { background: #1aa34a; }
+        .auth-toggle { text-align: center; margin-top: 10px; font-size: 14px; color: #aaa; cursor: pointer; }
+        .hidden { display: none; }
+        .item-list { list-style: none; padding: 0; }
+        .item-list li { background: #282828; padding: 15px; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); }
+        .download-btn { background: #007bff; width: auto; padding: 5px 15px; }
+        .download-btn:hover { background: #0056b3; }
+        
+        /* Imiyoboro y'Ikigereranyo (Social Links) */
+        .social-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+        .social-btn { padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white; font-weight: bold; font-size: 14px; text-align: center; display: inline-block; }
+        .btn-whatsapp { background-color: var(--whatsapp); }
+        .btn-instagram { background-color: var(--instagram); }
+        .admin-badge { background: red; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+    </style>
 </head>
-<body class="bg-[#0b0c10] text-white min-h-screen flex flex-col justify-between">
+<body>
 
-    <!-- Header Section -->
-    <header class="py-12 text-center border-b border-gray-800 bg-[#1f2833]/30 backdrop-blur-md sticky top-0 z-50">
-        <h1 class="text-4xl md:text-6xl font-black tracking-wider bg-gradient-to-right bg-clip-text text-transparent bg-gradient-to-r from-[#8a2be2] to-[#00ffff] mb-3 uppercase animate-pulse">
-            CKAVOX
-        </h1>
-        <p class="text-gray-400 text-sm md:text-base font-medium tracking-widest uppercase">
-            Official Media Platform
-        </p>
+<div class="container">
+    <header>
+        <h1>CKAVOX</h1>
+        <p>Log In, Trending Media, Files & Social Networks</p>
+        
+        <!-- Imiyoboro ya WhatsApp na Instagram ya CKAVOX -->
+        <div class="social-buttons">
+            <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d" target="_blank" class="social-btn btn-whatsapp">Follow WhatsApp Channel</a>
+            <a href="https://www.instagram.com/" target="_blank" class="social-btn btn-instagram">Follow Instagram</a>
+        </div>
+        
+        <br>
+        <div id="user-status" class="hidden"></div>
     </header>
 
-    <!-- Main Content Section -->
-    <main class="container mx-auto px-4 py-12 flex-grow max-w-4xl">
-        <div class="text-center mb-12">
-            <h2 class="text-2xl font-bold uppercase tracking-wide">Stay Connected With Us!</h2>
-            <p class="text-gray-400 mt-2 text-sm">Follow our platforms for more info & exclusive alerts.</p>
+    <!-- 1. IFROMU YA LOG IN / SIGN UP -->
+    <div id="auth-section" class="card">
+        <h2 id="auth-title">Log In (Kwinjira)</h2>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="auth-email" placeholder="Urugero: name@email.com">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="auth-password" placeholder="Password yawe">
+        </div>
+        <button id="auth-btn" onclick="handleAuth()">Injira</button>
+        <div class="auth-toggle" id="auth-toggle" onclick="toggleAuthMode()">Nta konti ufite? Fungura nshya hano (Sign Up)</div>
+    </div>
+
+    <!-- 2. AGACE K'IBIRIMO (MAIN CONTENT) - BIHISHWE MBERE YA LOG IN -->
+    <div id="content-section" class="hidden">
+        
+        <!-- Agace ka Admin (Wowe gusa Admin ubona ubu buryo bwo gushyiraho ibintu) -->
+        <div id="admin-section" class="card hidden">
+            <h2><span class="admin-badge">Admin Dashboard</span> Gushyiraho Ibyiciro Bishya</h2>
+            <div class="form-group">
+                <label>Ubwoko bw'igikorwa</label>
+                <select id="upload-type">
+                    <option value="photo">📸 Ifoto Nshya (Link / Izina)</option>
+                    <option value="song">🎵 Indirimbo Nshya</option>
+                    <option value="movie">🎬 Trending Firm (Filime)</option>
+                    <option value="news">🔥 Trending News (Amakuru)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Umutwe / Izina ry'Ikintu</label>
+                <input type="text" id="upload-title" placeholder="Urugero: Izina rya Artist - Indirimbo cyangwa Umutwe w'Amakuru">
+            </div>
+            <div class="form-group">
+                <label>Link (Shyira Link ya Google Drive, Mediafire, cyangwa Link y'ifoto hano)</label>
+                <input type="text" id="upload-link" placeholder="https://...">
+            </div>
+            <button onclick="addNewItem()">Shyiraho ku Rubuga</button>
         </div>
 
-        <!-- Social Grid Area -->
-        <div class="grid md:grid-cols-2 gap-8" id="social-grid">
+        <!-- Trending News Section -->
+        <div class="card">
+            <h2>🔥 Trending News (Amakuru Agezweho)</h2>
+            <ul id="news-list" class="item-list">
+                <li>Urubuga rwa CKAVOX rwatangiye gukora ku mugaragaro ku buntu!</li>
+            </ul>
+        </div>
+
+        <!-- Trending Firms Section -->
+        <div class="card">
+            <h2>🎬 Trending Firms (Filime Zigezweho)</h2>
+            <ul id="movie-list" class="item-list">
+                <li>
+                    <div><strong>CKAVOX Introduction Video</strong><br><small>Reba cyangwa u-downloade filime igezweho</small></div>
+                    <button class="download-btn" onclick="window.open('https://google.com', '_blank')">Download / Watch</button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Songs Section -->
+        <div class="card">
+            <h2>🎵 Indirimbo Zigezweho</h2>
+            <ul id="songs-list" class="item-list">
+                <li>
+                    <div><strong>CKAVOX Official Beat</strong><br><small>Hita ubona link yo kuyitunga</small></div>
+                    <button class="download-btn" onclick="window.open('https://google.com', '_blank')">Download</button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Photos Section -->
+        <div class="card">
+            <h2>📸 Amafoto Agezweho</h2>
+            <ul id="photos-list" class="item-list">
+                <li>Uburyo bwo kureba amafoto mashya burakora neza.</li>
+            </ul>
+        </div>
+        
+        <br>
+        <button style="background:#555;" onclick="logout()">Sohoka (Log Out)</button>
+    </div>
+</div>
+
+<script>
+    // !!! SIMBURA IBI BINTU BIBIRI USHYIREMO API KEYS ZA SUPABASE YAWE !!!
+    const SUPABASE_URL = "https://UZASIMBURE_HAMWE_NA_PROJECT_URL_YAWE.supabase.co";
+    const SUPABASE_ANON_KEY = "UZASIMBURE_HAMWE_NA_ANON_PUBLIC_KEY_YAWE";
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let isLoginMode = true;
+
+    // Email yawe nka Admin - Iyi email ni yo yonyine izajya ibona akasanduku ko gushyiraho ibintu!
+    const ADMIN_EMAIL = "cedrickkayiranga354@gmail.com"; 
+
+    window.onload = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        checkUser(session);
+    };
+
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('auth-title').innerText = isLoginMode ? "Log In (Kwinjira)" : "Sign Up (Fungura Konti)";
+        document.getElementById('auth-btn').innerText = isLoginMode ? "Injira" : "Fungura Konti";
+        document.getElementById('auth-toggle').innerText = isLoginMode ? "Nta konti ufite? Fungura nshya hano (Sign Up)" : "Usanzwe ufite konti? Kanda hano winjire (Log In)";
+    }
+
+    async function handleAuth() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+
+        if(!email || !password) return alert("Ugomba kwandika byose!");
+
+        if (isLoginMode) {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) alert("Kwinjira byanze: " + error.message);
+            else checkUser(data.session);
+        } else {
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) alert("Gufungura konti byanze: " + error.message);
+            else alert("Konti yawe yafungutse! Niba 'Confirm Email' yaka muri Supabase, banza uyemeze muri email yawe.");
+        }
+    }
+
+    function checkUser(session) {
+        if (session) {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('content-section').classList.remove('hidden');
+            document.getElementById('user-status').classList.remove('hidden');
+            document.getElementById('user-status').innerHTML = `Winjiye nka: <strong>${session.user.email}</strong>`;
             
-            <!-- WhatsApp Card -->
-            <div class="bg-[#1f2833]/80 p-8 rounded-2xl border border-emerald-500/30 flex flex-col justify-between transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-                <div>
-                    <div class="flex items-center gap-4 mb-4">
-                        <i class="fab fa-whatsapp text-4xl text-emerald-500"></i>
-                        <h3 class="text-xl font-bold tracking-wide uppercase">WhatsApp Channel</h3>
-                    </div>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                        Get Instant Breaking News Alerts & Pop Culture Updates directly to your phone.
-                    </p>
-                </div>
-                <a href="#" id="whatsapp-link" target="_blank" class="w-full text-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-full transition-colors tracking-wider uppercase text-sm block">
-                    Join On WhatsApp
-                </a>
-            </div>
+            if(session.user.email === ADMIN_EMAIL) {
+                document.getElementById('admin-section').classList.remove('hidden');
+            }
+        } else {
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('content-section').classList.add('hidden');
+            document.getElementById('user-status').classList.add('hidden');
+            document.getElementById('admin-section').classList.add('hidden');
+        }
+    }
 
-            <!-- Instagram Card -->
-            <div class="bg-[#1f2833]/80 p-8 rounded-2xl border border-pink-500/30 flex flex-col justify-between transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(236,72,153,0.2)]">
-                <div>
-                    <div class="flex items-center gap-4 mb-4">
-                        <i class="fab fa-instagram text-4xl text-pink-500"></i>
-                        <h3 class="text-xl font-bold tracking-wide uppercase">Instagram</h3>
-                    </div>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                        Daily Memes, Behind-the-Scenes fun, and viral video updates.
-                    </p>
-                </div>
-                <a href="#" id="instagram-link" target="_blank" class="w-full text-center bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white font-bold py-3 px-6 rounded-full transition-all tracking-wider uppercase text-sm block">
-                    Follow @CKAVOX
-                </a>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- Footer Section -->
-    <footer class="py-6 text-center border-t border-gray-900 bg-[#0b0c10]">
-        <p class="text-xs text-gray-600 uppercase tracking-widest">
-            &copy; 2026 CKAVOX. All Rights Reserved.
-        </p>
-    </footer>
-
-    <script src="script.js"></script>
-</body>
-</html>
+    async function logout() {
+        await supabase.auth.signOut();
