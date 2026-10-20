@@ -1,21 +1,279 @@
-/* Kongeramo uburyo bwo kureshya n'uburyo bworoshye */
-html, body {
+ * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    scroll-behavior: smooth;
-    background-color: #0b0c10;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Gukora background ifite amabara acyeye agenda gake nka animation (Glow effect) */
-body::before {
-    content: "";
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(138,43,226,0.05) 0%, transparent 60%),
-                radial-gradient(circle, rgba(0,255,255,0.03) 0%, transparent 60%);
-    z-index: -1;
+body {
+    background-color: #0b0c10;
+    color: #ffffff;
+    padding: 10px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* NAV BAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 10px;
+    background-color: #1f2833;
+    border-radius: 8px 8px 0 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    color: #c5a880;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #c5a880;
+}
+
+.social-icon-top {
+    color: #e1306c; /* Ibara rya Instagram */
+    font-size: 1.3rem;
+    text-decoration: none;
+}
+
+.tabs-count {
+    border: 2px solid #c5a880;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* IMAGE SLIDER CODE (Guhindura amafoto) */
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    margin: 15px 0;
+    border-radius: 8px;
+}
+
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.slide-text {
+    position: absolute;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    width: 100%;
+    color: #fff;
+    padding: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.slider-dots {
+    position: absolute;
+    bottom: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot.active {
+    background-color: #ffc107;
+    width: 12px;
+    border-radius: 4px;
+}
+
+/* HERO SECTION */
+.hero-section {
+    background: linear-gradient(180deg, #1f2833 0%, #0b0c10 100%);
+    padding: 15px 10px;
+    border-bottom: 1px solid #1f2833;
+}
+
+.featured-badge {
+    background-color: #c5a880;
+    color: #000;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.hero-content {
+    display: flex;
+    gap: 15px;
+}
+
+.movie-poster-container {
+    position: relative;
+    flex: 0 0 40%;
+}
+
+.movie-poster {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.poster-tag {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+}
+
+.movie-details {
+    flex: 1;
+}
+
+.movie-details h1 {
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+}
+
+.movie-meta {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.movie-description {
+    font-size: 0.8rem;
+    color: #ccc;
+    margin-bottom: 12px;
+}
+
+.watch-now-btn {
+    background-color: #ffc107;
+    color: #000;
+    border: none;
+    padding: 8px;
+    font-weight: bold;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+}
+
+/* WHATSAPP BANNER */
+.whatsapp-banner {
+    background-color: #071e16;
+    border: 1px solid #0f3d2c;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.banner-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.wp-icon {
+    font-size: 2rem;
+    color: #25d366;
+}
+
+.wp-text h3 {
+    font-size: 0.95rem;
+}
+
+.wp-text p {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.join-btn-link {
+    text-decoration: none;
+}
+
+.join-btn {
+    background-color: #25d366;
+    color: #000;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+/* DISCOVER SECTION */
+.discover-section {
+    border: 1px solid #c5a880;
+    border-radius: 8px;
+    padding: 20px 15px;
+}
+
+.discover-badge {
+    color: #c5a880;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.discover-text {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.discover-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.disc-btn {
+    border: 1px solid #444;
+    color: #ffc107;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
