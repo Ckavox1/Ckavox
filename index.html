@@ -16,32 +16,27 @@
             <i class="fas fa-home"></i> <span>ckavox.com</span>
         </div>
         <div class="nav-right">
-            <!-- Instagram Link -->
-            <a href="https://www.instagram.com/" target="_blank" class="social-icon-top"><i class="fab fa-instagram"></i></a>
-            <span class="tabs-count">44</span>
+            <a href="https://instagram.com" target="_blank" class="social-icon-top"><i class="fab fa-instagram"></i></a>
+            <span class="tabs-count">46</span>
         </div>
     </header>
 
-    <!-- IMAGE SLIDER (Amafoto akora moving akaza ahinduka) -->
+    <!-- IMAGE SLIDER -->
     <section class="slider-container">
         <div class="slider">
-            <!-- Ifoto ya 1 (Aha uzashyira link y'ifoto yawe) -->
             <div class="slide active">
                 <img src="https://unsplash.com" alt="Slide 1">
                 <div class="slide-text">Reba Agasobanuye Gashya kuri CKAVOX</div>
             </div>
-            <!-- Ifoto ya 2 -->
             <div class="slide">
                 <img src="https://unsplash.com" alt="Slide 2">
                 <div class="slide-text">Indirimbo n'Amakuru Agezweho buri munsi</div>
             </div>
-            <!-- Ifoto ya 3 -->
             <div class="slide">
                 <img src="https://unsplash.com" alt="Slide 3">
                 <div class="slide-text">Yaba Filime na Series Zikunzwe</div>
             </div>
         </div>
-        <!-- Utudomo twerekana ifoto igezweho -->
         <div class="slider-dots">
             <span class="dot active"></span>
             <span class="dot"></span>
@@ -49,13 +44,13 @@
         </div>
     </section>
 
-    <!-- HERO SECTION (Featured Movie) -->
+    <!-- HERO SECTION -->
     <section class="hero-section">
         <span class="featured-badge">FEATURED MOVIE</span>
         <div class="hero-content">
             <div class="movie-poster-container">
                 <span class="poster-tag">Rocky</span>
-                <img src="https://placeholder.com" alt="Matchbox The Movie Poster" class="movie-poster">
+                <img src="https://placeholder.com" alt="Movie Poster" class="movie-poster">
             </div>
             <div class="movie-details">
                 <h1>Matchbox the Movie</h1>
@@ -68,7 +63,7 @@
         </div>
     </section>
 
-    <!-- CKAVOX WHATSAPP CHANNEL BANNER -->
+    <!-- CKAVOX WHATSAPP CHANNEL -->
     <section class="whatsapp-banner">
         <div class="banner-info">
             <div class="wp-icon"><i class="fab fa-whatsapp"></i></div>
@@ -77,8 +72,7 @@
                 <p>Follow the CKAVOX channel for the latest releases.</p>
             </div>
         </div>
-        <!-- Urubuga rwawe rwa WhatsApp rwahindutse -->
-        <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d" target="_blank" class="join-btn-link">
+        <a href="https://whatsapp.com" target="_blank" class="join-btn-link">
             <button class="join-btn">Join channel <i class="fas fa-arrow-right"></i></button>
         </a>
     </section>
@@ -98,27 +92,7 @@
         </div>
     </section>
 
-    <!-- JAVASCRIPT: Irituma amafoto ahinduka buri masegonda 3 -->
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const dots = document.querySelectorAll('.dot');
-
-        function showSlide(index) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            dots.forEach(dot => dot.classList.remove('active'));
-            
-            slides[index].classList.add('active');
-            dots[index].classList.add('active');
-        }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % slides.length;
-            showSlide(currentSlide);
-        }
-
-        // Guhindura ifoto buri masegonda 3 (3000ms)
-        setInterval(nextSlide, 3000);
-    </script>
+    <!-- GUHUZA URUBUGA NA SCRIPT.JS -->
+    <script src="script.js"></script>
 </body>
 </html>
