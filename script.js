@@ -1,439 +1,719 @@
-"use strict";
-
-document.addEventListener("DOMContentLoaded", () => {
-    loadSavedContent();
-    initAllSliders();
-    setupModals();
-    setupDemoForms();
-
-    document.getElementById("current-year").textContent =
-        new Date().getFullYear();
-});
+ "use strict";
 
 /*
- * IMPORTANT:
- * This is a front-end demonstration only.
- * localStorage is not a shared database or secure authentication.
- */
+  CKAVOX WEBSITE
 
-const STORAGE_KEY = "ckavox_content_v2";
+  Demo login only.
+  Browser localStorage is not a secure authentication system.
+  Content is stored in the current browser, not shared across visitors.
+*/
 
-const sliderStates = {};
+const ADMIN_EMAIL = "admin@ckavox.com";
+const ADMIN_PASSWORD = "adminckavox123";
 
-function getSlides(container) {
-    return Array.from(
-        container.querySelectorAll(
-            ":scope > .hero-slide, " +
-            ":scope > .music-slide, " +
-            ":scope > .news-slide"
-        )
+const CONTENT_STORAGE_KEY = "ckavox_content_v1";
+const SESSION_STORAGE_KEY = "ckavox_demo_admin_session";
+
+const CATEGORIES = [
+  "movies",
+  "music",
+  "books",
+  "news",
+  "showbiz"
+];
+
+let contents = [];
+let currentSlide = 0;
+let sliderTimer = null;
+
+
+/* -----------------------------
+   SAFE LOCAL STORAGE
+----------------------------- */
+
+function readStoredContent() {
+  try {
+    const raw = localStorage.getItem(CONTENT_STORAGE_KEY);
+
+    if (!raw) {
+      return [];
+    }
+
+    const parsed = JSON.parse(raw);
+
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed.filter(item =>
+      item &&
+      typeof item.id === "string" &&
+      CATEGORIES.includes(item.category) &&
+      typeof item.title === "string"
     );
+
+  } catch (error) {
+    console.error("Could not load saved content:", error);
+    return [];
+  }
 }
 
-function initSlider(containerId, dotsId = null) {
-    const container = document.getElementById(containerId);
 
-    if (!container) return;
-
-    const slides = getSlides(container);
-    const dotsContainer = dotsId
-        ? document.getElementById(dotsId)
-        : null;
-
-    if (slides.length === 0) return;
-
-    let index = Math.max(
-        0,
-        slides.findIndex(slide => slide.classList.contains("active"))
+function saveContents() {
+  try {
+    localStorage.setItem(
+      CONTENT_STORAGE_KEY,
+      JSON.stringify(contents)
     );
 
-    function renderDots() {
-        if (!dotsContainer) return;
+    return true;
 
-        dotsContainer.replaceChildren();
+  } catch (error) {
+    alert(
+      "Could not save content. Your browser storage may be full or unavailable."
+    );
 
-        slides.forEach((slide, slideIndex) => {
-            const dot = document.createElement("button");
-
-            dot.type = "button";
-            dot.className =
-                slideIndex === index ? "dot active" : "dot";
-
-            dot.setAttribute(
-                "aria-label",
-                `Go to slide ${slideIndex + 1}`
-            );
-
-            dot.addEventListener("click", () => {
-                show(slideIndex);
-                restart();
-            });
-
-            dotsContainer.appendChild(dot);
-        });
-    }
-
-    function show(nextIndex) {
-        index = (nextIndex + slides.length) % slides.length;
-
-        slides.forEach((slide, slideIndex) => {
-            const active = slideIndex === index;
-
-            slide.classList.toggle("active", active);
-            slide.setAttribute("aria-hidden", String(!active));
-        });
-
-        if (dotsContainer) {
-            Array.from(dotsContainer.children).forEach(
-                (dot, dotIndex) => {
-                    dot.classList.toggle(
-                        "active",
-                        dotIndex === index
-                    );
-                }
-            );
-        }
-    }
-
-    function restart() {
-        clearInterval(sliderStates[containerId]);
-
-        if (slides.length > 1) {
-            sliderStates[containerId] = setInterval(() => {
-                show(index + 1);
-            }, 4000);
-        }
-    }
-
-    show(index);
-    renderDots();
-    restart();
-
-    return {
-        next: () => {
-            show(index + 1);
-            restart();
-        },
-
-        previous: () => {
-            show(index - 1);
-            restart();
-        }
-    };
+    console.error("Could not save content:", error);
+    return false;
+  }
 }
 
-function initAllSliders() {
-    const hero = initSlider("movies-slider-target", "hero-dots");
-    const music = initSlider("music-slider-target");
-    const news = initSlider("news-slider-target");
 
-    window.moveHeroSlide = direction => {
-        if (!hero) return;
+/* -----------------------------
+   NAVIGATION
+----------------------------- */
 
-        direction > 0 ? hero.next() : hero.previous();
-    };
+function showSection(sectionId) {
+  const requestedSection = document.getElementById(sectionId);
 
-    window.moveMusicSlide = direction => {
-        if (!music) return;
+  if (!requestedSection) {
+    return;
+  }
 
-        direction > 0 ? music.next() : music.previous();
-    };
+  if (
+    sectionId === "admin-dashboard" &&
+    !isAdminLoggedIn()
+  ) {
+    openLogin();
+    return;
+  }
 
-    window.moveNewsSlide = direction => {
-        if (!news) return;
+  document.querySelectorAll(".page-section").forEach(section => {
+    section.classList.remove("active");
+  });
 
-        direction > 0 ? news.next() : news.previous();
-    };
+  requestedSection.classList.add("active");
+
+  document.getElementById("navigation").classList.remove("open");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+  if (sectionId === "home") {
+    renderFeaturedSlider();
+  }
 }
 
-/* MODALS */
 
-function openModal(id) {
-    const modal = document.getElementById(id);
+document.getElementById("menu-button").addEventListener("click", () => {
+  document.getElementById("navigation").classList.toggle("open");
+});
 
-    if (modal) {
-        modal.style.display = "flex";
+
+/* -----------------------------
+   ADMIN LOGIN
+----------------------------- */
+
+function isAdminLoggedIn() {
+  return sessionStorage.getItem(SESSION_STORAGE_KEY) === "yes";
+}
+
+
+function openLogin() {
+  if (isAdminLoggedIn()) {
+    showSection("admin-dashboard");
+    renderAdminList();
+    return;
+  }
+
+  const modal = document.getElementById("login-modal");
+
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+
+  document.getElementById("login-error").textContent = "";
+
+  setTimeout(() => {
+    document.getElementById("admin-email").focus();
+  }, 100);
+}
+
+
+function closeLogin() {
+  const modal = document.getElementById("login-modal");
+
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+
+  document.getElementById("login-form").reset();
+  document.getElementById("login-error").textContent = "";
+}
+
+
+document.getElementById("login-form").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const email = document
+    .getElementById("admin-email")
+    .value
+    .trim()
+    .toLowerCase();
+
+  const password = document
+    .getElementById("admin-password")
+    .value;
+
+  if (
+    email === ADMIN_EMAIL &&
+    password === ADMIN_PASSWORD
+  ) {
+    sessionStorage.setItem(SESSION_STORAGE_KEY, "yes");
+
+    closeLogin();
+    showSection("admin-dashboard");
+    renderAdminList();
+
+  } else {
+    document.getElementById("login-error").textContent =
+      "Incorrect email or password. Please try again.";
+  }
+});
+
+
+function logout() {
+  sessionStorage.removeItem(SESSION_STORAGE_KEY);
+
+  showSection("home");
+
+  alert("You have logged out.");
+}
+
+
+/* Close modal when clicking outside the box */
+
+document.getElementById("login-modal").addEventListener("click", event => {
+  if (event.target.id === "login-modal") {
+    closeLogin();
+  }
+});
+
+
+/* Close modal with Escape */
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    closeLogin();
+  }
+});
+
+
+/* -----------------------------
+   CONTENT VALIDATION
+----------------------------- */
+
+function safeExternalUrl(value) {
+  if (!value) {
+    return "";
+  }
+
+  try {
+    const parsed = new URL(value);
+
+    if (
+      parsed.protocol === "https:" ||
+      parsed.protocol === "http:"
+    ) {
+      return parsed.href;
     }
+
+    return "";
+
+  } catch {
+    return "";
+  }
 }
 
-function closeModal(id) {
-    const modal = document.getElementById(id);
 
-    if (modal) {
-        modal.style.display = "none";
+function makeId() {
+  if (
+    window.crypto &&
+    typeof window.crypto.randomUUID === "function"
+  ) {
+    return window.crypto.randomUUID();
+  }
+
+  return Date.now().toString(36) +
+    Math.random().toString(36).slice(2);
+}
+
+
+/* -----------------------------
+   ADD CONTENT
+----------------------------- */
+
+document.getElementById("content-form").addEventListener("submit", event => {
+  event.preventDefault();
+
+  if (!isAdminLoggedIn()) {
+    alert("Please log in as admin first.");
+    openLogin();
+    return;
+  }
+
+  const category = document
+    .getElementById("content-type")
+    .value;
+
+  const title = document
+    .getElementById("content-title")
+    .value
+    .trim();
+
+  const description = document
+    .getElementById("content-desc")
+    .value
+    .trim();
+
+  const image = safeExternalUrl(
+    document.getElementById("content-img").value.trim()
+  );
+
+  const link = safeExternalUrl(
+    document.getElementById("content-url").value.trim()
+  );
+
+  if (!CATEGORIES.includes(category)) {
+    alert("Please choose a valid category.");
+    return;
+  }
+
+  if (!title) {
+    alert("Please enter a title.");
+    return;
+  }
+
+  const newContent = {
+    id: makeId(),
+    category,
+    title,
+    description,
+    image,
+    link,
+    createdAt: new Date().toISOString()
+  };
+
+  contents.unshift(newContent);
+
+  if (!saveContents()) {
+    contents.shift();
+    return;
+  }
+
+  event.target.reset();
+
+  renderAllContent();
+  renderAdminList();
+
+  currentSlide = 0;
+  renderFeaturedSlider();
+
+  alert("Content added successfully in this browser.");
+
+  showSection("admin-dashboard");
+});
+
+
+/* -----------------------------
+   IMAGE FALLBACK
+----------------------------- */
+
+function createFallbackImage() {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
+      <rect width="100%" height="100%" fill="#171717"/>
+      <text x="50%" y="46%" fill="#f5c518"
+        font-size="48" font-family="Arial"
+        text-anchor="middle" font-weight="bold">CKAVOX</text>
+      <text x="50%" y="60%" fill="#aaaaaa"
+        font-size="18" font-family="Arial"
+        text-anchor="middle">DISCOVER MORE</text>
+    </svg>
+  `;
+
+  return "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(svg);
+}
+
+
+function createImage(url, className, altText) {
+  const img = document.createElement("img");
+
+  img.className = className;
+  img.alt = altText || "CKAVOX content";
+  img.loading = "lazy";
+  img.decoding = "async";
+
+  img.src = safeExternalUrl(url) || createFallbackImage();
+
+  img.addEventListener("error", () => {
+    img.onerror = null;
+    img.src = createFallbackImage();
+  });
+
+  return img;
+}
+
+
+/* -----------------------------
+   SAFE CARD CREATION
+----------------------------- */
+
+function createContentCard(item) {
+  const article = document.createElement("article");
+  article.className = "content-card";
+
+  const imageWrap = document.createElement("div");
+  imageWrap.className = "card-image-wrap";
+
+  imageWrap.appendChild(
+    createImage(item.image, "card-image", item.title)
+  );
+
+  const body = document.createElement("div");
+  body.className = "card-body";
+
+  const category = document.createElement("span");
+  category.className = "card-category";
+  category.textContent = item.category;
+
+  const title = document.createElement("h3");
+  title.textContent = item.title;
+
+  const description = document.createElement("p");
+  description.textContent =
+    item.description || "Discover more on CKAVOX.";
+
+  body.append(category, title, description);
+
+  if (item.link) {
+    const link = document.createElement("a");
+
+    link.className = "card-link";
+    link.href = item.link;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "EXPLORE MORE ↗";
+
+    body.appendChild(link);
+  }
+
+  article.append(imageWrap, body);
+
+  return article;
+}
+
+
+/* -----------------------------
+   RENDER CATEGORY CONTENT
+----------------------------- */
+
+function renderCategory(category) {
+  const container = document.getElementById(category + "-grid");
+
+  if (!container) {
+    return;
+  }
+
+  container.replaceChildren();
+
+  const categoryItems = contents.filter(item =>
+    item.category === category
+  );
+
+  if (categoryItems.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "no-content";
+
+    const heading = document.createElement("h3");
+    heading.textContent = "Coming Soon";
+
+    const paragraph = document.createElement("p");
+    paragraph.textContent =
+      "New " + category + " content will appear here when published.";
+
+    empty.append(heading, paragraph);
+    container.appendChild(empty);
+
+    return;
+  }
+
+  categoryItems.forEach(item => {
+    container.appendChild(createContentCard(item));
+  });
+}
+
+
+function renderAllContent() {
+  CATEGORIES.forEach(category => {
+    renderCategory(category);
+  });
+}
+
+
+/* -----------------------------
+   AUTOMATIC FEATURED SLIDER
+   CHANGES EVERY 4 SECONDS
+----------------------------- */
+
+function getFeaturedItems() {
+  return contents.slice(0, 10);
+}
+
+
+function renderFeaturedSlider() {
+  const slider = document.getElementById("featured-slider");
+  const items = getFeaturedItems();
+
+  slider.replaceChildren();
+
+  if (items.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+
+    const icon = document.createElement("div");
+    icon.className = "empty-icon";
+    icon.textContent = "✦";
+
+    const title = document.createElement("h3");
+    title.textContent = "Your next favorite starts here";
+
+    const description = document.createElement("p");
+    description.textContent =
+      "Log in as admin to publish the first item.";
+
+    empty.append(icon, title, description);
+    slider.appendChild(empty);
+
+    return;
+  }
+
+  if (currentSlide >= items.length) {
+    currentSlide = 0;
+  }
+
+  if (currentSlide < 0) {
+    currentSlide = items.length - 1;
+  }
+
+  const item = items[currentSlide];
+
+  const slide = document.createElement("article");
+  slide.className = "slide-card";
+
+  const imageWrap = document.createElement("div");
+  imageWrap.className = "slide-image-wrap";
+
+  imageWrap.appendChild(
+    createImage(item.image, "slide-image", item.title)
+  );
+
+  const body = document.createElement("div");
+  body.className = "slide-content";
+
+  const tag = document.createElement("span");
+  tag.className = "slide-tag";
+  tag.textContent = item.category;
+
+  const title = document.createElement("h3");
+  title.textContent = item.title;
+
+  const description = document.createElement("p");
+  description.textContent =
+    item.description || "Discover more on CKAVOX.";
+
+  body.append(tag, title, description);
+
+  if (item.link) {
+    const link = document.createElement("a");
+
+    link.className = "primary-button";
+    link.href = item.link;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "EXPLORE MORE ↗";
+
+    body.appendChild(link);
+  }
+
+  slide.append(imageWrap, body);
+  slider.appendChild(slide);
+}
+
+
+function moveSlide(direction) {
+  const items = getFeaturedItems();
+
+  if (items.length <= 1) {
+    return;
+  }
+
+  currentSlide =
+    (currentSlide + direction + items.length) % items.length;
+
+  renderFeaturedSlider();
+
+  restartSlider();
+}
+
+
+function startSlider() {
+  stopSlider();
+
+  sliderTimer = window.setInterval(() => {
+    const items = getFeaturedItems();
+
+    if (items.length > 1) {
+      currentSlide = (currentSlide + 1) % items.length;
+      renderFeaturedSlider();
     }
+  }, 4000);
 }
 
-function setupModals() {
-    document.querySelectorAll(".modal").forEach(modal => {
-        modal.addEventListener("click", event => {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        });
+
+function stopSlider() {
+  if (sliderTimer !== null) {
+    window.clearInterval(sliderTimer);
+    sliderTimer = null;
+  }
+}
+
+
+function restartSlider() {
+  startSlider();
+}
+
+
+/* Pause slider when browser tab is hidden */
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    stopSlider();
+  } else {
+    startSlider();
+  }
+});
+
+
+/* -----------------------------
+   ADMIN CONTENT LIST
+----------------------------- */
+
+function renderAdminList() {
+  const list = document.getElementById("admin-content-list");
+  const count = document.getElementById("content-count");
+
+  list.replaceChildren();
+
+  count.textContent =
+    contents.length + (contents.length === 1 ? " item" : " items");
+
+  if (contents.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "no-content";
+    empty.textContent = "No content published yet.";
+    list.appendChild(empty);
+    return;
+  }
+
+  contents.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "admin-item";
+
+    const details = document.createElement("div");
+
+    const title = document.createElement("h3");
+    title.textContent = item.title;
+
+    const category = document.createElement("p");
+    category.textContent =
+      item.category.toUpperCase();
+
+    details.append(title, category);
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "delete-button";
+    deleteButton.textContent = "DELETE";
+
+    deleteButton.addEventListener("click", () => {
+      deleteContent(item.id);
     });
 
-    document.addEventListener("keydown", event => {
-        if (event.key === "Escape") {
-            document.querySelectorAll(".modal").forEach(modal => {
-                modal.style.display = "none";
-            });
-        }
-    });
+    row.append(details, deleteButton);
+    list.appendChild(row);
+  });
 }
 
-window.openModal = openModal;
-window.closeModal = closeModal;
 
-/* SAFE LOCAL STORAGE HELPERS */
+function deleteContent(id) {
+  if (!isAdminLoggedIn()) {
+    alert("Please log in first.");
+    return;
+  }
 
-function getSavedItems() {
-    try {
-        const value = localStorage.getItem(STORAGE_KEY);
-        const parsed = value ? JSON.parse(value) : [];
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this content?"
+  );
 
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-        console.error("Could not read CKAVOX content:", error);
-        return [];
-    }
+  if (!confirmed) {
+    return;
+  }
+
+  const oldContents = [...contents];
+
+  contents = contents.filter(item => item.id !== id);
+
+  if (!saveContents()) {
+    contents = oldContents;
+    return;
+  }
+
+  currentSlide = 0;
+
+  renderAllContent();
+  renderAdminList();
+  renderFeaturedSlider();
 }
 
-function saveItems(items) {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-        return true;
-    } catch (error) {
-        console.error("Could not save CKAVOX content:", error);
 
-        alert("Amakuru ntiyabitswe. Reba ububiko bwa browser yawe.");
-        return false;
-    }
+/* -----------------------------
+   INITIALIZE WEBSITE
+----------------------------- */
+
+function initializeWebsite() {
+  contents = readStoredContent();
+
+  document.getElementById("current-year").textContent =
+    new Date().getFullYear();
+
+  renderAllContent();
+  renderAdminList();
+  renderFeaturedSlider();
+
+  startSlider();
 }
 
-/* IMAGE VALIDATION */
 
-function isAllowedImageUrl(value) {
-    try {
-        const url = new URL(value);
-
-        return (
-            url.protocol === "https:" &&
-            !url.username &&
-            !url.password
-        );
-    } catch {
-        return false;
-    }
-}
-
-/* SAFE ELEMENT CREATION */
-
-function createImage(url, title, className) {
-    const image = document.createElement("img");
-
-    image.src = url;
-    image.alt = title;
-    image.className = className;
-    image.loading = "lazy";
-    image.referrerPolicy = "no-referrer";
-
-    image.addEventListener("error", () => {
-        image.style.display = "none";
-    });
-
-    return image;
-}
-
-function createCategory(text) {
-    const badge = document.createElement("span");
-
-    badge.className = "featured-badge";
-    badge.textContent = text;
-
-    return badge;
-}
-
-/* LOAD SAVED CONTENT */
-
-function loadSavedContent() {
-    const savedItems = getSavedItems();
-
-    const containers = {
-        movie: document.getElementById("movies-slider-target"),
-        music: document.getElementById("music-slider-target"),
-        news: document.getElementById("news-slider-target")
-    };
-
-    savedItems.forEach(item => {
-        if (
-            !item ||
-            !containers[item.type] ||
-            !item.title ||
-            !isAllowedImageUrl(item.imgUrl)
-        ) {
-            return;
-        }
-
-        const slide = document.createElement("article");
-
-        slide.className =
-            item.type === "movie"
-                ? "hero-slide"
-                : item.type === "music"
-                    ? "music-slide"
-                    : "news-slide";
-
-        if (item.type === "movie") {
-            const image = createImage(
-                item.imgUrl,
-                item.title,
-                "hero-image"
-            );
-
-            const overlay = document.createElement("div");
-            overlay.className = "hero-overlay";
-
-            const content = document.createElement("div");
-            content.className = "hero-content";
-
-            const details = document.createElement("div");
-            details.className = "details-side";
-
-            const category = document.createElement("p");
-            category.className = "eyebrow";
-            category.textContent = "CKAVOX FEATURED";
-
-            const title = document.createElement("h1");
-            title.textContent = item.title;
-
-            const description = document.createElement("p");
-            description.className = "movie-description";
-            description.textContent = item.desc || "";
-
-            details.append(category, title, description);
-            content.append(details);
-
-            slide.append(
-                image,
-                overlay,
-                createCategory("ADDED CONTENT"),
-                content
-            );
-        } else {
-            const image = createImage(
-                item.imgUrl,
-                item.title,
-                ""
-            );
-
-            const textBox = document.createElement("div");
-            textBox.className = "slide-tag-text";
-
-            const category = document.createElement("span");
-            category.className = "content-category";
-            category.textContent =
-                item.type === "music" ? "MUSIC" : "NEWS & SHOWBIZ";
-
-            const title = document.createElement("h3");
-            title.textContent = item.title;
-
-            const description = document.createElement("p");
-            description.textContent = item.desc || "";
-
-            textBox.append(category, title, description);
-            slide.append(image, textBox);
-        }
-
-        containers[item.type].appendChild(slide);
-    });
-}
-
-/* ADMIN DEMO */
-
-function addContentByAdmin(event) {
-    if (event) {
-        event.preventDefault();
-    }
-
-    const type = document.getElementById("content-type").value;
-    const title = document.getElementById("content-title").value.trim();
-    const desc = document.getElementById("content-desc").value.trim();
-    const imgUrl = document.getElementById("content-img").value.trim();
-
-    if (!["movie", "music", "news"].includes(type)) {
-        alert("Hitamo ubwoko bw'amakuru bwemewe.");
-        return;
-    }
-
-    if (!title) {
-        alert("Andika umutwe w'amakuru.");
-        return;
-    }
-
-    if (!isAllowedImageUrl(imgUrl)) {
-        alert("Shyiramo URL y'ifoto itangizwa na https://");
-        return;
-    }
-
-    const savedItems = getSavedItems();
-
-    savedItems.push({
-        id: crypto.randomUUID
-            ? crypto.randomUUID()
-            : String(Date.now()),
-
-        type,
-        title,
-        desc,
-        imgUrl,
-        createdAt: new Date().toISOString()
-    });
-
-    if (!saveItems(savedItems)) return;
-
-    alert("Amakuru yabitswe muri browser ukoresha.");
-
-    location.reload();
-}
-
-function logoutAdmin() {
-    document.getElementById("admin-dashboard").hidden = true;
-    closeModal("login-modal");
-}
-
-window.logoutAdmin = logoutAdmin;
-
-/* DEMO FORMS */
-
-function setupDemoForms() {
-    const loginForm = document.getElementById("login-form");
-
-    loginForm.addEventListener("submit", event => {
-        event.preventDefault();
-
-        /*
-         * No hard-coded administrator password is used.
-         * A real login must be implemented using Supabase Auth.
-         */
-
-        alert(
-            "Login nyakuri ntirashyirwamo. " +
-            "Huza Supabase Auth mbere yo gufungura Admin dashboard."
-        );
-    });
-
-    const signupForm = document.getElementById("signup-form");
-
-    signupForm.addEventListener("submit", event => {
-        event.preventDefault();
-
-        alert(
-            "Kwiyandikisha nyakuri bisaba guhuza Supabase Auth."
-        );
-    });
-
-    const adminForm = document.getElementById("admin-content-form");
-
-    adminForm.addEventListener("submit", addContentByAdmin);
-}
+document.addEventListener("DOMContentLoaded", initializeWebsite);
