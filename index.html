@@ -1,520 +1,325 @@
-
-   <!DOCTYPE html>
-<html lang="rw">
+ <!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="theme-color" content="#080808">
-    <meta name="description"
-          content="CKAVOX: amakuru, umuziki, filime, showbiz na siporo.">
+  <title>CKAVOX | Entertainment, Music & News</title>
+  <meta name="description"
+        content="CKAVOX: Discover music, movies, books, news and entertainment.">
 
-    <title>CKAVOX | News, Music, Movies & Sports</title>
-
-    <link rel="stylesheet" href="style.css">
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header class="main-header">
-    <a class="logo" href="#home">
-        <span>CKA</span>VOX<span class="logo-dot">.</span>
+  <!-- HEADER -->
+  <header class="header">
+    <a class="logo" href="#" onclick="showSection('home'); return false;">
+      <span class="logo-icon">C<span>〰</span></span>
+      <span>CKA<span class="gold">VOX</span></span>
     </a>
 
-    <nav class="nav-links">
-        <a href="#home">HOME</a>
-        <a href="#movies">MOVIES</a>
-        <a href="#music">MUSIC</a>
-        <a href="#news">NEWS</a>
-        <a href="#sports">SPORTS</a>
+    <button class="menu-button" id="menu-button"
+            aria-label="Open navigation">☰</button>
+
+    <nav class="navigation" id="navigation">
+      <button onclick="showSection('home')">HOME</button>
+      <button onclick="showSection('movies')">MOVIES</button>
+      <button onclick="showSection('music')">MUSIC</button>
+      <button onclick="showSection('books')">BOOKS</button>
+      <button onclick="showSection('news')">NEWS</button>
+      <button onclick="showSection('showbiz')">SHOWBIZ</button>
+      <button class="login-nav" onclick="openLogin()">ADMIN LOGIN</button>
     </nav>
+  </header>
 
-    <div class="auth-buttons">
-        <button class="btn-create"
-                onclick="openModal('signup-modal')">
-            SIGN UP
+  <!-- WHATSAPP CHANNEL -->
+  <a class="whatsapp-bar"
+     href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
+     target="_blank"
+     rel="noopener noreferrer">
+    <span>●</span> FOLLOW CKAVOX ON WHATSAPP
+    <span class="whatsapp-arrow">↗</span>
+  </a>
+
+  <main>
+
+    <!-- HOME -->
+    <section id="home" class="page-section active">
+
+      <div class="hero">
+        <div class="hero-content">
+          <span class="eyebrow">WELCOME TO CKAVOX</span>
+
+          <h1>YOUR WORLD.<br>
+            <span class="gold">YOUR ENTERTAINMENT.</span>
+          </h1>
+
+          <p>Discover movies, music, books, breaking stories and showbiz.</p>
+
+          <button class="primary-button"
+                  onclick="showSection('news')">
+            EXPLORE NOW →
+          </button>
+        </div>
+
+        <div class="hero-visual">
+          <div class="hero-badge">CKAVOX</div>
+          <div class="hero-wave">▂ ▄ ▆ █ ▆ ▄ ▂</div>
+          <p>ENTERTAINMENT • MUSIC • NEWS</p>
+        </div>
+      </div>
+
+      <!-- AUTOMATIC SLIDER -->
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">DISCOVER</span>
+          <h2>Trending Now</h2>
+        </div>
+
+        <div class="slider-controls">
+          <button onclick="moveSlide(-1)" aria-label="Previous slide">‹</button>
+          <button onclick="moveSlide(1)" aria-label="Next slide">›</button>
+        </div>
+      </div>
+
+      <div class="featured-slider" id="featured-slider">
+        <div class="empty-state">
+          <div class="empty-icon">✦</div>
+          <h3>Your next favorite starts here</h3>
+          <p>New content will appear here when it is published.</p>
+        </div>
+      </div>
+
+      <!-- CATEGORY CARDS -->
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">EXPLORE CKAVOX</span>
+          <h2>Choose Your Category</h2>
+        </div>
+      </div>
+
+      <div class="category-grid">
+
+        <button class="category-card" onclick="showSection('movies')">
+          <span>🎬</span>
+          <h3>Movies</h3>
+          <p>Discover films</p>
         </button>
 
-        <button class="btn-signin"
-                onclick="openModal('login-modal')">
-            LOGIN
+        <button class="category-card" onclick="showSection('music')">
+          <span>🎵</span>
+          <h3>Music</h3>
+          <p>Listen and explore</p>
         </button>
-    </div>
-</header>
 
-<main id="home">
+        <button class="category-card" onclick="showSection('books')">
+          <span>📚</span>
+          <h3>Books</h3>
+          <p>Explore reading</p>
+        </button>
 
-    <!-- MOVIES SLIDER -->
-    <section class="hero-section" id="movies">
+        <button class="category-card" onclick="showSection('news')">
+          <span>📰</span>
+          <h3>News</h3>
+          <p>Discover stories</p>
+        </button>
 
-        <div class="section-heading">
-            <span class="gold-line"></span>
-            <h2>FEATURED MOVIES</h2>
-        </div>
+        <button class="category-card" onclick="showSection('showbiz')">
+          <span>🌟</span>
+          <h3>Showbiz</h3>
+          <p>Celebrity updates</p>
+        </button>
 
-        <div class="hero-slider-container">
-
-            <div class="hero-slides" id="movies-slider-target">
-
-                <article class="hero-slide active">
-                    <img class="hero-image"
-                         src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=80"
-                         alt="Cinema screen"
-                         fetchpriority="high">
-
-                    <div class="hero-overlay"></div>
-
-                    <div class="hero-content">
-                        <span class="featured-badge">FEATURED</span>
-
-                        <div class="details-side">
-                            <p class="eyebrow">MOVIES & ENTERTAINMENT</p>
-                            <h1>Discover Great Movies</h1>
-
-                            <p class="movie-description">
-                                Explore movies, action films and entertainment
-                                updates on CKAVOX.
-                            </p>
-
-                            <a class="watch-btn"
-                               href="#news">
-                                <i class="fas fa-play"></i>
-                                Explore Now
-                            </a>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="hero-slide">
-                    <img class="hero-image"
-                         src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=1600&q=80"
-                         alt="Movie production">
-
-                    <div class="hero-overlay"></div>
-
-                    <div class="hero-content">
-                        <span class="featured-badge">ENTERTAINMENT</span>
-
-                        <div class="details-side">
-                            <p class="eyebrow">YOUR ENTERTAINMENT HUB</p>
-                            <h1>Movies & Showbiz</h1>
-
-                            <p class="movie-description">
-                                Follow entertainment stories and discover
-                                the latest film updates.
-                            </p>
-
-                            <a class="watch-btn" href="#news">
-                                <i class="fas fa-arrow-right"></i>
-                                Read Updates
-                            </a>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="hero-slide">
-                    <img class="hero-image"
-                         src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1600&q=80"
-                         alt="Movie camera">
-
-                    <div class="hero-overlay"></div>
-
-                    <div class="hero-content">
-                        <span class="featured-badge">CKAVOX PICKS</span>
-
-                        <div class="details-side">
-                            <p class="eyebrow">EXPLORE THE SCREEN</p>
-                            <h1>Your Movie Destination</h1>
-
-                            <p class="movie-description">
-                                Find entertainment highlights and
-                                movie stories in one place.
-                            </p>
-
-                            <a class="watch-btn" href="#news">
-                                Discover More
-                            </a>
-                        </div>
-                    </div>
-                </article>
-
-            </div>
-
-            <div class="slider-controls">
-                <button class="ctrl-btn"
-                        onclick="moveHeroSlide(-1)"
-                        aria-label="Previous movie">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-
-                <div class="slider-dots" id="hero-dots">
-                    <button class="dot active"
-                            aria-label="Movie 1"></button>
-                    <button class="dot"
-                            aria-label="Movie 2"></button>
-                    <button class="dot"
-                            aria-label="Movie 3"></button>
-                </div>
-
-                <button class="ctrl-btn"
-                        onclick="moveHeroSlide(1)"
-                        aria-label="Next movie">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- WHATSAPP CHANNEL -->
-    <section class="whatsapp-banner">
-        <div class="wp-left">
-            <div class="wp-icon-box">
-                <i class="fab fa-whatsapp"></i>
-            </div>
-
-            <div class="wp-info">
-                <h3>Join CKAVOX on WhatsApp</h3>
-                <p>Follow our channel for updates and entertainment.</p>
-            </div>
-        </div>
-
-        <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="join-channel-btn">
-            Follow Channel
-            <i class="fas fa-arrow-right"></i>
-        </a>
-    </section>
-
-    <!-- MUSIC AND NEWS -->
-    <section class="sections-grid">
-
-        <article class="grid-box" id="music">
-            <div class="section-heading">
-                <span class="gold-line"></span>
-                <h2><i class="fas fa-music"></i> TRENDING MUSIC</h2>
-            </div>
-
-            <div class="inner-slider-container">
-
-                <div class="music-slides" id="music-slider-target">
-
-                    <article class="music-slide active">
-                        <img
-                            src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1000&q=80"
-                            alt="Live music performance"
-                            loading="lazy">
-
-                        <div class="slide-tag-text">
-                            <span class="content-category">MUSIC</span>
-                            <h3>Discover New Music</h3>
-                            <p>Explore artists and music updates.</p>
-                        </div>
-                    </article>
-
-                    <article class="music-slide">
-                        <img
-                            src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1000&q=80"
-                            alt="Concert crowd"
-                            loading="lazy">
-
-                        <div class="slide-tag-text">
-                            <span class="content-category">CONCERTS</span>
-                            <h3>Music & Live Shows</h3>
-                            <p>Discover performances and entertainment.</p>
-                        </div>
-                    </article>
-
-                </div>
-
-                <button class="inner-arrow prev"
-                        onclick="moveMusicSlide(-1)"
-                        aria-label="Previous music">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-
-                <button class="inner-arrow next"
-                        onclick="moveMusicSlide(1)"
-                        aria-label="Next music">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-
-            </div>
-        </article>
-
-        <article class="grid-box" id="news">
-            <div class="section-heading">
-                <span class="gold-line"></span>
-                <h2><i class="fas fa-newspaper"></i> NEWS & SHOWBIZ</h2>
-            </div>
-
-            <div class="inner-slider-container">
-
-                <div class="news-slides" id="news-slider-target">
-
-                    <article class="news-slide active">
-                        <img
-                            src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80"
-                            alt="News publication"
-                            loading="lazy">
-
-                        <div class="slide-tag-text">
-                            <span class="content-category">NEWS</span>
-                            <h3>Latest Stories</h3>
-                            <p>Discover news and current affairs.</p>
-                        </div>
-                    </article>
-
-                    <article class="news-slide">
-                        <img
-                            src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=1000&q=80"
-                            alt="Entertainment event"
-                            loading="lazy">
-
-                        <div class="slide-tag-text">
-                            <span class="content-category">SHOWBIZ</span>
-                            <h3>Entertainment Updates</h3>
-                            <p>Follow celebrity and showbiz stories.</p>
-                        </div>
-                    </article>
-
-                </div>
-
-                <button class="inner-arrow prev"
-                        onclick="moveNewsSlide(-1)"
-                        aria-label="Previous news">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-
-                <button class="inner-arrow next"
-                        onclick="moveNewsSlide(1)"
-                        aria-label="Next news">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-
-            </div>
-        </article>
+      </div>
 
     </section>
 
-    <!-- SPORTS -->
-    <section class="sports-section" id="sports">
-        <div class="section-heading">
-            <span class="gold-line"></span>
-            <h2>SPORTS & FORMULA 1</h2>
-        </div>
+    <!-- MOVIES -->
+    <section id="movies" class="page-section content-section">
+      <span class="eyebrow">WATCH & DISCOVER</span>
+      <h1>Movies <span class="gold">🎬</span></h1>
+      <p class="section-description">Explore movies featured on CKAVOX.</p>
+      <div class="content-grid" id="movies-grid"></div>
+    </section>
 
-        <div class="sports-card">
-            <img
-                src="https://images.unsplash.com/photo-1532906619279-a4b7267faa66?auto=format&fit=crop&w=1400&q=80"
-                alt="Motorsport"
-                loading="lazy">
+    <!-- MUSIC -->
+    <section id="music" class="page-section content-section">
+      <span class="eyebrow">SOUND & RHYTHM</span>
+      <h1>Music <span class="gold">🎵</span></h1>
+      <p class="section-description">Discover songs, artists and music news.</p>
+      <div class="content-grid" id="music-grid"></div>
+    </section>
 
-            <div class="sports-card-content">
-                <span class="content-category">SPORTS</span>
-                <h3>Speed, Competition & Sports</h3>
-                <p>
-                    Follow motorsport, football and other sports stories
-                    on CKAVOX.
-                </p>
-            </div>
-        </div>
+    <!-- BOOKS -->
+    <section id="books" class="page-section content-section">
+      <span class="eyebrow">READ & LEARN</span>
+      <h1>Books <span class="gold">📚</span></h1>
+      <p class="section-description">Discover books and reading resources.</p>
+      <div class="content-grid" id="books-grid"></div>
+    </section>
+
+    <!-- NEWS -->
+    <section id="news" class="page-section content-section">
+      <span class="eyebrow">STAY INFORMED</span>
+      <h1>Latest <span class="gold">News</span></h1>
+      <p class="section-description">Explore news and interesting stories.</p>
+      <div class="content-grid" id="news-grid"></div>
+    </section>
+
+    <!-- SHOWBIZ -->
+    <section id="showbiz" class="page-section content-section">
+      <span class="eyebrow">CELEBRITY WORLD</span>
+      <h1>Showbiz <span class="gold">🌟</span></h1>
+      <p class="section-description">Discover celebrities and entertainment.</p>
+      <div class="content-grid" id="showbiz-grid"></div>
     </section>
 
     <!-- ADMIN DASHBOARD -->
-    <section class="admin-dashboard" id="admin-dashboard" hidden>
-        <div class="section-heading">
-            <span class="gold-line"></span>
-            <h2>CKAVOX ADMIN DASHBOARD</h2>
+    <section id="admin-dashboard" class="page-section admin-section">
+
+      <div class="admin-heading">
+        <div>
+          <span class="eyebrow">CONTENT MANAGEMENT</span>
+          <h1>Admin <span class="gold">Dashboard</span></h1>
+          <p>Add and manage content in this browser.</p>
         </div>
 
-        <p class="admin-warning">
-            Iyi ni demo ibika amakuru muri browser ukoresha gusa.
-            Ntuyikoreshe nk'umutekano nyakuri wa Admin.
-        </p>
-
-        <form id="admin-content-form" class="admin-form">
-
-            <label for="content-type">Ubwoko bw'amakuru</label>
-            <select id="content-type" required>
-                <option value="movie">Movies</option>
-                <option value="music">Music</option>
-                <option value="news">News & Showbiz</option>
-            </select>
-
-            <label for="content-title">Umutwe w'amakuru</label>
-            <input id="content-title"
-                   type="text"
-                   maxlength="150"
-                   placeholder="Andika umutwe"
-                   required>
-
-            <label for="content-desc">Ibisobanuro</label>
-            <textarea id="content-desc"
-                      maxlength="2000"
-                      placeholder="Andika ibisobanuro"></textarea>
-
-            <label for="content-img">URL y'ifoto</label>
-            <input id="content-img"
-                   type="url"
-                   placeholder="https://example.com/photo.jpg"
-                   required>
-
-            <button class="submit-btn" type="submit">
-                <i class="fas fa-plus"></i>
-                Ongeraho amakuru
-            </button>
-
-        </form>
-
-        <button class="logout-btn"
-                type="button"
-                onclick="logoutAdmin()">
-            Logout
+        <button class="secondary-button" onclick="logout()">
+          LOG OUT
         </button>
+      </div>
+
+      <div class="admin-warning">
+        Demo mode: content is saved in this browser only.
+        This login is not secure enough for a public production website.
+      </div>
+
+      <form id="content-form" class="admin-form">
+
+        <h2>Publish New Content</h2>
+
+        <label for="content-type">Choose Category</label>
+        <select id="content-type" required>
+          <option value="movies">Movies</option>
+          <option value="music">Music</option>
+          <option value="books">Books</option>
+          <option value="news">News</option>
+          <option value="showbiz">Showbiz</option>
+        </select>
+
+        <label for="content-title">Title</label>
+        <input id="content-title"
+               type="text"
+               placeholder="Enter the title"
+               maxlength="150"
+               required>
+
+        <label for="content-desc">Description</label>
+        <textarea id="content-desc"
+                  placeholder="Write a short description"
+                  maxlength="2000"
+                  rows="4"></textarea>
+
+        <label for="content-img">Image URL</label>
+        <input id="content-img"
+               type="url"
+               placeholder="https://example.com/image.jpg">
+
+        <label for="content-url">Content Link</label>
+        <input id="content-url"
+               type="url"
+               placeholder="https://example.com/content">
+
+        <button class="primary-button full-width" type="submit">
+          PUBLISH CONTENT
+        </button>
+
+      </form>
+
+      <div class="admin-list-heading">
+        <h2>Published Content</h2>
+        <span id="content-count">0 items</span>
+      </div>
+
+      <div id="admin-content-list" class="admin-content-list"></div>
+
     </section>
 
-    <!-- INSTAGRAM -->
-    <section class="instagram-banner-box">
-        <div class="ig-left-side">
-            <i class="fab fa-instagram"></i>
+  </main>
 
-            <div class="ig-info">
-                <h3>FOLLOW CKAVOX ON INSTAGRAM</h3>
-                <p>Follow our page for entertainment and news updates.</p>
-            </div>
-        </div>
+  <!-- LOGIN MODAL -->
+  <div class="modal" id="login-modal" aria-hidden="true">
+    <div class="modal-box">
 
-        <a href="https://www.instagram.com/"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="ig-link-btn">
-            Follow CKAVOX
-        </a>
-    </section>
+      <button class="close-button"
+              onclick="closeLogin()"
+              aria-label="Close login">×</button>
 
-</main>
+      <div class="login-logo">CK<span class="gold">AVOX</span></div>
 
-<!-- LOGIN MODAL -->
-<div class="modal" id="login-modal" role="dialog" aria-modal="true">
-    <div class="modal-content">
+      <span class="eyebrow">RESTRICTED AREA</span>
+      <h2>Admin Login</h2>
+      <p>Sign in to manage website content.</p>
 
-        <button class="close-btn"
-                onclick="closeModal('login-modal')"
-                aria-label="Close">&times;</button>
+      <form id="login-form">
 
-        <h2>Admin / User Login</h2>
+        <label for="admin-email">Email Address</label>
+        <input id="admin-email"
+               type="email"
+               autocomplete="username"
+               placeholder="Admin email"
+               required>
 
-        <form id="login-form">
-            <label for="login-email">Email</label>
-            <input type="email"
-                   id="login-email"
-                   autocomplete="username"
-                   placeholder="Email yawe"
-                   required>
+        <label for="admin-password">Password</label>
+        <input id="admin-password"
+               type="password"
+               autocomplete="current-password"
+               placeholder="Password"
+               required>
 
-            <label for="login-pass">Password</label>
-            <input type="password"
-                   id="login-pass"
-                   autocomplete="current-password"
-                   placeholder="Password"
-                   required>
+        <p id="login-error" class="error-message"></p>
 
-            <button class="submit-btn" type="submit">
-                Injira
-            </button>
-        </form>
+        <button class="primary-button full-width" type="submit">
+          SIGN IN
+        </button>
 
-        <p class="modal-note">
-            Login nyakuri izashyirwa muri Supabase Auth.
-            Ntukoreshe password y'ibanga muri JavaScript.
-        </p>
-    </div>
-</div>
-
-<!-- SIGNUP MODAL -->
-<div class="modal" id="signup-modal" role="dialog" aria-modal="true">
-    <div class="modal-content">
-
-        <button class="close-btn"
-                onclick="closeModal('signup-modal')"
-                aria-label="Close">&times;</button>
-
-        <h2>Create Account</h2>
-
-        <form id="signup-form">
-
-            <label for="signup-name">Izina</label>
-            <input id="signup-name"
-                   type="text"
-                   placeholder="Izina ryawe"
-                   required>
-
-            <label for="signup-email">Email</label>
-            <input id="signup-email"
-                   type="email"
-                   placeholder="Email yawe"
-                   required>
-
-            <label for="signup-pass">Password</label>
-            <input id="signup-pass"
-                   type="password"
-                   minlength="8"
-                   autocomplete="new-password"
-                   placeholder="Nibura inyuguti 8"
-                   required>
-
-            <button class="submit-btn" type="submit">
-                Kora Account
-            </button>
-
-        </form>
-
-        <p class="modal-note">
-            Kwiyandikisha nyakuri bisaba guhuza Supabase Auth.
-        </p>
+      </form>
 
     </div>
-</div>
+  </div>
 
-<!-- FOOTER -->
-<footer class="site-footer">
-    <a class="logo" href="#home">
-        <span>CKA</span>VOX<span class="logo-dot">.</span>
+  <!-- FOOTER -->
+  <footer class="footer">
+    <a class="footer-logo" href="#"
+       onclick="showSection('home'); return false;">
+      CK<span class="gold">AVOX</span>
     </a>
 
-    <p>News • Music • Movies • Showbiz • Sports</p>
+    <p>Music • Movies • Books • News • Showbiz</p>
 
     <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
        target="_blank"
        rel="noopener noreferrer">
-        Follow CKAVOX on WhatsApp
+      Follow CKAVOX for more
     </a>
 
     <p class="copyright">
-        &copy; <span id="current-year"></span> CKAVOX.
-        All rights reserved.
+      © <span id="current-year"></span> CKAVOX. All rights reserved.
     </p>
-</footer>
+  </footer>
 
-<!-- WHATSAPP FLOATING BUTTON -->
-<a class="whatsapp-float"
-   href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
-   target="_blank"
-   rel="noopener noreferrer"
-   aria-label="Follow CKAVOX WhatsApp Channel">
+  <!-- ALWAYS-VISIBLE WHATSAPP BUTTON -->
+  <a class="whatsapp-floating"
+     href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
+     target="_blank"
+     rel="noopener noreferrer"
+     aria-label="Follow CKAVOX on WhatsApp">
+    WA
+  </a>
 
-    <i class="fab fa-whatsapp"></i>
-    <span>Follow CKAVOX</span>
-</a>
-
-<script src="script.js" defer></script>
+  <script src="script.js"></script>
 
 </body>
-</html>         
-           
+</html>
