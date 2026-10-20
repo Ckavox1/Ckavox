@@ -1,9 +1,10 @@
- <!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="rw">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKAVOX website - Trending News, Movies, Music</title>
+    <title>CKAVOX - Movies, Music & Sports</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cloudflare.com">
 </head>
@@ -13,12 +14,10 @@
     <header class="main-header">
         <div class="logo">CKAVOX website</div>
         <nav class="nav-links">
-            <a href="#" class="active">TRENDING NEWS</a>
+            <a href="#" class="active">HOME</a>
             <a href="#">MOVIES</a>
             <a href="#">MUSIC</a>
-            <a href="#">BOOKS</a>
-            <a href="#">PEOPLE</a>
-            <a href="#">VIDEO</a>
+            <a href="#">SPORTS</a>
         </nav>
         <div class="auth-buttons">
             <button class="btn-create" onclick="openModal('signup-modal')">CREATE ACCOUNT</button>
@@ -26,98 +25,142 @@
         </div>
     </header>
 
-    <!-- TOP HERO BANNER -->
-    <section class="top-hero">
-        <div class="hero-overlay">
-            <h1>YOUR DAILY DOSE OF TRENDING CULTURE.<br>BREAKING NEWS, REVIEWS, TRAILERS.</h1>
+    <!-- 1. MOVIES HERO SLIDER (Isa neza n'iyo ku ifoto unyeretse) -->
+    <section class="hero-slider-container">
+        <div class="hero-slides">
+            <!-- Slide 1: Matchbox -->
+            <div class="hero-slide active">
+                <div class="slide-bg" style="background-image: linear-gradient(rgba(0,0,0,0.1), #050505), url('https://unsplash.com');"></div>
+                <span class="featured-badge">FEATURED MOVIE</span>
+                <div class="hero-content">
+                    <div class="poster-side">
+                        <span class="poster-tag">Rocky</span>
+                        <img src="https://unsplash.com" alt="Matchbox">
+                    </div>
+                    <div class="details-side">
+                        <h1>Matchbox the Movie</h1>
+                        <p class="movie-meta">2026 &bull; Action, Adventure, Comedy &bull; Movie</p>
+                        <p class="movie-description">When a group of former childhood friends reconnect, their reunion takes a wild turn as they stumble upon a dangerous international...</p>
+                        <button class="watch-btn"><i class="fas fa-play"></i> Watch Now</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Slide 2: Spider-Man -->
+            <div class="hero-slide">
+                <div class="slide-bg" style="background-image: linear-gradient(rgba(0,0,0,0.1), #050505), url('https://unsplash.com');"></div>
+                <span class="featured-badge">FEATURED MOVIE</span>
+                <div class="hero-content">
+                    <div class="poster-side">
+                        <span class="poster-tag">Marvel</span>
+                        <img src="https://unsplash.com" alt="Spider-Man">
+                    </div>
+                    <div class="details-side">
+                        <h1>Spider-Man: Homecoming</h1>
+                        <p class="movie-meta">Action, Sci-Fi &bull; Movie</p>
+                        <p class="movie-description">Peter Parker balances his life as an ordinary high school student in Queens with his superhero alter-ego Spider-Man...</p>
+                        <button class="watch-btn"><i class="fas fa-play"></i> Watch Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Amabuto yo guhindura -->
+        <div class="slider-controls">
+            <button class="ctrl-btn" onclick="moveHeroSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+            <div class="slider-dots" id="hero-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+            </div>
+            <button class="ctrl-btn" onclick="moveHeroSlide(1)"><i class="fas fa-chevron-right"></i></button>
         </div>
     </section>
 
-    <!-- SECTIONS CONTENT -->
-    <main class="content-grid">
-        <section class="grid-box">
-            <h3>HOT NEWS & SHOWBIZ</h3>
-            <div class="news-list" id="admin-news-section">
-                <div class="news-item">
-                    <img src="https://placeholder.com" alt="News">
-                    <p>Celebrity interviews, festival updates and local showbiz.</p>
-                </div>
+    <!-- WHATSAPP BANNER (Isa neza n'iyo ku ifoto) -->
+    <section class="whatsapp-banner">
+        <div class="wp-left">
+            <div class="wp-icon-box"><i class="fab fa-whatsapp"></i></div>
+            <div class="wp-info">
+                <h3>New movie updates on WhatsApp</h3>
+                <p>Follow the CKAVOX channel for the latest releases.</p>
             </div>
-        </section>
+        </div>
+        <a href="https://whatsapp.com" target="_blank" class="join-channel-btn">Join channel <i class="fas fa-arrow-right"></i></a>
+    </section>
 
-        <!-- MOVING SCREEN (FILM SLIDER BURI MASEGONDA 4) -->
-        <section class="grid-box dynamic-slider-box">
-            <h3>MOVING SCREEN (MOVIES)</h3>
-            <div class="movie-slider-container">
-                <div class="movie-slides">
-                    <!-- Film ya 1: Matchbox -->
-                    <div class="movie-slide active">
-                        <img src="https://unsplash.com" alt="Matchbox">
-                        <div class="movie-title-tag">Matchbox (2026)</div>
+    <!-- MAIN BODY CONTENT -->
+    <main class="sections-grid">
+        
+        <!-- 2. SLIDER Y'INDIRIMBO ZIKUNZWE (Music Slider) -->
+        <section class="grid-box">
+            <h3><i class="fas fa-music"></i> TRENDING MUSIC SLIDER</h3>
+            <div class="inner-slider-container">
+                <div class="music-slides">
+                    <div class="music-slide active">
+                        <img src="https://unsplash.com" alt="Music 1">
+                        <div class="slide-tag-text">Asake &bull; Active (Trending No.1)</div>
                     </div>
-                    <!-- Film ya 2: Spider-Man Homecoming -->
-                    <div class="movie-slide">
-                        <img src="https://unsplash.com" alt="Spider-Man">
-                        <div class="movie-title-tag">Spider-Man: Homecoming</div>
-                    </div>
-                    <!-- Film ya 3: Escape and Evasion -->
-                    <div class="movie-slide">
-                        <img src="https://unsplash.com" alt="Escape and Evasion">
-                        <div class="movie-title-tag">Escape and Evasion</div>
+                    <div class="music-slide">
+                        <img src="https://unsplash.com" alt="Music 2">
+                        <div class="slide-tag-text">The Weeknd &bull; Dancing In The Flames</div>
                     </div>
                 </div>
-                <!-- Amabuto yo gusubiza inyuma no kwimbere kuri film -->
-                <button class="m-btn m-prev" onclick="moveMovieSlide(-1)"><i class="fas fa-chevron-left"></i></button>
-                <button class="m-btn m-next" onclick="moveMovieSlide(1)"><i class="fas fa-chevron-right"></i></button>
+                <button class="inner-arrow prev" onclick="moveMusicSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+                <button class="inner-arrow next" onclick="moveMusicSlide(1)"><i class="fas fa-chevron-right"></i></button>
             </div>
-            <!-- Ahajya izo Admin adding nyuma -->
-            <div id="admin-movie-section" class="added-movies"></div>
+            <div id="admin-music-section" class="added-items-list"></div>
         </section>
 
+        <!-- 3. SLIDER YA MATCH ZIRI KUBA N'IZABAYE (Sports Slider) -->
         <section class="grid-box">
-            <h3>TOP CHARTS</h3>
-            <div class="music-list" id="admin-music-section">
-                <p><i class="fas fa-play-circle"></i> Taylor Swift &bull; play</p>
-                <p><i class="fas fa-play-circle"></i> The Weeknd &bull; play</p>
-                <p><i class="fas fa-play-circle"></i> BTS &bull; play</p>
+            <h3><i class="fas fa-trophy"></i> LIVE & RECENT MATCHES</h3>
+            <div class="inner-slider-container">
+                <div class="sports-slides">
+                    <!-- Match ya 1: Live -->
+                    <div class="sports-slide active">
+                        <div class="match-card live">
+                            <span class="live-badge">LIVE NOW</span>
+                            <div class="teams">Arsenal <span class="score">2 - 1</span> Chelsea</div>
+                            <p class="match-details">Premier League &bull; 75th Minute</p>
+                        </div>
+                    </div>
+                    <!-- Match ya 2: Izabaye -->
+                    <div class="sports-slide">
+                        <div class="match-card finished">
+                            <span class="finished-badge">FINISHED</span>
+                            <div class="teams">Real Madrid <span class="score">3 - 0</span> Barcelona</div>
+                            <p class="match-details">La Liga &bull; Kagame Cup Recap</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="inner-arrow prev" onclick="moveSportsSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+                <button class="inner-arrow next" onclick="moveSportsSlide(1)"><i class="fas fa-chevron-right"></i></button>
             </div>
+            <div id="admin-sports-section" class="added-items-list"></div>
         </section>
 
-        <section class="grid-box">
-            <h3>MUST-READ BOOKS</h3>
-            <div class="book-list">
-                <div class="book-item"><img src="https://placeholder.com" alt="Book"><p>Fourth Wing</p></div>
-                <div class="book-item"><img src="https://placeholder.com" alt="Book"><p>Spare</p></div>
+        <!-- DISCOVER SECTION -->
+        <section class="grid-box full-width-box">
+            <span class="discover-title">DISCOVER ON CKAVOX</span>
+            <h2>Reba Agasobanuye Movies na Series kuri CKAVOX</h2>
+            <p class="discover-p">Ukunda Agasobanuye? CKAVOX ni ho urebera movies na series zasobanuwe mu Kinyarwanda. Shakisha izigezweho, hitamo izo ukunda, maze wishimire kureba nta matangazo akurogoya.</p>
+            <div class="discover-tabs">
+                <button class="tab-btn">Movies &rarr;</button>
+                <button class="tab-btn">Series &rarr;</button>
+                <button class="tab-btn">Categories &rarr;</button>
             </div>
         </section>
     </main>
 
-    <!-- SOCIAL MEDIA CONNECT (WhatsApp & Instagram) -->
-    <section class="social-connect-banner">
-        <h2>STAY CONNECTED WITH CKAVOX!<br>FOLLOW FOR MORE INFO & EXCLUSIVE ALERTS.</h2>
-        
-        <div class="social-row">
-            <div class="social-box">
-                <i class="fab fa-whatsapp whatsapp-icon"></i>
-                <div class="social-text">
-                    <h4>JOIN OUR WHATSAPP CHANNEL.</h4>
-                    <p>Get Instant Breaking News Alerts & Pop Culture Updates.</p>
-                    <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d" target="_blank" class="social-btn wa-btn">JOIN CKAVOX ON WHATSAPP</a>
-                </div>
-            </div>
-
-            <div class="social-box">
-                <i class="fab fa-instagram instagram-icon"></i>
-                <div class="social-text">
-                    <h4>FOLLOW US ON INSTAGRAM.</h4>
-                    <p>Daily Memes, Videos & Behind-the-Scenes Fun.</p>
-                    <a href="https://www.instagram.com/" target="_blank" class="social-btn ig-btn">FOLLOW @CKAVOX</a>
-                </div>
-            </div>
+    <!-- INSTAGRAM BANNER -->
+    <section class="instagram-banner-box">
+        <i class="fab fa-instagram"></i>
+        <div class="ig-info">
+            <h4>FOLLOW US ON INSTAGRAM</h4>
+            <p>Get latest news, showbiz, and updates directly on your timeline.</p>
         </div>
+        <a href="https://instagram.com" target="_blank" class="ig-link-btn">Follow @CKAVOX</a>
     </section>
 
-    <!-- MODALS (Sign In, Sign Up, Password Recovery) -->
+    <!-- MODALS (Sign In, Sign Up, Recovery) -->
     <div class="modal" id="login-modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
@@ -140,39 +183,3 @@
                 <input type="email" placeholder="Email" required>
                 <input type="tel" placeholder="Nomero ya Telefone (+250...)" required>
                 <input type="password" placeholder="Password nshya" required>
-                <button type="submit" class="submit-btn">Gukora Account</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal" id="recovery-modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('recovery-modal')">&times;</span>
-            <h2>Kugarura Password</h2>
-            <p>Ushobora gukoresha Email cyangwa Nomero ya telefone washyizeho.</p>
-            <form onsubmit="handleRecovery(event)">
-                <input type="text" placeholder="Andika Email cyangwa Nomero ya Telefone" required id="recovery-input">
-                <button type="submit" class="submit-btn">Ohereza Code</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- ADMIN DASHBOARD PANEL -->
-    <div class="admin-panel" id="admin-dashboard" style="display: none;">
-        <h3><i class="fas fa-user-shield"></i> CKAVOX Admin Panel</h3>
-        <div class="admin-form">
-            <select id="content-type">
-                <option value="news">Amakuru / Showbiz</option>
-                <option value="movie">Filime nshya (Movie)</option>
-                <option value="music">Indirimbo (Music)</option>
-            </select>
-            <input type="text" id="content-title" placeholder="Izina ry'ikintu">
-            <input type="text" id="content-img" placeholder="Link y'ifoto (Image URL)">
-            <button onclick="addContentByAdmin()" class="admin-add-btn">Shyiraho ku Rubuga</button>
-        </div>
-        <button onclick="logoutAdmin()" class="logout-btn">Sohoka (Logout)</button>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
