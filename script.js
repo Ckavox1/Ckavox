@@ -1,91 +1,101 @@
- // --- MOVING SCREEN: REFA FILIME BURI MASEGONDA 4 ---
-let currentMovieIndex = 0;
-const movieSlides = document.querySelectorAll('.movie-slide');
-let movieInterval = setInterval(nextMovieSlide, 4000); // Amasegonda 4
+ // --- 1. MOVIES HERO SLIDER (Amasegonda 4) ---
+let currentHeroIndex = 0;
+const heroSlides = document.querySelectorAll('.hero-slide');
+const heroDots = document.querySelectorAll('#hero-dots .dot');
+let heroInterval = setInterval(() => moveHeroSlide(1), 4000);
 
-function showMovieSlide(index) {
-    movieSlides.forEach(slide => slide.classList.remove('active'));
+function showHeroSlide(index) {
+    heroSlides.forEach(slide => slide.classList.remove('active'));
+    heroDots.forEach(dot => dot.classList.remove('active'));
     
-    if (index >= movieSlides.length) { currentMovieIndex = 0; }
-    else if (index < 0) { currentMovieIndex = movieSlides.length - 1; }
-    else { currentMovieIndex = index; }
+    if (index >= heroSlides.length) { currentHeroIndex = 0; }
+    else if (index < 0) { currentHeroIndex = heroSlides.length - 1; }
+    else { currentHeroIndex = index; }
     
-    movieSlides[currentMovieIndex].classList.add('active');
+    heroSlides[currentHeroIndex].classList.add('active');
+    heroDots[currentHeroIndex].classList.add('active');
 }
 
-function nextMovieSlide() {
-    showMovieSlide(currentMovieIndex + 1);
+function moveHeroSlide(direction) {
+    clearInterval(heroInterval);
+    showHeroSlide(currentHeroIndex + direction);
+    heroInterval = setInterval(() => moveHeroSlide(1), 4000);
 }
 
-// Amabuto yo gukanda Next cyangwa Prev
-function moveMovieSlide(direction) {
-    clearInterval(movieInterval); // Guhagarika auto-scroll
-    showMovieSlide(currentMovieIndex + direction);
-    movieInterval = setInterval(nextMovieSlide, 4000); // Yongere itangire buri masegonda 4
+// --- 2. MUSIC SLIDER (Amasegonda 4) ---
+let currentMusicIndex = 0;
+const musicSlides = document.querySelectorAll('.music-slide');
+let musicInterval = setInterval(() => moveMusicSlide(1), 4000);
+
+function showMusicSlide(index) {
+    musicSlides.forEach(slide => slide.classList.remove('active'));
+    if (index >= musicSlides.length) { currentMusicIndex = 0; }
+    else if (index < 0) { currentMusicIndex = musicSlides.length - 1; }
+    else { currentMusicIndex = index; }
+    musicSlides[currentMusicIndex].classList.add('active');
 }
 
+function moveMusicSlide(direction) {
+    clearInterval(musicInterval);
+    showMusicSlide(currentMusicIndex + direction);
+    musicInterval = setInterval(() => moveMusicSlide(1), 4000);
+}
+
+// --- 3. SPORTS SLIDER (Amasegonda 4) ---
+let currentSportsIndex = 0;
+const sportsSlides = document.querySelectorAll('.sports-slide');
+let sportsInterval = setInterval(() => moveSportsSlide(1), 4000);
+
+function showSportsSlide(index) {
+    sportsSlides.forEach(slide => slide.classList.remove('active'));
+    if (index >= sportsSlides.length) { currentSportsIndex = 0; }
+    else if (index < 0) { currentSportsIndex = sportsSlides.length - 1; }
+    else { currentSportsIndex = index; }
+    sportsSlides[currentSportsIndex].classList.add('active');
+}
+
+function moveSportsSlide(direction) {
+    clearInterval(sportsInterval);
+    showSportsSlide(currentSportsIndex + direction);
+    sportsInterval = setInterval(() => moveSportsSlide(1), 4000);
+}
 
 // --- MODAL CONTROLS ---
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-
-// --- ADMIN LOGIN ---
+// --- ADMIN LOGIN & CONTROL ---
 function handleLogin(event) {
     event.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const pass = document.getElementById('login-pass').value;
-
-    if (email === 'admin@ckavox.com' && pass === 'adminckavox123') {
-        alert('Ubegeye neza CKAVOX Admin!');
+    if (document.getElementById('login-email').value === 'admin@ckavox.com' && document.getElementById('login-pass').value === 'adminckavox123') {
+        alert('Welcome CKAVOX Admin!');
         document.getElementById('admin-dashboard').style.display = 'block';
         closeModal('login-modal');
     } else {
-        alert('Email cyangwa Password ntabwo ari zo za Admin! Mwinjiye nka user usanzwe.');
+        alert('Mwinjiye nka User usanzwe.');
         closeModal('login-modal');
     }
 }
+function logoutAdmin() { document.getElementById('admin-dashboard').style.display = 'none'; }
 
-function logoutAdmin() {
-    document.getElementById('admin-dashboard').style.display = 'none';
-    alert('Uvuye mu buryo bwa Admin.');
-}
-
-
-// --- PASSWORD RECOVERY (EMAIL OR NUMBER) ---
-function handleRecovery(event) {
-    event.preventDefault();
-    const userInput = document.getElementById('recovery-input').value;
-    alert('Code yo kugarura password yawe yohererejwe kuri: ' + userInput + '. Reba muri Email cyangwa SMS hafi yawe.');
+function handleRecovery() {
+    alert('Code yo kugarura password yohererejwe kuri Email/Telefone washyizemo!');
     closeModal('recovery-modal');
 }
 
-
-// --- ADMIN POSTING CONTENT ---
 function addContentByAdmin() {
     const type = document.getElementById('content-type').value;
     const title = document.getElementById('content-title').value;
-    const imgUrl = document.getElementById('content-img').value || 'https://placeholder.com';
+    if (!title) return alert('Andika ikintu!');
 
-    if (!title) { alert('Andika izina ry\'ikintu!'); return; }
-
-    if (type === 'news') {
-        document.getElementById('admin-news-section').innerHTML += `
-            <div class="news-item" style="margin-top:10px;">
-                <img src="${imgUrl}" alt="News" style="width:80px; border-radius:4px;">
-                <p>${title}</p>
+    if (type === 'music') {
+        document.getElementById('admin-music-section').innerHTML += `<p style="padding:5px; font-size:0.85rem;"><i class="fas fa-play-circle"></i> ${title} &bull; play</p>`;
+    } else if (type === 'sports') {
+        document.getElementById('admin-sports-section').innerHTML += `
+            <div class="match-card" style="margin-top:10px; height:auto; padding:10px;">
+                <div class="teams" style="font-size:0.9rem;">${title}</div>
             </div>`;
-    } else if (type === 'movie') {
-        document.getElementById('admin-movie-section').innerHTML += `
-            <div class="news-item" style="margin-top:10px; display:flex; gap:10px; background:#222; padding:5px; border-radius:4px;">
-                <img src="${imgUrl}" alt="Film" style="width:50px; height:70px; object-fit:cover;">
-                <p style="font-size:0.8rem;">${title} (Yashyizweho n'Admin)</p>
-            </div>`;
-    } else if (type === 'music') {
-        document.getElementById('admin-music-section').innerHTML += `<p><i class="fas fa-play-circle"></i> ${title} &bull; play</p>`;
     }
-
-    alert('Gushyiraho ' + title + ' byajemo neza!');
+    alert('Byagenze neza!');
     document.getElementById('content-title').value = '';
-    document.getElementById('content-img').value = '';
 }
