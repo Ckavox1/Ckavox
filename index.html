@@ -3,96 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKAVOX - Movies, News & Music</title>
+    <title>CKAVOX website - Trending News, Movies, Music</title>
     <link rel="stylesheet" href="style.css">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body>
 
-    <!-- NAV BAR -->
-    <header class="navbar">
-        <div class="logo">
-            <i class="fas fa-home"></i> <span>ckavox.com</span>
-        </div>
-        <div class="nav-right">
-            <a href="https://instagram.com" target="_blank" class="social-icon-top"><i class="fab fa-instagram"></i></a>
-            <span class="tabs-count">46</span>
+    <!-- NAVBAR (Umutwe w'urubuga) -->
+    <header class="main-header">
+        <div class="logo">CKAVOX website</div>
+        <nav class="nav-links">
+            <a href="#" class="active">TRENDING NEWS</a>
+            <a href="#">MOVIES</a>
+            <a href="#">MUSIC</a>
+            <a href="#">BOOKS</a>
+            <a href="#">PEOPLE</a>
+            <a href="#">VIDEO</a>
+        </nav>
+        <div class="auth-buttons">
+            <button class="btn-create" onclick="openModal('signup-modal')">CREATE ACCOUNT</button>
+            <button class="btn-signin" onclick="openModal('login-modal')">SIGN IN</button>
         </div>
     </header>
 
-    <!-- IMAGE SLIDER -->
-    <section class="slider-container">
-        <div class="slider">
-            <div class="slide active">
-                <img src="https://unsplash.com" alt="Slide 1">
-                <div class="slide-text">Reba Agasobanuye Gashya kuri CKAVOX</div>
-            </div>
-            <div class="slide">
-                <img src="https://unsplash.com" alt="Slide 2">
-                <div class="slide-text">Indirimbo n'Amakuru Agezweho buri munsi</div>
-            </div>
-            <div class="slide">
-                <img src="https://unsplash.com" alt="Slide 3">
-                <div class="slide-text">Yaba Filime na Series Zikunzwe</div>
-            </div>
-        </div>
-        <div class="slider-dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
+    <!-- TOP HERO BANNER -->
+    <section class="top-hero">
+        <div class="hero-overlay">
+            <h1>YOUR DAILY DOSE OF TRENDING CULTURE.<br>BREAKING NEWS, REVIEWS, TRAILERS.</h1>
         </div>
     </section>
 
-    <!-- HERO SECTION -->
-    <section class="hero-section">
-        <span class="featured-badge">FEATURED MOVIE</span>
-        <div class="hero-content">
-            <div class="movie-poster-container">
-                <span class="poster-tag">Rocky</span>
-                <img src="https://placeholder.com" alt="Movie Poster" class="movie-poster">
+    <!-- SECTIONS CONTENT -->
+    <main class="content-grid">
+        <section class="grid-box">
+            <h3>HOT NEWS & SHOWBIZ</h3>
+            <div class="news-list" id="admin-news-section">
+                <div class="news-item">
+                    <img src="https://placeholder.com" alt="News">
+                    <p>Celebrity interviews, festival updates and local showbiz.</p>
+                </div>
             </div>
-            <div class="movie-details">
-                <h1>Matchbox the Movie</h1>
-                <p class="movie-meta">2026 &bull; Action, Adventure &bull; Movie</p>
-                <p class="movie-description">
-                    When a group of former childhood friends reconnect, their reunion takes a wild turn as they stumble...
-                </p>
-                <button class="watch-now-btn"><i class="fas fa-play"></i> Watch Now</button>
+        </section>
+
+        <!-- MOVING SCREEN (FILM SLIDER BURI MASEGONDA 4) -->
+        <section class="grid-box dynamic-slider-box">
+            <h3>MOVING SCREEN (MOVIES)</h3>
+            <div class="movie-slider-container">
+                <div class="movie-slides">
+                    <!-- Film ya 1: Matchbox -->
+                    <div class="movie-slide active">
+                        <img src="https://unsplash.com" alt="Matchbox">
+                        <div class="movie-title-tag">Matchbox (2026)</div>
+                    </div>
+                    <!-- Film ya 2: Spider-Man Homecoming -->
+                    <div class="movie-slide">
+                        <img src="https://unsplash.com" alt="Spider-Man">
+                        <div class="movie-title-tag">Spider-Man: Homecoming</div>
+                    </div>
+                    <!-- Film ya 3: Escape and Evasion -->
+                    <div class="movie-slide">
+                        <img src="https://unsplash.com" alt="Escape and Evasion">
+                        <div class="movie-title-tag">Escape and Evasion</div>
+                    </div>
+                </div>
+                <!-- Amabuto yo gusubiza inyuma no kwimbere kuri film -->
+                <button class="m-btn m-prev" onclick="moveMovieSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+                <button class="m-btn m-next" onclick="moveMovieSlide(1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <!-- Ahajya izo Admin adding nyuma -->
+            <div id="admin-movie-section" class="added-movies"></div>
+        </section>
+
+        <section class="grid-box">
+            <h3>TOP CHARTS</h3>
+            <div class="music-list" id="admin-music-section">
+                <p><i class="fas fa-play-circle"></i> Taylor Swift &bull; play</p>
+                <p><i class="fas fa-play-circle"></i> The Weeknd &bull; play</p>
+                <p><i class="fas fa-play-circle"></i> BTS &bull; play</p>
+            </div>
+        </section>
+
+        <section class="grid-box">
+            <h3>MUST-READ BOOKS</h3>
+            <div class="book-list">
+                <div class="book-item"><img src="https://placeholder.com" alt="Book"><p>Fourth Wing</p></div>
+                <div class="book-item"><img src="https://placeholder.com" alt="Book"><p>Spare</p></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- SOCIAL MEDIA CONNECT (WhatsApp & Instagram) -->
+    <section class="social-connect-banner">
+        <h2>STAY CONNECTED WITH CKAVOX!<br>FOLLOW FOR MORE INFO & EXCLUSIVE ALERTS.</h2>
+        
+        <div class="social-row">
+            <div class="social-box">
+                <i class="fab fa-whatsapp whatsapp-icon"></i>
+                <div class="social-text">
+                    <h4>JOIN OUR WHATSAPP CHANNEL.</h4>
+                    <p>Get Instant Breaking News Alerts & Pop Culture Updates.</p>
+                    <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d" target="_blank" class="social-btn wa-btn">JOIN CKAVOX ON WHATSAPP</a>
+                </div>
+            </div>
+
+            <div class="social-box">
+                <i class="fab fa-instagram instagram-icon"></i>
+                <div class="social-text">
+                    <h4>FOLLOW US ON INSTAGRAM.</h4>
+                    <p>Daily Memes, Videos & Behind-the-Scenes Fun.</p>
+                    <a href="https://www.instagram.com/" target="_blank" class="social-btn ig-btn">FOLLOW @CKAVOX</a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- CKAVOX WHATSAPP CHANNEL -->
-    <section class="whatsapp-banner">
-        <div class="banner-info">
-            <div class="wp-icon"><i class="fab fa-whatsapp"></i></div>
-            <div class="wp-text">
-                <h3>CKAVOX updates on WhatsApp</h3>
-                <p>Follow the CKAVOX channel for the latest releases.</p>
-            </div>
+    <!-- MODALS (Sign In, Sign Up, Password Recovery) -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
+            <h2>Sign In</h2>
+            <form onsubmit="handleLogin(event)">
+                <input type="email" placeholder="Email yawe" required id="login-email">
+                <input type="password" placeholder="Password" required id="login-pass">
+                <button type="submit" class="submit-btn">Injira</button>
+            </form>
+            <p class="recovery-link" onclick="openModal('recovery-modal'); closeModal('login-modal')">Wibagiwe password? Kanda hano</p>
         </div>
-        <a href="https://whatsapp.com" target="_blank" class="join-btn-link">
-            <button class="join-btn">Join channel <i class="fas fa-arrow-right"></i></button>
-        </a>
-    </section>
+    </div>
 
-    <!-- DISCOVER SECTION -->
-    <section class="discover-section">
-        <span class="discover-badge">DISCOVER ON CKAVOX</span>
-        <h2>Reba Agasobanuye Movies na Series kuri CKAVOX</h2>
-        <p class="discover-text">
-            Urabaza indirimbo, amakuru, cyangwa filime zasobanuwe mu Kinyarwanda? CKAVOX ni ho hantu honyine ubona ibigezweho nta kurogoya. Just press play and enjoy!
-        </p>
-        <div class="discover-buttons">
-            <a href="#" class="disc-btn">Movies <i class="fas fa-arrow-right"></i></a>
-            <a href="#" class="disc-btn">Series <i class="fas fa-arrow-right"></i></a>
-            <a href="#" class="disc-btn">News / Amakuru <i class="fas fa-arrow-right"></i></a>
-            <a href="#" class="disc-btn">Indirimbo / Music <i class="fas fa-arrow-right"></i></a>
+    <div class="modal" id="signup-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('signup-modal')">&times;</span>
+            <h2>Create Account</h2>
+            <form onsubmit="event.preventDefault(); alert('Account yakozwe neza!'); closeModal('signup-modal');">
+                <input type="text" placeholder="Izina ryose" required>
+                <input type="email" placeholder="Email" required>
+                <input type="tel" placeholder="Nomero ya Telefone (+250...)" required>
+                <input type="password" placeholder="Password nshya" required>
+                <button type="submit" class="submit-btn">Gukora Account</button>
+            </form>
         </div>
-    </section>
+    </div>
 
-    <!-- GUHUZA URUBUGA NA SCRIPT.JS -->
+    <div class="modal" id="recovery-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('recovery-modal')">&times;</span>
+            <h2>Kugarura Password</h2>
+            <p>Ushobora gukoresha Email cyangwa Nomero ya telefone washyizeho.</p>
+            <form onsubmit="handleRecovery(event)">
+                <input type="text" placeholder="Andika Email cyangwa Nomero ya Telefone" required id="recovery-input">
+                <button type="submit" class="submit-btn">Ohereza Code</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD PANEL -->
+    <div class="admin-panel" id="admin-dashboard" style="display: none;">
+        <h3><i class="fas fa-user-shield"></i> CKAVOX Admin Panel</h3>
+        <div class="admin-form">
+            <select id="content-type">
+                <option value="news">Amakuru / Showbiz</option>
+                <option value="movie">Filime nshya (Movie)</option>
+                <option value="music">Indirimbo (Music)</option>
+            </select>
+            <input type="text" id="content-title" placeholder="Izina ry'ikintu">
+            <input type="text" id="content-img" placeholder="Link y'ifoto (Image URL)">
+            <button onclick="addContentByAdmin()" class="admin-add-btn">Shyiraho ku Rubuga</button>
+        </div>
+        <button onclick="logoutAdmin()" class="logout-btn">Sohoka (Logout)</button>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
