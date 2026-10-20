@@ -1,195 +1,520 @@
- <!DOCTYPE html>
+
+   <!DOCTYPE html>
 <html lang="rw">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKAVOX WEBSITE - Movies, Music, News & Sports</title>
+
+    <meta name="theme-color" content="#080808">
+    <meta name="description"
+          content="CKAVOX: amakuru, umuziki, filime, showbiz na siporo.">
+
+    <title>CKAVOX | News, Music, Movies & Sports</title>
+
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cloudflare.com">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
+
 <body>
 
-    <!-- NAVBAR -->
-    <header class="main-header">
-        <div class="logo">CKAVOX WEBSITE</div>
-        <nav class="nav-links">
-            <a href="#" class="active">HOME</a>
-            <a href="#">MOVIES</a>
-            <a href="#">MUSIC</a>
-            <a href="#">NEWS</a>
-        </nav>
-        <div class="auth-buttons">
-            <button class="btn-create" onclick="openModal('signup-modal')">SIGN UP</button>
-            <button class="btn-signin" onclick="openModal('login-modal')">LOGIN</button>
+<header class="main-header">
+    <a class="logo" href="#home">
+        <span>CKA</span>VOX<span class="logo-dot">.</span>
+    </a>
+
+    <nav class="nav-links">
+        <a href="#home">HOME</a>
+        <a href="#movies">MOVIES</a>
+        <a href="#music">MUSIC</a>
+        <a href="#news">NEWS</a>
+        <a href="#sports">SPORTS</a>
+    </nav>
+
+    <div class="auth-buttons">
+        <button class="btn-create"
+                onclick="openModal('signup-modal')">
+            SIGN UP
+        </button>
+
+        <button class="btn-signin"
+                onclick="openModal('login-modal')">
+            LOGIN
+        </button>
+    </div>
+</header>
+
+<main id="home">
+
+    <!-- MOVIES SLIDER -->
+    <section class="hero-section" id="movies">
+
+        <div class="section-heading">
+            <span class="gold-line"></span>
+            <h2>FEATURED MOVIES</h2>
         </div>
-    </header>
 
-    <!-- 1. MOVIES HERO SLIDER (Amasegonda 4) -->
-    <section class="hero-slider-container">
-        <div class="hero-slides" id="movies-slider-target">
-            
-            <!-- Slide 1: Matchbox -->
-            <div class="hero-slide active">
-                <div class="slide-bg" style="background-image: linear-gradient(rgba(0,0,0,0.2), #050505), url('https://picsum.photos');"></div>
-                <span class="featured-badge">FEATURED MOVIE</span>
-                <div class="hero-content">
-                    <div class="poster-side">
-                        <span class="poster-tag">Rocky</span>
-                        <img src="https://picsum.photos" alt="Matchbox">
+        <div class="hero-slider-container">
+
+            <div class="hero-slides" id="movies-slider-target">
+
+                <article class="hero-slide active">
+                    <img class="hero-image"
+                         src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=80"
+                         alt="Cinema screen"
+                         fetchpriority="high">
+
+                    <div class="hero-overlay"></div>
+
+                    <div class="hero-content">
+                        <span class="featured-badge">FEATURED</span>
+
+                        <div class="details-side">
+                            <p class="eyebrow">MOVIES & ENTERTAINMENT</p>
+                            <h1>Discover Great Movies</h1>
+
+                            <p class="movie-description">
+                                Explore movies, action films and entertainment
+                                updates on CKAVOX.
+                            </p>
+
+                            <a class="watch-btn"
+                               href="#news">
+                                <i class="fas fa-play"></i>
+                                Explore Now
+                            </a>
+                        </div>
                     </div>
-                    <div class="details-side">
-                        <h1>Matchbox the Movie</h1>
-                        <p class="movie-meta">2026 &bull; Action, Comedy</p>
-                        <p class="movie-description">When a group of former childhood friends reconnect, their reunion takes a wild turn as they stumble upon a dangerous international...</p>
-                        <button class="watch-btn"><i class="fas fa-play"></i> Watch Now</button>
+                </article>
+
+                <article class="hero-slide">
+                    <img class="hero-image"
+                         src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=1600&q=80"
+                         alt="Movie production">
+
+                    <div class="hero-overlay"></div>
+
+                    <div class="hero-content">
+                        <span class="featured-badge">ENTERTAINMENT</span>
+
+                        <div class="details-side">
+                            <p class="eyebrow">YOUR ENTERTAINMENT HUB</p>
+                            <h1>Movies & Showbiz</h1>
+
+                            <p class="movie-description">
+                                Follow entertainment stories and discover
+                                the latest film updates.
+                            </p>
+
+                            <a class="watch-btn" href="#news">
+                                <i class="fas fa-arrow-right"></i>
+                                Read Updates
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Slide 2: Spider-Man -->
-            <div class="hero-slide">
-                <div class="slide-bg" style="background-image: linear-gradient(rgba(0,0,0,0.2), #050505), url('https://picsum.photos');"></div>
-                <span class="featured-badge">FEATURED MOVIE</span>
-                <div class="hero-content">
-                    <div class="poster-side">
-                        <span class="poster-tag">Marvel</span>
-                        <img src="https://picsum.photos" alt="Spider-Man">
+                </article>
+
+                <article class="hero-slide">
+                    <img class="hero-image"
+                         src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1600&q=80"
+                         alt="Movie camera">
+
+                    <div class="hero-overlay"></div>
+
+                    <div class="hero-content">
+                        <span class="featured-badge">CKAVOX PICKS</span>
+
+                        <div class="details-side">
+                            <p class="eyebrow">EXPLORE THE SCREEN</p>
+                            <h1>Your Movie Destination</h1>
+
+                            <p class="movie-description">
+                                Find entertainment highlights and
+                                movie stories in one place.
+                            </p>
+
+                            <a class="watch-btn" href="#news">
+                                Discover More
+                            </a>
+                        </div>
                     </div>
-                    <div class="details-side">
-                        <h1>Spider-Man: Homecoming</h1>
-                        <p class="movie-meta">Action, Sci-Fi</p>
-                        <p class="movie-description">Peter Parker balances his life as an ordinary high school student with his superhero alter-ego Spider-Man...</p>
-                        <button class="watch-btn"><i class="fas fa-play"></i> Watch Now</button>
-                    </div>
-                </div>
+                </article>
+
             </div>
 
-            <!-- Slide 3: Escape and Evasion -->
-            <div class="hero-slide">
-                <div class="slide-bg" style="background-image: linear-gradient(rgba(0,0,0,0.2), #050505), url('https://picsum.photos');"></div>
-                <span class="featured-badge">FEATURED MOVIE</span>
-                <div class="hero-content">
-                    <div class="poster-side">
-                        <span class="poster-tag">Action</span>
-                        <img src="https://picsum.photos" alt="Escape and Evasion">
-                    </div>
-                    <div class="details-side">
-                        <h1>Escape and Evasion</h1>
-                        <p class="movie-meta">War, Drama</p>
-                        <p class="movie-description">After his men are killed in Burma, a lone soldier returns home to face his past and deal with the conspiracy surrounding the mission...</p>
-                        <button class="watch-btn"><i class="fas fa-play"></i> Watch Now</button>
-                    </div>
+            <div class="slider-controls">
+                <button class="ctrl-btn"
+                        onclick="moveHeroSlide(-1)"
+                        aria-label="Previous movie">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <div class="slider-dots" id="hero-dots">
+                    <button class="dot active"
+                            aria-label="Movie 1"></button>
+                    <button class="dot"
+                            aria-label="Movie 2"></button>
+                    <button class="dot"
+                            aria-label="Movie 3"></button>
                 </div>
+
+                <button class="ctrl-btn"
+                        onclick="moveHeroSlide(1)"
+                        aria-label="Next movie">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
 
-        </div>
-        
-        <div class="slider-controls">
-            <button class="ctrl-btn" onclick="moveHeroSlide(-1)"><i class="fas fa-chevron-left"></i></button>
-            <div class="slider-dots" id="hero-dots">
-                <span class="dot active"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-            </div>
-            <button class="ctrl-btn" onclick="moveHeroSlide(1)"><i class="fas fa-chevron-right"></i></button>
         </div>
     </section>
 
-    <!-- WHATSAPP BANNER -->
+    <!-- WHATSAPP CHANNEL -->
     <section class="whatsapp-banner">
         <div class="wp-left">
-            <div class="wp-icon-box"><i class="fab fa-whatsapp"></i></div>
+            <div class="wp-icon-box">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+
             <div class="wp-info">
-                <h3>New movie updates on WhatsApp</h3>
-                <p>Follow the CKAVOX channel for the latest releases.</p>
+                <h3>Join CKAVOX on WhatsApp</h3>
+                <p>Follow our channel for updates and entertainment.</p>
             </div>
         </div>
-        <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d" target="_blank" class="join-channel-btn">Join channel <i class="fas fa-arrow-right"></i></a>
+
+        <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="join-channel-btn">
+            Follow Channel
+            <i class="fas fa-arrow-right"></i>
+        </a>
     </section>
 
-    <!-- MAIN GRID FOR MUSIC & SHOWBIZ NEWS -->
-    <main class="sections-grid">
-        
-        <!-- 2. MUSIC SLIDER (Amasegonda 4) -->
-        <section class="grid-box">
-            <h3><i class="fas fa-music"></i> TRENDING MUSIC SLIDER</h3>
+    <!-- MUSIC AND NEWS -->
+    <section class="sections-grid">
+
+        <article class="grid-box" id="music">
+            <div class="section-heading">
+                <span class="gold-line"></span>
+                <h2><i class="fas fa-music"></i> TRENDING MUSIC</h2>
+            </div>
+
             <div class="inner-slider-container">
+
                 <div class="music-slides" id="music-slider-target">
-                    <div class="music-slide active">
-                        <img src="https://picsum.photos" alt="Music 1">
-                        <div class="slide-tag-text">Asake &bull; Active (Trending No.1)</div>
-                    </div>
-                    <div class="music-slide">
-                        <img src="https://picsum.photos" alt="Music 2">
-                        <div class="slide-tag-text">The Weeknd &bull; Dancing In The Flames</div>
-                    </div>
-                </div>
-                <button class="inner-arrow prev" onclick="moveMusicSlide(-1)"><i class="fas fa-chevron-left"></i></button>
-                <button class="inner-arrow next" onclick="moveMusicSlide(1)"><i class="fas fa-chevron-right"></i></button>
-            </div>
-        </section>
 
-        <!-- 3. HOT NEWS & SHOWBIZ SLIDER (Amasegonda 4) -->
-        <section class="grid-box">
-            <h3><i class="fas fa-newspaper"></i> HOT NEWS & SHOWBIZ</h3>
+                    <article class="music-slide active">
+                        <img
+                            src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1000&q=80"
+                            alt="Live music performance"
+                            loading="lazy">
+
+                        <div class="slide-tag-text">
+                            <span class="content-category">MUSIC</span>
+                            <h3>Discover New Music</h3>
+                            <p>Explore artists and music updates.</p>
+                        </div>
+                    </article>
+
+                    <article class="music-slide">
+                        <img
+                            src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1000&q=80"
+                            alt="Concert crowd"
+                            loading="lazy">
+
+                        <div class="slide-tag-text">
+                            <span class="content-category">CONCERTS</span>
+                            <h3>Music & Live Shows</h3>
+                            <p>Discover performances and entertainment.</p>
+                        </div>
+                    </article>
+
+                </div>
+
+                <button class="inner-arrow prev"
+                        onclick="moveMusicSlide(-1)"
+                        aria-label="Previous music">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <button class="inner-arrow next"
+                        onclick="moveMusicSlide(1)"
+                        aria-label="Next music">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+            </div>
+        </article>
+
+        <article class="grid-box" id="news">
+            <div class="section-heading">
+                <span class="gold-line"></span>
+                <h2><i class="fas fa-newspaper"></i> NEWS & SHOWBIZ</h2>
+            </div>
+
             <div class="inner-slider-container">
-                <div class="news-slides" id="news-slider-target">
-                    <div class="news-slide active">
-                        <img src="https://picsum.photos" alt="News 1">
-                        <div class="slide-tag-text">Showbiz: Exclusive Celebrity Interviews & Festivals</div>
-                    </div>
-                    <div class="news-slide">
-                        <img src="https://picsum.photos" alt="News 2">
-                        <div class="slide-tag-text">Local News: Upcoming Movie Releases in Kigali</div>
-                    </div>
-                </div>
-                <button class="inner-arrow prev" onclick="moveNewsSlide(-1)"><i class="fas fa-chevron-left"></i></button>
-                <button class="inner-arrow next" onclick="moveNewsSlide(1)"><i class="fas fa-chevron-right"></i></button>
-            </div>
-        </section>
-    </main>
 
-    <!-- INSTAGRAM BANNER -->
+                <div class="news-slides" id="news-slider-target">
+
+                    <article class="news-slide active">
+                        <img
+                            src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80"
+                            alt="News publication"
+                            loading="lazy">
+
+                        <div class="slide-tag-text">
+                            <span class="content-category">NEWS</span>
+                            <h3>Latest Stories</h3>
+                            <p>Discover news and current affairs.</p>
+                        </div>
+                    </article>
+
+                    <article class="news-slide">
+                        <img
+                            src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=1000&q=80"
+                            alt="Entertainment event"
+                            loading="lazy">
+
+                        <div class="slide-tag-text">
+                            <span class="content-category">SHOWBIZ</span>
+                            <h3>Entertainment Updates</h3>
+                            <p>Follow celebrity and showbiz stories.</p>
+                        </div>
+                    </article>
+
+                </div>
+
+                <button class="inner-arrow prev"
+                        onclick="moveNewsSlide(-1)"
+                        aria-label="Previous news">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <button class="inner-arrow next"
+                        onclick="moveNewsSlide(1)"
+                        aria-label="Next news">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+            </div>
+        </article>
+
+    </section>
+
+    <!-- SPORTS -->
+    <section class="sports-section" id="sports">
+        <div class="section-heading">
+            <span class="gold-line"></span>
+            <h2>SPORTS & FORMULA 1</h2>
+        </div>
+
+        <div class="sports-card">
+            <img
+                src="https://images.unsplash.com/photo-1532906619279-a4b7267faa66?auto=format&fit=crop&w=1400&q=80"
+                alt="Motorsport"
+                loading="lazy">
+
+            <div class="sports-card-content">
+                <span class="content-category">SPORTS</span>
+                <h3>Speed, Competition & Sports</h3>
+                <p>
+                    Follow motorsport, football and other sports stories
+                    on CKAVOX.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMIN DASHBOARD -->
+    <section class="admin-dashboard" id="admin-dashboard" hidden>
+        <div class="section-heading">
+            <span class="gold-line"></span>
+            <h2>CKAVOX ADMIN DASHBOARD</h2>
+        </div>
+
+        <p class="admin-warning">
+            Iyi ni demo ibika amakuru muri browser ukoresha gusa.
+            Ntuyikoreshe nk'umutekano nyakuri wa Admin.
+        </p>
+
+        <form id="admin-content-form" class="admin-form">
+
+            <label for="content-type">Ubwoko bw'amakuru</label>
+            <select id="content-type" required>
+                <option value="movie">Movies</option>
+                <option value="music">Music</option>
+                <option value="news">News & Showbiz</option>
+            </select>
+
+            <label for="content-title">Umutwe w'amakuru</label>
+            <input id="content-title"
+                   type="text"
+                   maxlength="150"
+                   placeholder="Andika umutwe"
+                   required>
+
+            <label for="content-desc">Ibisobanuro</label>
+            <textarea id="content-desc"
+                      maxlength="2000"
+                      placeholder="Andika ibisobanuro"></textarea>
+
+            <label for="content-img">URL y'ifoto</label>
+            <input id="content-img"
+                   type="url"
+                   placeholder="https://example.com/photo.jpg"
+                   required>
+
+            <button class="submit-btn" type="submit">
+                <i class="fas fa-plus"></i>
+                Ongeraho amakuru
+            </button>
+
+        </form>
+
+        <button class="logout-btn"
+                type="button"
+                onclick="logoutAdmin()">
+            Logout
+        </button>
+    </section>
+
+    <!-- INSTAGRAM -->
     <section class="instagram-banner-box">
         <div class="ig-left-side">
             <i class="fab fa-instagram"></i>
+
             <div class="ig-info">
-                <h4>FOLLOW US ON INSTAGRAM</h4>
-                <p>Get latest news, showbiz, and pop culture updates directly on your timeline.</p>
+                <h3>FOLLOW CKAVOX ON INSTAGRAM</h3>
+                <p>Follow our page for entertainment and news updates.</p>
             </div>
         </div>
-        <a href="https://instagram.com" target="_blank" class="ig-link-btn">Follow @CKAVOX</a>
+
+        <a href="https://www.instagram.com/"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="ig-link-btn">
+            Follow CKAVOX
+        </a>
     </section>
 
-    <!-- USER MODALS -->
-    <div class="modal" id="login-modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
-            <h2>Sign In</h2>
-            <form onsubmit="handleLogin(event)">
-                <input type="email" placeholder="Email yawe" required id="login-email">
-                <input type="password" placeholder="Password" required id="login-pass">
-                <button type="submit" class="submit-btn">Injira</button>
-            </form>
-            <p class="recovery-link" onclick="openModal('recovery-modal'); closeModal('login-modal')">Wibagiwe password? Kanda hano</p>
-        </div>
-    </div>
+</main>
 
-    <div class="modal" id="signup-modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('signup-modal')">&times;</span>
-            <h2>Create Account</h2>
-            <form onsubmit="event.preventDefault(); alert('Account yakozwe neza!'); closeModal('signup-modal');">
-                <input type="text" placeholder="Izina ryose" required>
-                <input type="email" placeholder="Email" required>
-                <input type="tel" placeholder="Nomero ya Telefone" required>
-                <input type="password" placeholder="Password nshya" required>
-                <button type="submit" class="submit-btn">Gukora Account</button>
-            </form>
-        </div>
-    </div>
+<!-- LOGIN MODAL -->
+<div class="modal" id="login-modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
 
-    <div class="modal" id="recovery-modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('recovery-modal')">&times;</span>
-            <h2>Kugarura Password</h2>
+        <button class="close-btn"
+                onclick="closeModal('login-modal')"
+                aria-label="Close">&times;</button>
+
+        <h2>Admin / User Login</h2>
+
+        <form id="login-form">
+            <label for="login-email">Email</label>
+            <input type="email"
+                   id="login-email"
+                   autocomplete="username"
+                   placeholder="Email yawe"
+                   required>
+
+            <label for="login-pass">Password</label>
+            <input type="password"
+                   id="login-pass"
+                   autocomplete="current-password"
+                   placeholder="Password"
+                   required>
+
+            <button class="submit-btn" type="submit">
+                Injira
+            </button>
+        </form>
+
+        <p class="modal-note">
+            Login nyakuri izashyirwa muri Supabase Auth.
+            Ntukoreshe password y'ibanga muri JavaScript.
+        </p>
+    </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div class="modal" id="signup-modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+
+        <button class="close-btn"
+                onclick="closeModal('signup-modal')"
+                aria-label="Close">&times;</button>
+
+        <h2>Create Account</h2>
+
+        <form id="signup-form">
+
+            <label for="signup-name">Izina</label>
+            <input id="signup-name"
+                   type="text"
+                   placeholder="Izina ryawe"
+                   required>
+
+            <label for="signup-email">Email</label>
+            <input id="signup-email"
+                   type="email"
+                   placeholder="Email yawe"
+                   required>
+
+            <label for="signup-pass">Password</label>
+            <input id="signup-pass"
+                   type="password"
+                   minlength="8"
+                   autocomplete="new-password"
+                   placeholder="Nibura inyuguti 8"
+                   required>
+
+            <button class="submit-btn" type="submit">
+                Kora Account
+            </button>
+
+        </form>
+
+        <p class="modal-note">
+            Kwiyandikisha nyakuri bisaba guhuza Supabase Auth.
+        </p>
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+    <a class="logo" href="#home">
+        <span>CKA</span>VOX<span class="logo-dot">.</span>
+    </a>
+
+    <p>News • Music • Movies • Showbiz • Sports</p>
+
+    <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
+       target="_blank"
+       rel="noopener noreferrer">
+        Follow CKAVOX on WhatsApp
+    </a>
+
+    <p class="copyright">
+        &copy; <span id="current-year"></span> CKAVOX.
+        All rights reserved.
+    </p>
+</footer>
+
+<!-- WHATSAPP FLOATING BUTTON -->
+<a class="whatsapp-float"
+   href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
+   target="_blank"
+   rel="noopener noreferrer"
+   aria-label="Follow CKAVOX WhatsApp Channel">
+
+    <i class="fab fa-whatsapp"></i>
+    <span>Follow CKAVOX</span>
+</a>
+
+<script src="script.js" defer></script>
+
+</body>
+</html>         
+           
