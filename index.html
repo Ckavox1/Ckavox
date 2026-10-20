@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKAVOX - Movies, Music & Sports</title>
+    <title>CKAVOX WEBSITE - Movies, Music & Sports</title>
     <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome Icons z'ubuntu -->
     <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body>
@@ -19,27 +20,26 @@
             <a href="#">SPORTS</a>
         </nav>
         <div class="auth-buttons">
-            <button class="btn-create" onclick="openModal('signup-modal')">CREATE ACCOUNT</button>
-            <button class="btn-signin" onclick="openModal('login-modal')">SIGN IN</button>
+            <a href="https://instagram.com" target="_blank" class="nav-ig-icon"><i class="fab fa-instagram"></i></a>
         </div>
     </header>
 
-    <!-- MOVIES HERO SLIDER (Aha ni ho habanje kwangirika) -->
+    <!-- 1. MOVIES MOVING SLIDER (Amasegonda 4 + Amabuto) -->
     <section class="hero-slider-container">
         <div class="hero-slides">
             
             <!-- Slide 1: Matchbox -->
             <div class="hero-slide active">
-                <div class="slide-bg" style="background-image: linear-gradient(rgba(0,0,0,0.2), #050505), url('https://picsum.photos');"></div>
+                <div class="slide-bg" style="background-image: linear-gradient(rgba(0,0,0,0.3), #050505), url('https://unsplash.com');"></div>
                 <span class="featured-badge">FEATURED MOVIE</span>
                 <div class="hero-content">
                     <div class="poster-side">
                         <span class="poster-tag">Rocky</span>
-                        <img src="https://picsum.photos" alt="Matchbox Poster" class="movie-img-file">
+                        <img src="https://unsplash.com" alt="Matchbox">
                     </div>
                     <div class="details-side">
                         <h1>Matchbox the Movie</h1>
-                        <p class="movie-meta">2026 &bull; Action, Adventure, Comedy &bull; Movie</p>
+                        <p class="movie-meta">2026 &bull; Action, Adventure &bull; Movie</p>
                         <p class="movie-description">When a group of former childhood friends reconnect, their reunion takes a wild turn as they stumble upon a dangerous international...</p>
                         <button class="watch-btn"><i class="fas fa-play"></i> Watch Now</button>
                     </div>
@@ -48,12 +48,12 @@
             
             <!-- Slide 2: Spider-Man -->
             <div class="hero-slide">
-                <div class="slide-bg" style="background-image: linear-gradient(rgba(0,0,0,0.2), #050505), url('https://picsum.photos');"></div>
+                <div class="slide-bg" style="background-image: linear-gradient(rgba(0,0,0,0.3), #050505), url('https://unsplash.com');"></div>
                 <span class="featured-badge">FEATURED MOVIE</span>
                 <div class="hero-content">
                     <div class="poster-side">
                         <span class="poster-tag">Marvel</span>
-                        <img src="https://picsum.photos" alt="Spider-Man Poster" class="movie-img-file">
+                        <img src="https://unsplash.com" alt="Spider-Man">
                     </div>
                     <div class="details-side">
                         <h1>Spider-Man: Homecoming</h1>
@@ -64,20 +64,39 @@
                 </div>
             </div>
 
+            <!-- Slide 3: Escape and Evasion -->
+            <div class="hero-slide">
+                <div class="slide-bg" style="background-image: linear-gradient(rgba(0,0,0,0.3), #050505), url('https://unsplash.com');"></div>
+                <span class="featured-badge">FEATURED MOVIE</span>
+                <div class="hero-content">
+                    <div class="poster-side">
+                        <span class="poster-tag">Action</span>
+                        <img src="https://unsplash.com" alt="Escape and Evasion">
+                    </div>
+                    <div class="details-side">
+                        <h1>Escape and Evasion</h1>
+                        <p class="movie-meta">War, Drama &bull; Movie</p>
+                        <p class="movie-description">After his men are killed in Burma, a lone soldier returns home to face his past and deal with the conspiracy surrounding the mission...</p>
+                        <button class="watch-btn"><i class="fas fa-play"></i> Watch Now</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
         
-        <!-- Amabuto yo guhindura Slider -->
+        <!-- Amabuto ya Next/Prev kuri Filime -->
         <div class="slider-controls">
             <button class="ctrl-btn" onclick="moveHeroSlide(-1)"><i class="fas fa-chevron-left"></i></button>
             <div class="slider-dots" id="hero-dots">
                 <span class="dot active"></span>
+                <span class="dot"></span>
                 <span class="dot"></span>
             </div>
             <button class="ctrl-btn" onclick="moveHeroSlide(1)"><i class="fas fa-chevron-right"></i></button>
         </div>
     </section>
 
-    <!-- WHATSAPP BANNER -->
+    <!-- WHATSAPP BANNER (CKAVOX CHANNEL) -->
     <section class="whatsapp-banner">
         <div class="wp-left">
             <div class="wp-icon-box"><i class="fab fa-whatsapp"></i></div>
@@ -89,30 +108,29 @@
         <a href="https://whatsapp.com" target="_blank" class="join-channel-btn">Join channel <i class="fas fa-arrow-right"></i></a>
     </section>
 
-    <!-- MAIN BODY CONTENT -->
+    <!-- MAIN GRID FOR MUSIC & SPORTS -->
     <main class="sections-grid">
         
-        <!-- MUSIC SLIDER -->
+        <!-- 2. MUSIC SLIDER (Indirimbo zikunzwe) -->
         <section class="grid-box">
             <h3><i class="fas fa-music"></i> TRENDING MUSIC SLIDER</h3>
             <div class="inner-slider-container">
                 <div class="music-slides">
                     <div class="music-slide active">
-                        <img src="https://picsum.photos" alt="Music 1">
+                        <img src="https://unsplash.com" alt="Music 1">
                         <div class="slide-tag-text">Asake &bull; Active (Trending No.1)</div>
                     </div>
                     <div class="music-slide">
-                        <img src="https://picsum.photos" alt="Music 2">
+                        <img src="https://unsplash.com" alt="Music 2">
                         <div class="slide-tag-text">The Weeknd &bull; Dancing In The Flames</div>
                     </div>
                 </div>
                 <button class="inner-arrow prev" onclick="moveMusicSlide(-1)"><i class="fas fa-chevron-left"></i></button>
                 <button class="inner-arrow next" onclick="moveMusicSlide(1)"><i class="fas fa-chevron-right"></i></button>
             </div>
-            <div id="admin-music-section" class="added-items-list"></div>
         </section>
 
-        <!-- SPORTS SLIDER -->
+        <!-- 3. SPORTS SLIDER (Match ziri kuba n'izaye) -->
         <section class="grid-box">
             <h3><i class="fas fa-trophy"></i> LIVE & RECENT MATCHES</h3>
             <div class="inner-slider-container">
@@ -128,72 +146,28 @@
                         <div class="match-card finished">
                             <span class="finished-badge">FINISHED</span>
                             <div class="teams">Real Madrid <span class="score">3 - 0</span> Barcelona</div>
-                            <p class="match-details">La Liga Recap</p>
+                            <p class="match-details">La Liga Recap &bull; Kagame Cup</p>
                         </div>
                     </div>
                 </div>
                 <button class="inner-arrow prev" onclick="moveSportsSlide(-1)"><i class="fas fa-chevron-left"></i></button>
                 <button class="inner-arrow next" onclick="moveSportsSlide(1)"><i class="fas fa-chevron-right"></i></button>
             </div>
-            <div id="admin-sports-section" class="added-items-list"></div>
-        </section>
-
-        <!-- DISCOVER SECTION -->
-        <section class="grid-box full-width-box">
-            <span class="discover-title">DISCOVER ON CKAVOX</span>
-            <h2>Reba Agasobanuye Movies na Series kuri CKAVOX</h2>
-            <p class="discover-p">Ukunda Agasobanuye? CKAVOX ni ho urebera movies na series zasobanuwe mu Kinyarwanda. Shakisha izigezweho, hitamo izo ukunda, maze wishimire kureba nta matangazo akurogoya.</p>
-            <div class="discover-tabs">
-                <button class="tab-btn">Movies &rarr;</button>
-                <button class="tab-btn">Series &rarr;</button>
-                <button class="tab-btn">Categories &rarr;</button>
-            </div>
         </section>
     </main>
 
     <!-- INSTAGRAM BANNER -->
     <section class="instagram-banner-box">
-        <i class="fab fa-instagram"></i>
-        <div class="ig-info">
-            <h4>FOLLOW US ON INSTAGRAM</h4>
-            <p>Get latest news, showbiz, and updates directly on your timeline.</p>
+        <div class="ig-left-side">
+            <i class="fab fa-instagram"></i>
+            <div class="ig-info">
+                <h4>FOLLOW US ON INSTAGRAM</h4>
+                <p>Get latest news, showbiz, and pop culture updates directly on your timeline.</p>
+            </div>
         </div>
         <a href="https://instagram.com" target="_blank" class="ig-link-btn">Follow @CKAVOX</a>
     </section>
 
-    <!-- MODALS -->
-    <div class="modal" id="login-modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
-            <h2>Sign In</h2>
-            <form onsubmit="handleLogin(event)">
-                <input type="email" placeholder="Email yawe" required id="login-email">
-                <input type="password" placeholder="Password" required id="login-pass">
-                <button type="submit" class="submit-btn">Injira</button>
-            </form>
-            <p class="recovery-link" onclick="openModal('recovery-modal'); closeModal('login-modal')">Wibagiwe password?</p>
-        </div>
-    </div>
-
-    <div class="modal" id="signup-modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('signup-modal')">&times;</span>
-            <h2>Create Account</h2>
-            <form onsubmit="event.preventDefault(); alert('Account yakozwe!'); closeModal('signup-modal');">
-                <input type="text" placeholder="Izina" required>
-                <input type="email" placeholder="Email" required>
-                <input type="password" placeholder="Password" required>
-                <button type="submit" class="submit-btn">Gukora Account</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal" id="recovery-modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('recovery-modal')">&times;</span>
-            <h2>Kugarura Password</h2>
-            <input type="text" placeholder="Email cyangwa Telefone" required id="recovery-input">
-            <button class="submit-btn" onclick="handleRecovery()">Ohereza Code</button>
-        </div>
-    </div>
-
+    <script src="script.js"></script>
+</body>
+</html>
