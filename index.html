@@ -1,54 +1,251 @@
- 
-<!-- CKAVOX USER ACCOUNT -->
-<section class="section account-section" id="account">
-  <div class="account-box">
-    <span class="eyebrow">YOUR CKAVOX ACCOUNT</span>
-    <h2 id="accountHeading">Join the Community</h2>
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080808">
 
-    <p class="muted" id="accountDescription">
-      Create an account or sign in to access your account.
-    </p>
+<title>CKAVOX | News, Showbiz, Sports & Technology</title>
 
-    <form id="authForm">
-      <label for="displayName">Full name</label>
-      <input id="displayName" type="text"
-             maxlength="100" placeholder="Enter your name">
+<link rel="stylesheet" href="style.css">
 
-      <label for="email">Email address</label>
-      <input id="email" type="email"
-             placeholder="Enter your email" required>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="script.js"></script>
+</head>
 
-      <label for="password">Password</label>
-      <input id="password" type="password"
-             placeholder="Enter your password"
-             minlength="8" required>
+<body>
 
-      <div class="auth-buttons">
-        <button type="submit" id="signInButton"
-                class="gold-button">Sign In</button>
-        <button type="button" id="signUpButton"
-                class="outline-button">Sign Up</button>
-      </div>
-    </form>
+<header class="topbar">
 
-    <div id="authMessage" role="status"></div>
+<a href="#home" class="brand">
+<span class="brand-mark">C</span>
+<span>CKA<span class="gold">VOX</span></span>
+</a>
 
-    <div id="userArea" hidden>
-      <hr>
-      <h3>My Account</h3>
-      <p id="userName"></p>
-      <p id="userEmail"></p>
-      <p id="accountCreated"></p>
+<div class="clock">
+<strong id="clockTime">00:00:00</strong>
+<span id="clockDate">Loading date...</span>
+</div>
 
-      <button id="signOutButton" class="outline-button">
-        Sign Out
-      </button>
+<button id="menuToggle" class="menu-toggle">☰</button>
 
-      <p>
-        <a href="admin.html" id="adminLink" hidden>
-          Open Admin Dashboard
-        </a>
-      </p>
-    </div>
-  </div>
+<nav id="mainNav">
+<a href="#news">News</a>
+<a href="#showbiz">Showbiz</a>
+<a href="#sports">Sports</a>
+<a href="#films">Films</a>
+<a href="#technology">Technology</a>
+<a href="#trending">Trending</a>
+<a href="#account">My Account</a>
+</nav>
+
+</header>
+
+<main id="home">
+
+<!-- HERO SLIDESHOW -->
+
+<section class="hero">
+
+<div id="heroImage" class="hero-image"></div>
+<div class="hero-shade"></div>
+
+<div class="hero-copy">
+
+<p class="eyebrow">YOUR WORLD, UPDATED</p>
+
+<h1 id="heroTitle">
+Stories that keep you informed.
+</h1>
+
+<p id="heroDescription">
+News, entertainment, technology and sports.
+</p>
+
+<a href="#news" class="button">Explore News</a>
+
+</div>
+
+<div class="slider-controls">
+
+<button id="heroPrev" aria-label="Previous slide">‹</button>
+
+<div id="heroDots" class="dots"></div>
+
+<button id="heroNext" aria-label="Next slide">›</button>
+
+</div>
+
 </section>
+
+<!-- EXPLORE PLATFORMS -->
+
+<section class="wrap platform-section">
+
+<p class="eyebrow">DISCOVER</p>
+
+<h2>Explore Platforms</h2>
+
+<div class="platform-grid">
+
+<a class="platform"
+href="https://www.google.com/chrome/"
+target="_blank" rel="noopener">
+<img src="https://cdn.simpleicons.org/googlechrome/DB4437" alt="Chrome">
+<span>Chrome</span>
+</a>
+
+<a class="platform"
+href="https://www.netflix.com/"
+target="_blank" rel="noopener">
+<img src="https://cdn.simpleicons.org/netflix/E50914" alt="Netflix">
+<span>Netflix</span>
+</a>
+
+<a class="platform"
+href="https://open.spotify.com/"
+target="_blank" rel="noopener">
+<img src="https://cdn.simpleicons.org/spotify/1DB954" alt="Spotify">
+<span>Spotify</span>
+</a>
+
+<a class="platform"
+href="https://www.instagram.com/"
+target="_blank" rel="noopener">
+<img src="https://cdn.simpleicons.org/instagram/E4405F" alt="Instagram">
+<span>Instagram</span>
+</a>
+
+<a class="platform"
+href="https://www.tiktok.com/"
+target="_blank" rel="noopener">
+<img src="https://cdn.simpleicons.org/tiktok/FFFFFF" alt="TikTok">
+<span>TikTok</span>
+</a>
+
+<a class="platform"
+href="https://www.facebook.com/"
+target="_blank" rel="noopener">
+<img src="https://cdn.simpleicons.org/facebook/0866FF" alt="Facebook">
+<span>Facebook</span>
+</a>
+
+<a class="platform"
+href="https://x.com/"
+target="_blank" rel="noopener">
+<img src="https://cdn.simpleicons.org/x/FFFFFF" alt="X">
+<span>X / Twitter</span>
+</a>
+
+</div>
+</section>
+
+<!-- CONTENT SECTIONS -->
+
+<div id="contentSections" class="content-sections"></div>
+
+<!-- ACCOUNT -->
+
+<section class="account-area" id="account">
+
+<div class="account-card">
+
+<p class="eyebrow">YOUR CKAVOX ACCOUNT</p>
+
+<h2 id="accountHeading">Join the Community</h2>
+
+<p id="accountMessage">
+Create an account or sign in to access your account.
+</p>
+
+<form id="authForm">
+
+<label for="email">Email address</label>
+
+<input
+id="email"
+type="email"
+autocomplete="email"
+placeholder="Enter your email"
+required
+>
+
+<label for="password">Password</label>
+
+<input
+id="password"
+type="password"
+autocomplete="current-password"
+minlength="6"
+placeholder="Enter your password"
+required
+>
+
+<div class="button-row">
+
+<button type="submit" class="button">
+Sign In
+</button>
+
+<button type="button" id="signUpBtn"
+class="button button-outline">
+Sign Up
+</button>
+
+</div>
+
+</form>
+
+<div id="signedInPanel" hidden>
+
+<p id="signedInEmail"></p>
+
+<a href="admin.html"
+id="adminLink"
+class="button button-outline"
+hidden>
+Open Admin Dashboard
+</a>
+
+<button id="signOutBtn" class="button">
+Sign Out
+</button>
+
+</div>
+
+<p id="authStatus" class="status"></p>
+
+</div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+<a href="#home" class="brand footer-brand">
+<span class="brand-mark">C</span>
+<span>CKA<span class="gold">VOX</span></span>
+</a>
+
+<p>News. Entertainment. Technology. Sports.</p>
+
+<p>© <span id="year"></span> CKAVOX</p>
+
+</footer>
+
+<!-- WHATSAPP CHANNEL -->
+
+<a
+class="whatsapp-float"
+href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
+target="_blank"
+rel="noopener">
+
+◉ &nbsp; Follow CKAVOX on WhatsApp
+
+</a>
+
+</body>
+</html>
