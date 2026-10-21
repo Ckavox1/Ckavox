@@ -1,378 +1,886 @@
- <!DOCTYPE html>
+Dore code yuzuye ya "index.html":
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
 
-    <meta name="theme-color" content="#080808">
-    <meta name="description"
-          content="CKAVOX - Movies, Music, Sports, News and Showbiz.">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-    <title>CKAVOX | Entertainment & News</title>
+  <meta name="theme-color" content="#080808">
 
-    <link rel="stylesheet" href="style.css">
+  <meta name="description"
+        content="CKAVOX - Trending movies, music, news, sports and entertainment.">
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script src="script.js" defer></script>
+  <title>CKAVOX | Entertainment & Trending News</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="manifest" href="manifest.json">
+
+  <link rel="icon"
+        href="icons/icon-192.png"
+        type="image/png">
+
+  <!-- Supabase library -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  </script>
+
+  <!-- Your Supabase configuration -->
+  <script src="supabase-config.js"></script>
+
+  <!-- Main JavaScript -->
+  <script src="script.js" defer></script>
 </head>
 
 <body>
 
-    <!-- HEADER -->
-    <header class="site-header">
+  <!-- HEADER -->
+  <header class="site-header">
 
-        <a class="logo" href="#home">
-            <span class="logo-mark">C〰</span>
-            <span>CKAVOX</span>
-        </a>
+    <a href="#home" class="brand">
+      <span class="brand-mark">C</span>
+      <span class="brand-name">CKAVOX</span>
+    </a>
 
-        <button id="menuToggle"
-                class="menu-toggle"
-                aria-label="Open navigation"
-                aria-expanded="false">
-            ☰
-        </button>
+    <button
+      id="menuToggle"
+      class="menu-toggle"
+      aria-label="Open navigation menu">
+      ☰
+    </button>
 
-        <nav id="mainNav">
-            <a href="#home">Home</a>
-            <a href="#movies">Movies</a>
-            <a href="#music">Music</a>
-            <a href="#news">News</a>
-            <a href="#sports">Sports</a>
-            <a href="#showbiz">Showbiz</a>
-        </nav>
+    <nav id="mainNav" class="main-nav">
+      <a href="#home">Home</a>
+      <a href="#movies">Movies</a>
+      <a href="#music">Music</a>
+      <a href="#news">News</a>
+      <a href="#sports">Sports</a>
+      <a href="#showbiz">Showbiz</a>
+      <a href="#photos">Photos</a>
+    </nav>
 
-        <div id="accountArea" class="account-buttons">
-            <a href="login.html" class="btn btn-yellow">Sign Up</a>
-            <a href="login.html" class="btn btn-outline">Login</a>
-        </div>
-
-    </header>
-
-    <!-- LIVE DATE AND CLOCK -->
-    <div class="clock-bar">
-        <span>📅 <span id="currentDate">Loading date...</span></span>
-        <span>🕒 <span id="currentTime">00:00:00</span></span>
-        <span id="clockZone">Kigali, Rwanda</span>
+    <div class="account-area" id="accountArea">
+      <a href="#account" class="button button-outline">
+        Login / Sign up
+      </a>
     </div>
 
-    <main>
+  </header>
 
-        <!-- HERO SLIDER -->
-        <section id="home" class="hero-section">
 
-            <div class="hero-slider" id="heroSlider">
+  <main>
 
-                <article class="hero-slide active">
-                    <img
-                        src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1920&q=90"
-                        alt="Cinema and movies"
-                        fetchpriority="high">
+    <!-- HERO / HOME -->
+    <section id="home" class="hero-section">
 
-                    <div class="hero-overlay">
-                        <span class="eyebrow">WELCOME TO CKAVOX</span>
-                        <h1>Entertainment Starts Here</h1>
-                        <p>
-                            Movies, music, trending news, sports and showbiz
-                            in one place.
-                        </p>
-                        <a href="#movies" class="btn btn-yellow">
-                            Explore Now
-                        </a>
-                    </div>
-                </article>
+      <div class="hero-slider" id="heroSlider">
 
-                <article class="hero-slide">
-                    <img
-                        src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1920&q=90"
-                        alt="Live music performance"
-                        loading="lazy">
+        <article class="hero-slide active">
+          <img
+            src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=85"
+            alt="Cinema screen">
 
-                    <div class="hero-overlay">
-                        <span class="eyebrow">MUSIC & ARTISTS</span>
-                        <h1>Feel the Music</h1>
-                        <p>
-                            Discover artists, new releases and music news.
-                        </p>
-                        <a href="#music" class="btn btn-yellow">
-                            Explore Music
-                        </a>
-                    </div>
-                </article>
+          <div class="hero-overlay">
+            <span class="category-label">ENTERTAINMENT</span>
 
-                <article class="hero-slide">
-                    <img
-                        src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1920&q=90"
-                        alt="Football stadium"
-                        loading="lazy">
+            <h1>Welcome to CKAVOX</h1>
 
-                    <div class="hero-overlay">
-                        <span class="eyebrow">SPORTS</span>
-                        <h1>Stay in the Game</h1>
-                        <p>
-                            Follow football, basketball, volleyball and F1.
-                        </p>
-                        <a href="#sports" class="btn btn-yellow">
-                            Explore Sports
-                        </a>
-                    </div>
-                </article>
+            <p>
+              Discover trending movies, music, news and entertainment
+              in one place.
+            </p>
 
-                <article class="hero-slide">
-                    <img
-                        src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1920&q=90"
-                        alt="Entertainment event"
-                        loading="lazy">
-
-                    <div class="hero-overlay">
-                        <span class="eyebrow">TRENDING SHOWBIZ</span>
-                        <h1>What's Happening?</h1>
-                        <p>
-                            Explore entertainment stories and trending events.
-                        </p>
-                        <a href="#showbiz" class="btn btn-yellow">
-                            Discover More
-                        </a>
-                    </div>
-                </article>
-
-                <button id="prevSlide"
-                        class="slider-arrow prev"
-                        aria-label="Previous slide">❮</button>
-
-                <button id="nextSlide"
-                        class="slider-arrow next"
-                        aria-label="Next slide">❯</button>
-
-                <div id="sliderDots"
-                     class="slider-dots"
-                     aria-label="Choose slide"></div>
-
-            </div>
-
-        </section>
-
-        <!-- SEARCH -->
-        <section class="search-section">
-            <h2>Discover CKAVOX</h2>
-
-            <input
-                id="searchInput"
-                type="search"
-                placeholder="Search movies, music, news..."
-                aria-label="Search CKAVOX content">
-
-            <div id="searchResults" class="content-grid"></div>
-        </section>
-
-        <!-- BRAND LOGOS -->
-        <section class="section">
-            <div class="section-heading">
-                <div>
-                    <span class="eyebrow">EXPLORE ONLINE</span>
-                    <h2>Popular Platforms</h2>
-                </div>
-            </div>
-
-            <div class="brand-grid">
-
-                <a class="brand-card"
-                   href="https://www.google.com/chrome/"
-                   target="_blank"
-                   rel="noopener noreferrer">
-
-                    <img
-                        src="https://cdn.simpleicons.org/googlechrome/DB4437"
-                        alt="Google Chrome logo">
-
-                    <h3>Google Chrome</h3>
-                    <p>Explore the web</p>
-                </a>
-
-                <a class="brand-card"
-                   href="https://www.netflix.com/"
-                   target="_blank"
-                   rel="noopener noreferrer">
-
-                    <img
-                        src="https://cdn.simpleicons.org/netflix/E50914"
-                        alt="Netflix logo">
-
-                    <h3>Netflix</h3>
-                    <p>Movies and series</p>
-                </a>
-
-                <a class="brand-card"
-                   href="https://open.spotify.com/"
-                   target="_blank"
-                   rel="noopener noreferrer">
-
-                    <img
-                        src="https://cdn.simpleicons.org/spotify/1DB954"
-                        alt="Spotify logo">
-
-                    <h3>Spotify</h3>
-                    <p>Music streaming</p>
-                </a>
-
-            </div>
-        </section>
-
-        <!-- MOVIES -->
-        <section id="movies" class="section">
-            <div class="section-heading">
-                <div>
-                    <span class="eyebrow">CINEMA</span>
-                    <h2>Movies & Films</h2>
-                </div>
-            </div>
-
-            <div class="category-list">
-                <span>Action</span>
-                <span>Comedy</span>
-                <span>Superheroes</span>
-                <span>Horror</span>
-                <span>Indian</span>
-                <span>Thriller</span>
-                <span>Romance</span>
-            </div>
-
-            <div id="moviesContainer" class="content-grid">
-                <p class="loading-message">Loading movies...</p>
-            </div>
-        </section>
-
-        <!-- MUSIC -->
-        <section id="music" class="section">
-            <div class="section-heading">
-                <div>
-                    <span class="eyebrow">LISTEN & DISCOVER</span>
-                    <h2>Music</h2>
-                </div>
-            </div>
-
-            <div class="category-list">
-                <span>African Music</span>
-                <span>American Music</span>
-                <span>Afrobeats</span>
-                <span>Hip-Hop</span>
-                <span>Gospel</span>
-                <span>Other Music</span>
-            </div>
-
-            <div id="musicContainer" class="content-grid">
-                <p class="loading-message">Loading music...</p>
-            </div>
-        </section>
-
-        <!-- NEWS -->
-        <section id="news" class="section">
-            <div class="section-heading">
-                <div>
-                    <span class="eyebrow">STAY INFORMED</span>
-                    <h2>Latest News</h2>
-                </div>
-            </div>
-
-            <div id="newsContainer" class="content-grid">
-                <p class="loading-message">Loading news...</p>
-            </div>
-        </section>
-
-        <!-- SPORTS -->
-        <section id="sports" class="section">
-            <div class="section-heading">
-                <div>
-                    <span class="eyebrow">SPORTS WORLD</span>
-                    <h2>Sports</h2>
-                </div>
-            </div>
-
-            <div class="category-list">
-                <span>Football</span>
-                <span>Basketball</span>
-                <span>Volleyball</span>
-                <span>Formula 1</span>
-            </div>
-
-            <div id="sportsContainer" class="content-grid">
-                <p class="loading-message">Loading sports...</p>
-            </div>
-        </section>
-
-        <!-- SHOWBIZ -->
-        <section id="showbiz" class="section">
-            <div class="section-heading">
-                <div>
-                    <span class="eyebrow">CELEBRITY WORLD</span>
-                    <h2>Showbiz & Trending</h2>
-                </div>
-            </div>
-
-            <div id="showbizContainer" class="content-grid">
-                <p class="loading-message">Loading showbiz...</p>
-            </div>
-        </section>
-
-        <!-- PHOTOS -->
-        <section id="photos" class="section">
-            <div class="section-heading">
-                <div>
-                    <span class="eyebrow">VISUAL STORIES</span>
-                    <h2>Photos</h2>
-                </div>
-            </div>
-
-            <div id="photosContainer" class="content-grid">
-                <p class="loading-message">Loading photos...</p>
-            </div>
-        </section>
-
-        <!-- WHATSAPP -->
-        <section class="whatsapp-section">
-            <div>
-                <span class="eyebrow">JOIN OUR COMMUNITY</span>
-                <h2>Follow CKAVOX on WhatsApp</h2>
-                <p>
-                    Get updates about movies, music, sports, news and showbiz.
-                </p>
-            </div>
-
-            <a
-                href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="whatsapp-button">
-
-                Follow CKAVOX Channel →
+            <a href="#movies" class="button button-yellow">
+              Explore Now
             </a>
-        </section>
+          </div>
+        </article>
 
-    </main>
 
-    <!-- FOOTER -->
-    <footer class="site-footer">
-        <a class="logo footer-logo" href="#home">CKAVOX</a>
+        <article class="hero-slide">
+          <img
+            src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1600&q=85"
+            alt="Live music performance">
 
-        <p>Movies • Music • News • Sports • Showbiz</p>
+          <div class="hero-overlay">
+            <span class="category-label">MUSIC</span>
 
-        <p>Follow CKAVOX for more info.</p>
+            <h2>Discover Trending Music</h2>
 
-        <p>
-            &copy; <span id="footerYear"></span> CKAVOX.
-            All rights reserved.
-        </p>
+            <p>
+              Explore popular songs and artists from Rwanda
+              and around the world.
+            </p>
+
+            <a href="#music" class="button button-yellow">
+              Explore Music
+            </a>
+          </div>
+        </article>
+
+
+        <article class="hero-slide">
+          <img
+            src="https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1600&q=85"
+            alt="Newspaper and news">
+
+          <div class="hero-overlay">
+            <span class="category-label">LATEST NEWS</span>
+
+            <h2>Stay Updated</h2>
+
+            <p>
+              Find news, sports updates and entertainment stories
+              on CKAVOX.
+            </p>
+
+            <a href="#news" class="button button-yellow">
+              Read News
+            </a>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="hero-controls">
+        <button id="heroPrevious" aria-label="Previous slide">
+          ❮
+        </button>
+
+        <div id="heroDots" class="hero-dots"></div>
+
+        <button id="heroNext" aria-label="Next slide">
+          ❯
+        </button>
+      </div>
+
+    </section>
+
+
+    <!-- DATE AND TIME -->
+    <section class="clock-section">
+
+      <div>
+        <span class="clock-label">KIGALI TIME</span>
+        <h2 id="currentTime">00:00:00</h2>
+        <p id="currentDate">Loading date...</p>
+      </div>
+
+      <div class="online-status">
+        <span class="status-dot"></span>
+        <span id="connectionStatus">Checking connection...</span>
+      </div>
+
+    </section>
+
+
+    <!-- SEARCH -->
+    <section class="search-section">
+
+      <form id="searchForm" role="search">
+        <input
+          type="search"
+          id="siteSearch"
+          placeholder="Search movies, music, news..."
+          aria-label="Search CKAVOX">
+
+        <button type="submit" class="button button-yellow">
+          Search
+        </button>
+      </form>
+
+      <p id="searchMessage" aria-live="polite"></p>
+
+    </section>
+
+
+    <!-- SOCIAL AND DIGITAL PLATFORMS -->
+    <section class="content-section" id="platforms">
+
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">CONNECT WITH THE WORLD</span>
+          <h2>Explore Platforms</h2>
+        </div>
+      </div>
+
+      <div class="platform-grid">
 
         <a
-            href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
-            target="_blank"
-            rel="noopener noreferrer">
+          class="platform-card"
+          href="https://www.google.com/"
+          target="_blank"
+          rel="noopener noreferrer">
 
-            CKAVOX WhatsApp Channel
+          <span class="platform-icon">G</span>
+          <h3>Google</h3>
+          <p>Search the web</p>
+          <span class="platform-link">Open platform ↗</span>
         </a>
-    </footer>
+
+
+        <a
+          class="platform-card"
+          href="https://www.netflix.com/"
+          target="_blank"
+          rel="noopener noreferrer">
+
+          <span class="platform-icon netflix-icon">N</span>
+          <h3>Netflix</h3>
+          <p>Explore movies and series</p>
+          <span class="platform-link">Open platform ↗</span>
+        </a>
+
+
+        <a
+          class="platform-card"
+          href="https://www.instagram.com/"
+          target="_blank"
+          rel="noopener noreferrer">
+
+          <span class="platform-icon instagram-icon">IG</span>
+          <h3>Instagram</h3>
+          <p>Photos, reels and stories</p>
+          <span class="platform-link">Open platform ↗</span>
+        </a>
+
+
+        <a
+          class="platform-card"
+          href="https://www.facebook.com/"
+          target="_blank"
+          rel="noopener noreferrer">
+
+          <span class="platform-icon facebook-icon">f</span>
+          <h3>Facebook</h3>
+          <p>Connect with people</p>
+          <span class="platform-link">Open platform ↗</span>
+        </a>
+
+
+        <a
+          class="platform-card"
+          href="https://x.com/"
+          target="_blank"
+          rel="noopener noreferrer">
+
+          <span class="platform-icon">𝕏</span>
+          <h3>X / Twitter</h3>
+          <p>Discover current conversations</p>
+          <span class="platform-link">Open platform ↗</span>
+        </a>
+
+
+        <a
+          class="platform-card"
+          href="https://www.tiktok.com/"
+          target="_blank"
+          rel="noopener noreferrer">
+
+          <span class="platform-icon tiktok-icon">♪</span>
+          <h3>TikTok</h3>
+          <p>Discover short videos</p>
+          <span class="platform-link">Open platform ↗</span>
+        </a>
+
+
+        <a
+          class="platform-card"
+          href="https://open.spotify.com/"
+          target="_blank"
+          rel="noopener noreferrer">
+
+          <span class="platform-icon spotify-icon">♫</span>
+          <h3>Spotify</h3>
+          <p>Discover music</p>
+          <span class="platform-link">Open platform ↗</span>
+        </a>
+
+      </div>
+
+      <p class="section-note">
+        If you are already logged in to a platform on your device,
+        it may open your existing session. To open a specific personal
+        profile, its profile link must be added.
+      </p>
+
+    </section>
+
+
+    <!-- TRENDING MOVIES -->
+    <section id="movies" class="content-section">
+
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">WHAT PEOPLE ARE WATCHING</span>
+          <h2>🔥 Trending Movies</h2>
+          <p>
+            Movie discoveries from the Netflix charts.
+            Availability may differ by country.
+          </p>
+        </div>
+
+        <a
+          href="https://www.netflix.com/tudum/top10"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-link">
+          View Netflix Top 10 ↗
+        </a>
+      </div>
+
+
+      <div class="trend-slider" id="movieSlider">
+
+        <button
+          class="slider-arrow previous"
+          type="button"
+          data-slider="movieSlider"
+          aria-label="Previous movies">
+          ❮
+        </button>
+
+        <div class="trend-track">
+
+          <article class="trend-card">
+            <a
+              href="https://www.netflix.com/search?q=Animals"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <img
+                src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80"
+                alt="Animals movie discovery illustration"
+                loading="lazy">
+
+              <div class="trend-card-info">
+                <span class="rank-badge">TRENDING</span>
+                <h3>Animals</h3>
+                <p>Explore on Netflix</p>
+              </div>
+
+            </a>
+          </article>
+
+
+          <article class="trend-card">
+            <a
+              href="https://www.netflix.com/search?q=Doing%20Life"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <img
+                src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=600&q=80"
+                alt="Movie theater illustration"
+                loading="lazy">
+
+              <div class="trend-card-info">
+                <span class="rank-badge">TRENDING</span>
+                <h3>Doing Life</h3>
+                <p>Explore on Netflix</p>
+              </div>
+
+            </a>
+          </article>
+
+
+          <article class="trend-card">
+            <a
+              href="https://www.netflix.com/search?q=Ice%20Age%20Collision%20Course"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <img
+                src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=600&q=80"
+                alt="Ice Age movie discovery illustration"
+                loading="lazy">
+
+              <div class="trend-card-info">
+                <span class="rank-badge">TRENDING</span>
+                <h3>Ice Age: Collision Course</h3>
+                <p>Explore on Netflix</p>
+              </div>
+
+            </a>
+          </article>
+
+
+          <article class="trend-card">
+            <a
+              href="https://www.netflix.com/search?q=Ice%20Age%20Dawn%20of%20the%20Dinosaurs"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <img
+                src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80"
+                alt="Mountain adventure illustration"
+                loading="lazy">
+
+              <div class="trend-card-info">
+                <span class="rank-badge">TRENDING</span>
+                <h3>Ice Age: Dawn of the Dinosaurs</h3>
+                <p>Explore on Netflix</p>
+              </div>
+
+            </a>
+          </article>
+
+        </div>
+
+        <button
+          class="slider-arrow next"
+          type="button"
+          data-slider="movieSlider"
+          aria-label="Next movies">
+          ❯
+        </button>
+
+      </div>
+
+      <p class="section-note">
+        These are discovery cards, not official movie posters.
+        The list is a snapshot and must be refreshed from the latest
+        Netflix charts to remain current.
+      </p>
+
+    </section>
+
+
+    <!-- TRENDING MUSIC -->
+    <section id="music" class="content-section">
+
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">SOUNDS PEOPLE LOVE</span>
+          <h2>🎵 Trending Music</h2>
+          <p>
+            Discover songs from Rwanda's music scene.
+          </p>
+        </div>
+
+        <a
+          href="https://open.spotify.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-link">
+          Open Spotify ↗
+        </a>
+      </div>
+
+
+      <div class="trend-slider" id="musicSlider">
+
+        <button
+          class="slider-arrow previous"
+          type="button"
+          data-slider="musicSlider"
+          aria-label="Previous songs">
+          ❮
+        </button>
+
+        <div class="trend-track">
+
+          <article class="trend-card music-card">
+            <a
+              href="https://open.spotify.com/search/AYAYAAH"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <img
+                src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=600&q=80"
+                alt="Live music performance"
+                loading="lazy">
+
+              <div class="trend-card-info">
+                <span class="rank-badge">RWANDA MUSIC</span>
+                <h3>AYAYAAH</h3>
+                <p>ELEMENT EleéeH, Joshua Baraka, Bien</p>
+                <span class="listen-link">Find on Spotify ↗</span>
+              </div>
+
+            </a>
+          </article>
+
+
+          <article class="trend-card music-card">
+            <a
+              href="https://open.spotify.com/search/Extra%20Stamina"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <img
+                src="https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=600&q=80"
+                alt="Concert crowd"
+                loading="lazy">
+
+              <div class="trend-card-info">
+                <span class="rank-badge">RWANDA MUSIC</span>
+                <h3>Extra Stamina</h3>
+                <p>Diez Dola</p>
+                <span class="listen-link">Find on Spotify ↗</span>
+              </div>
+
+            </a>
+          </article>
+
+
+          <article class="trend-card music-card">
+            <a
+              href="https://open.spotify.com/search/KALE%20chiboo"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <img
+                src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=600&q=80"
+                alt="DJ music performance"
+                loading="lazy">
+
+              <div class="trend-card-info">
+                <span class="rank-badge">RWANDA MUSIC</span>
+                <h3>KALE</h3>
+                <p>chiboo</p>
+                <span class="listen-link">Find on Spotify ↗</span>
+              </div>
+
+            </a>
+          </article>
+
+
+          <article class="trend-card music-card">
+            <a
+              href="https://open.spotify.com/search/MAASO%20ELEMENT%20EleeeH"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <img
+                src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=600&q=80"
+                alt="Musician performing on stage"
+                loading="lazy">
+
+              <div class="trend-card-info">
+                <span class="rank-badge">RWANDA MUSIC</span>
+                <h3>MAASO</h3>
+                <p>ELEMENT EleéeH</p>
+                <span class="listen-link">Find on Spotify ↗</span>
+              </div>
+
+            </a>
+          </article>
+
+
+          <article class="trend-card music-card">
+            <a
+              href="https://open.spotify.com/search/LAST%20TIME%20Passy%20Kizito"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <img
+                src="https://images.unsplash.com/photo-1501612780327-45045538702b?auto=format&fit=crop&w=600&q=80"
+                alt="Musical instruments"
+                loading="lazy">
+
+              <div class="trend-card-info">
+                <span class="rank-badge">RWANDA MUSIC</span>
+                <h3>LAST TIME</h3>
+                <p>Passy Kizito</p>
+                <span class="listen-link">Find on Spotify ↗</span>
+              </div>
+
+            </a>
+          </article>
+
+        </div>
+
+        <button
+          class="slider-arrow next"
+          type="button"
+          data-slider="musicSlider"
+          aria-label="Next songs">
+          ❯
+        </button>
+
+      </div>
+
+      <p class="section-note">
+        Song names are linked to Spotify search. Images are illustrations,
+        not official album covers. Spotify availability and playback
+        depend on your account, location and internet connection.
+      </p>
+
+    </section>
+
+
+    <!-- NEWS -->
+    <section id="news" class="content-section">
+
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">STAY INFORMED</span>
+          <h2>📰 Latest News</h2>
+        </div>
+      </div>
+
+      <div id="newsContent" class="content-grid">
+
+        <article class="info-card">
+          <img
+            src="https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=800&q=80"
+            alt="News and newspapers"
+            loading="lazy">
+
+          <div class="info-card-body">
+            <h3>Latest Stories</h3>
+            <p>
+              News articles published by CKAVOX will appear here.
+            </p>
+          </div>
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- SPORTS -->
+    <section id="sports" class="content-section">
+
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">SPORTS UPDATES</span>
+          <h2>⚽ Sports</h2>
+        </div>
+      </div>
+
+      <div id="sportsContent" class="content-grid">
+
+        <article class="info-card">
+          <img
+            src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=800&q=80"
+            alt="Football stadium"
+            loading="lazy">
+
+          <div class="info-card-body">
+            <h3>Sports News</h3>
+            <p>
+              Football, Formula 1 and other sports updates will appear here.
+            </p>
+          </div>
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- SHOWBIZ -->
+    <section id="showbiz" class="content-section">
+
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">CELEBRITIES & ENTERTAINMENT</span>
+          <h2>🌟 Showbiz</h2>
+        </div>
+      </div>
+
+      <div id="showbizContent" class="content-grid">
+
+        <article class="info-card">
+          <img
+            src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=800&q=80"
+            alt="Entertainment event"
+            loading="lazy">
+
+          <div class="info-card-body">
+            <h3>Showbiz Updates</h3>
+            <p>
+              Celebrity news, interviews and entertainment stories
+              published by CKAVOX will appear here.
+            </p>
+          </div>
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- PHOTOS -->
+    <section id="photos" class="content-section">
+
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">VISUAL STORIES</span>
+          <h2>📸 Photos</h2>
+        </div>
+      </div>
+
+      <div id="photosContent" class="photo-grid">
+
+        <img
+          src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80"
+          alt="Landscape photograph"
+          loading="lazy">
+
+        <img
+          src="https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=800&q=80"
+          alt="Live concert photograph"
+          loading="lazy">
+
+        <img
+          src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80"
+          alt="Event photograph"
+          loading="lazy">
+
+      </div>
+
+    </section>
+
+
+    <!-- ACCOUNT / AUTH -->
+    <section id="account" class="content-section account-section">
+
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">YOUR CKAVOX ACCOUNT</span>
+          <h2>Login or Create Account</h2>
+          <p>
+            Create an account to access features available to members.
+          </p>
+        </div>
+      </div>
+
+      <form id="authForm" class="auth-form">
+
+        <label for="authEmail">Email address</label>
+
+        <input
+          type="email"
+          id="authEmail"
+          name="email"
+          autocomplete="email"
+          placeholder="Enter your email"
+          required>
+
+        <label for="authPassword">Password</label>
+
+        <input
+          type="password"
+          id="authPassword"
+          name="password"
+          autocomplete="current-password"
+          minlength="6"
+          placeholder="Enter your password"
+          required>
+
+        <div class="auth-buttons">
+
+          <button
+            type="button"
+            id="loginButton"
+            class="button button-yellow">
+            Login
+          </button>
+
+          <button
+            type="button"
+            id="signupButton"
+            class="button button-outline">
+            Sign up
+          </button>
+
+        </div>
+
+        <p id="authMessage" aria-live="polite"></p>
+
+      </form>
+
+    </section>
+
+
+    <!-- OFFLINE INFORMATION -->
+    <section id="offlineInfo" class="offline-section">
+
+      <div class="offline-symbol">◉</div>
+
+      <div>
+        <h2>CKAVOX: Online & Offline</h2>
+
+        <p>
+          CKAVOX is being prepared as an installable web app.
+          Previously cached pages and saved content may be available
+          offline. New articles, remote images and online services
+          require an internet connection.
+        </p>
+
+        <p id="offlineMessage" aria-live="polite">
+          Checking offline availability...
+        </p>
+
+        <button
+          id="installAppButton"
+          class="button button-yellow"
+          hidden>
+          Install CKAVOX
+        </button>
+      </div>
+
+    </section>
+
+
+    <!-- WHATSAPP CHANNEL -->
+    <section id="whatsappChannel" class="whatsapp-section">
+
+      <div>
+        <span class="eyebrow">FOLLOW OUR UPDATES</span>
+
+        <h2>Join the CKAVOX WhatsApp Channel</h2>
+
+        <p>
+          Follow CKAVOX to discover more entertainment, news and updates.
+        </p>
+      </div>
+
+      <a
+        href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="button button-yellow">
+
+        Follow CKAVOX ↗
+
+      </a>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <a href="#home" class="footer-brand">CKAVOX</a>
+
+    <p>
+      Movies • Music • News • Sports • Showbiz
+    </p>
+
+    <p>
+      © <span id="footerYear"></span> CKAVOX.
+      All rights reserved.
+    </p>
+
+    <a
+      href="https://www.instagram.com/"
+      target="_blank"
+      rel="noopener noreferrer">
+      Follow us on Instagram ↗
+    </a>
+
+  </footer>
+
 
 </body>
 </html>
