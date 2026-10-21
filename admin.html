@@ -1,106 +1,107 @@
- <!DOCTYPE html>
-<html lang="rw">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKAVOX</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Gukoresha Font Awesome ku bw'ibirango bya porogaramu -->
-    <link rel="stylesheet" href="https://cloudflare.com">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CKAVOX Admin Dashboard</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js" defer></script>
 </head>
+
 <body>
 
-    <!-- UMUTWE W'IKIRENGA (HEADER) -->
-    <header>
-        <div class="logo">C<span>w</span> CKAVOX</div>
-        <div class="auth-buttons">
-            <button class="btn-signup" onclick="toggleAuthForm('signup')">Sign Up</button>
-            <button class="btn-login" onclick="toggleAuthForm('login')">Login</button>
-        </div>
-    </header>
+<header class="header">
+  <a href="index.html" class="brand">
+    <span class="brand-symbol">C</span>
+    <span>CKA<span class="gold">VOX</span></span>
+  </a>
 
-    <!-- IFOMU YO KWINJIRA / KWANDIKISHA (POPUP AUTH FORM) -->
-    <div id="auth-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeAuthForm()">&times;</span>
-            <h2 id="form-title">Login</h2>
-            <form id="account-form" onsubmit="handleAuth(event)">
-                <div class="input-group">
-                    <label>Email Address</label>
-                    <input type="email" id="user-email" required placeholder="urugero@gmail.com">
-                </div>
-                <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" id="user-password" required placeholder="********">
-                </div>
-                <button type="submit" class="btn-submit" id="btn-action">Log In</button>
-            </form>
-        </div>
-    </div>
+  <a href="index.html" class="outline-button">View Website</a>
+</header>
 
-    <!-- INYURAMYANDIKO YA MBERE (LANDING PAGE - IDAHITA YINJIRA) -->
-    <main id="main-content">
-        <!-- IGICE CY'IKORANABUHANGA (APPS SECTION) -->
-        <section class="apps-container">
-            <div class="app-card">
-                <i class="fab fa-chrome chrome-icon"></i>
-                <h3>Google Chrome</h3>
-                <p>Explore the web</p>
-            </div>
-            <div class="app-card">
-                <i class="fab fa-netflix netflix-icon"></i>
-                <h3>Netflix</h3>
-                <p>Movies and series</p>
-            </div>
-            <div class="app-card">
-                <i class="fab fa-spotify spotify-icon"></i>
-                <h3>Spotify</h3>
-                <p>Music streaming</p>
-            </div>
-            <div class="app-card">
-                <i class="fab fa-facebook facebook-icon"></i>
-                <h3>Facebook</h3>
-                <p>Connect with friends</p>
-            </div>
-            <div class="app-card">
-                <i class="fab fa-instagram instagram-icon"></i>
-                <h3>Instagram</h3>
-                <p>Share photos & stories</p>
-            </div>
-            <div class="app-card">
-                <i class="fab fa-tiktok tiktok-icon"></i>
-                <h3>TikTok</h3>
-                <p>Short-form videos</p>
-            </div>
-            <div class="app-card">
-                <i class="fab fa-x-twitter x-icon"></i>
-                <h3>X (Twitter)</h3>
-                <p>What's happening</p>
-            </div>
-        </section>
+<main class="section">
 
-        <!-- IGICE CYA FILIME (CINEMA SECTION) -->
-        <section class="cinema-section">
-            <span class="section-tag">CINEMA</span>
-            <h2>Movies & Films</h2>
-            
-            <div class="categories">
-                <span class="tag active">Action</span>
-                <span class="tag">Comedy</span>
-                <span class="tag">Superheroes</span>
-                <span class="tag">Horror</span>
-                <span class="tag">Indian</span>
-                <span class="tag">Thriller</span>
-                <span class="tag">Romance</span>
-            </div>
+  <div class="account-box">
+    <span class="eyebrow">CONTENT MANAGEMENT</span>
+    <h1>CKAVOX Admin Dashboard</h1>
 
-            <!-- Urutonde rwa Filime z'ukuri (HD) ruhita rugaragara iyo umuntu yinjiye -->
-            <div id="movies-gallery" class="content-gallery locked">
-                <p class="lock-message">Ubanze winjire (Login) ngo urebe filime n'indirimbo...</p>
-            </div>
-        </section>
-    </main>
+    <p class="muted">
+      Only authorized administrators can publish and manage stories.
+    </p>
 
-    <script src="script.js"></script>
+    <div id="adminStatus" role="status">Checking permissions...</div>
+
+    <form id="postForm" hidden>
+
+      <label for="title">Story title</label>
+      <input id="title" maxlength="200" required>
+
+      <label for="category">Category</label>
+      <select id="category"
+              style="width:100%;padding:12px;background:#090909;color:white"
+              required>
+        <option value="trending">Trending</option>
+        <option value="news">Trending News</option>
+        <option value="showbiz">Showbiz</option>
+        <option value="sports">Sports / Formula 1</option>
+        <option value="technology">Technology</option>
+      </select>
+
+      <label for="summary">Short summary</label>
+      <textarea id="summary" maxlength="500" rows="3"
+                style="width:100%;padding:12px;background:#090909;color:white"
+                required></textarea>
+
+      <label for="content">Full story (optional)</label>
+      <textarea id="content" rows="6"
+                style="width:100%;padding:12px;background:#090909;color:white"></textarea>
+
+      <label for="imageUrl">HD image URL</label>
+      <input id="imageUrl" type="url"
+             placeholder="https://example.com/image.jpg">
+
+      <label for="externalUrl">Source / Read More URL (optional)</label>
+      <input id="externalUrl" type="url"
+             placeholder="https://example.com/article">
+
+      <label>
+        <input type="checkbox" id="published" checked
+               style="width:auto">
+        Publish immediately
+      </label>
+
+      <button type="submit" class="gold-button">
+        Publish Story
+      </button>
+
+    </form>
+
+    <div id="adminMessage" role="status"></div>
+
+  </div>
+
+  <section style="max-width:900px;margin:35px auto">
+
+    <h2>Manage Stories</h2>
+
+    <div id="adminPosts" class="content-grid"></div>
+
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>CKAVOX Admin Dashboard</p>
+  <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
+     target="_blank" rel="noopener noreferrer">
+    Follow CKAVOX on WhatsApp
+  </a>
+</footer>
+
 </body>
 </html>
