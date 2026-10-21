@@ -1,118 +1,21 @@
- // ==========================================
-// CKAVOX WEBSITE
-// ==========================================
-
-// 1. LIVE CLOCK: KIGALI TIME
-
-function updateClock() {
-  const now = new Date();
-
-  document.getElementById("clock").textContent =
-    new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Africa/Kigali",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false
-    }).format(now);
-
-  document.getElementById("date").textContent =
-    new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Africa/Kigali",
-      weekday: "long",
-      day: "2-digit",
-      month: "long",
-      year: "numeric"
-    }).format(now);
-
-  document.getElementById("copyrightYear").textContent =
-    new Intl.DateTimeFormat("en", {
-      timeZone: "Africa/Kigali",
-      year: "numeric"
-    }).format(now);
-}
-
-updateClock();
-setInterval(updateClock, 1000);
-
-
-// 2. HERO SLIDER: CHANGE EVERY 4 SECONDS
-
-const slides = Array.from(
-  document.querySelectorAll(".hero-slide")
-);
-
-const dotsContainer = document.getElementById("sliderDots");
-
-let currentSlide = 0;
-let sliderInterval;
-
-slides.forEach((slide, index) => {
-  const dot = document.createElement("button");
-
-  dot.className = "slider-dot";
-  dot.setAttribute("aria-label", `Go to slide ${index + 1}`);
-
-  dot.addEventListener("click", () => {
-    showSlide(index);
-    restartSlider();
-  });
-
-  dotsContainer.appendChild(dot);
-});
-
-const dots = Array.from(
-  document.querySelectorAll(".slider-dot")
-);
-
-function showSlide(index) {
-  if (!slides.length) return;
-
-  currentSlide = (index + slides.length) % slides.length;
-
-  slides.forEach((slide, i) => {
-    slide.classList.toggle("active", i === currentSlide);
-  });
-
-  dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === currentSlide);
-  });
-}
-
-function nextSlide() {
-  showSlide(currentSlide + 1);
-}
-
-function restartSlider() {
-  clearInterval(sliderInterval);
-  sliderInterval = setInterval(nextSlide, 4000);
-}
-
-document.getElementById("nextSlide").addEventListener("click", () => {
-  showSlide(currentSlide + 1);
-  restartSlider();
-});
-
-document.getElementById("previousSlide").addEventListener("click", () => {
-  showSlide(currentSlide - 1);
-  restartSlider();
-});
-
-if (slides.length) {
-  showSlide(0);
-  restartSlider();
-}
-
-
-// 3. SUPABASE DATABASE AND AUTHENTICATION
+ 
+/* CKAVOX ACCOUNT SYSTEM */
 
 const authForm = document.getElementById("authForm");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
+const displayNameInput = document.getElementById("displayName");
 const authMessage = document.getElementById("authMessage");
 
 const userArea = document.getElementById("userArea");
 const userEmail = document.getElementById("userEmail");
+const userName = document.getElementById("userName");
+const accountCreated = document.getElementById("accountCreated");
+const accountHeading = document.getElementById("accountHeading");
+const accountDescription = document.getElementById("accountDescription");
+const signInButton = document.getElementById("signInButton");
+const signUpButton = document.getElementById("signUpButton");
+const signOutButton = document.getElementById("signOutButton");
 const adminLink = document.getElementById("adminLink");
 
 function message(text, error = false) {
@@ -122,69 +25,70 @@ function message(text, error = false) {
 
 function getClient() {
   if (!supabaseClient) {
-    message(
-      "Supabase is not configured. Check supabase-config.js.",
-      true
-    );
+    message("Supabase configuration is missing.", true);
     return null;
   }
-
   return supabaseClient;
 }
 
-
-// SIGN UP
-
-document.getElementById("signUpButton").addEventListener(
-  "click",
-  async () => {
-    const client = getClient();
-    if (!client) return;
-
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-
-    if (!email || password.length < 8) {
-      message("Enter a valid email and a password of at least 8 characters.", true);
-      return;
-    }
-
-    const { data, error } = await client.auth.signUp({
-      email,
-      password
-    });
-
-    if (error) {
-      message(error.message, true);
-      return;
-    }
-
-    if (data.session) {
-      message("Account created successfully.");
-      await updateUser();
-    } else {
-      message(
-        "Account created. Check your email to confirm your account before signing in."
-      );
-    }
-  }
-);
-
-
-// SIGN IN
-
-authForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
+// Switch between registration and login forms.
+signUpButton.addEventListener("click", async () => {
   const client = getClient();
   if (!client) return;
 
   const email = emailInput.value.trim();
   const password = passwordInput.value;
+  const displayName = displayNameInput.value.trim();
+
+  if (!displayName) {
+    message("Please enter your full name.", true);
+    displayNameInput.focus();
+    return;
+  }
+
+  if (!email || password.length < 8) {
+    message("Enter a valid email and a password of at least 8 characters.", true);
+    return;
+  }
+
+  signUpButton.disabled = true;
+  signUpButton.textContent = "Creating account...";
+
+  try {
+    const { data, error } = await client.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { display_name: displayName }
+      }
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      message("Account created successfully.");
+      await updateUser();
+    } else {
+      message("Account created. Check your email to confirm it, then sign in.");
+    }
+  } catch (error) {
+    message(error.message || "Could not create account.", true);
+  } finally {
+    signUpButton.disabled = false;
+    signUpButton.textContent = "Sign Up";
+  }
+});
+
+// Sign in to an existing account.
+authForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const client = getClient();
+  if (!client) return;
 
   const { error } = await client.auth.signInWithPassword({
-    email,
-    password
+    email: emailInput.value.trim(),
+    password: passwordInput.value
   });
 
   if (error) {
@@ -196,211 +100,87 @@ authForm.addEventListener("submit", async (event) => {
   await updateUser();
 });
 
+// Sign out.
+signOutButton.addEventListener("click", async () => {
+  const client = getClient();
+  if (!client) return;
 
-// SIGN OUT
+  const { error } = await client.auth.signOut();
 
-document.getElementById("signOutButton").addEventListener(
-  "click",
-  async () => {
-    const client = getClient();
-    if (!client) return;
-
-    const { error } = await client.auth.signOut();
-
-    if (error) {
-      message(error.message, true);
-      return;
-    }
-
-    message("You have signed out.");
-    await updateUser();
+  if (error) {
+    message(error.message, true);
+    return;
   }
-);
 
+  message("You have signed out.");
+  await updateUser();
+});
 
-// CHECK USER AND ADMIN ROLE
-
+// Load the signed-in user's own account information.
 async function updateUser() {
   if (!supabaseClient) return;
 
-  const { data: { user }, error } =
-    await supabaseClient.auth.getUser();
+  const { data, error } = await supabaseClient.auth.getUser();
 
   if (error) {
     message("Could not check your account.", true);
     return;
   }
 
+  const user = data.user;
+
   if (!user) {
     userArea.hidden = true;
-    adminLink.hidden = true;
     authForm.hidden = false;
+    displayNameInput.hidden = false;
+    signInButton.hidden = false;
+    adminLink.hidden = true;
+
+    accountHeading.textContent = "Join the Community";
+    accountDescription.textContent =
+      "Create an account or sign in to access your account.";
     return;
   }
 
-  userArea.hidden = false;
   authForm.hidden = true;
-  userEmail.textContent = `Signed in as ${user.email}`;
+  userArea.hidden = false;
 
-  const { data: profile } = await supabaseClient
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
+  accountHeading.textContent = "Welcome to CKAVOX";
+  accountDescription.textContent = "Your personal account.";
 
-  adminLink.hidden = profile?.role !== "admin";
+  userName.textContent =
+    "Name: " + (user.user_metadata?.display_name || "CKAVOX Member");
 
-  await loadPosts();
+  userEmail.textContent = "Email: " + user.email;
+
+  accountCreated.textContent =
+    "Account created: " +
+    new Intl.DateTimeFormat("en-GB", {
+      dateStyle: "medium",
+      timeZone: "Africa/Kigali"
+    }).format(new Date(user.created_at));
+
+  // Admin permission is determined by the database role.
+  const { data: profile, error: profileError } =
+    await supabaseClient
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+  adminLink.hidden =
+    !!profileError || profile?.role !== "admin";
 }
 
-
-// 4. LOAD PUBLISHED POSTS
-
-const sections = {
-  trending: "trendingPosts",
-  news: "newsPosts",
-  showbiz: "showbizPosts",
-  sports: "sportsPosts",
-  technology: "technologyPosts"
-};
-
-function safeLink(url) {
-  try {
-    const parsed = new URL(url);
-
-    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
-      return parsed.href;
-    }
-  } catch (_) {}
-
-  return "";
-}
-
-function makePostCard(post) {
-  const article = document.createElement("article");
-  article.className = "post-card";
-
-  const image = document.createElement("img");
-  image.className = "post-image";
-  image.loading = "lazy";
-  image.alt = post.title || "CKAVOX story";
-  image.src = safeLink(post.image_url) ||
-    "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=900&q=85";
-
-  image.onerror = () => {
-    image.onerror = null;
-    image.src =
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=900&q=85";
-  };
-
-  const body = document.createElement("div");
-  body.className = "post-body";
-
-  const category = document.createElement("div");
-  category.className = "post-category";
-  category.textContent = post.category || "CKAVOX";
-
-  const title = document.createElement("h3");
-  title.textContent = post.title || "CKAVOX Story";
-
-  const summary = document.createElement("p");
-  summary.textContent = post.summary || "";
-
-  body.append(category, title, summary);
-
-  if (post.content) {
-    const content = document.createElement("p");
-    content.textContent = post.content;
-    body.appendChild(content);
-  }
-
-  if (post.external_url) {
-    const linkUrl = safeLink(post.external_url);
-
-    if (linkUrl) {
-      const link = document.createElement("a");
-      link.href = linkUrl;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = "Read More ↗";
-
-      body.appendChild(link);
-    }
-  }
-
-  article.append(image, body);
-
-  return article;
-}
-
-
-async function loadPosts() {
-  if (!supabaseClient) {
-    Object.values(sections).forEach(id => {
-      document.getElementById(id).replaceChildren();
-      const info = document.createElement("p");
-      info.className = "muted";
-      info.textContent = "Connect Supabase to display published CKAVOX stories.";
-      document.getElementById(id).appendChild(info);
-    });
-    return;
-  }
-
-  for (const [category, elementId] of Object.entries(sections)) {
-    const container = document.getElementById(elementId);
-
-    const { data, error } = await supabaseClient
-      .from("posts")
-      .select("id, title, summary, content, image_url, external_url, category, created_at")
-      .eq("category", category)
-      .eq("published", true)
-      .order("created_at", { ascending: false })
-      .limit(12);
-
-    if (error) {
-      container.replaceChildren();
-
-      const info = document.createElement("p");
-      info.className = "muted";
-      info.textContent = "Stories are temporarily unavailable.";
-
-      container.appendChild(info);
-      continue;
-    }
-
-    container.replaceChildren();
-
-    if (!data || data.length === 0) {
-      const info = document.createElement("p");
-      info.className = "muted";
-      info.textContent = "No stories published in this category yet.";
-      container.appendChild(info);
-      continue;
-    }
-
-    data.forEach(post => {
-      container.appendChild(makePostCard(post));
-    });
-  }
-}
-
-
-// INITIALIZE
-
-async function initializeCKAVOX() {
-  if (!supabaseClient) {
-    message(
-      "Website ready. Configure Supabase to enable accounts and live posts."
-    );
-    await loadPosts();
-    return;
-  }
-
+// Initialize account state and keep it synchronized.
+async function initializeAccount() {
   await updateUser();
 
-  supabaseClient.auth.onAuthStateChange(() => {
-    setTimeout(() => updateUser(), 0);
-  });
+  if (supabaseClient) {
+    supabaseClient.auth.onAuthStateChange(() => {
+      setTimeout(() => updateUser(), 0);
+    });
+  }
 }
 
-initializeCKAVOX();
+initializeAccount();
