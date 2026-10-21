@@ -1,703 +1,851 @@
- /*
-CKAVOX WEBSITE
+ "use strict";
 
-Shyiramo Supabase Project URL na public anon/publishable key.
-Ntukoreshe service_role key muri JavaScript.
+/*
+  CKAVOX WEBSITE
+
+  Before using authentication:
+  1. Create a Supabase project.
+  2. Enable Email authentication.
+  3. Paste your project URL and publishable key below.
+  4. Follow the SQL setup instructions provided after this file.
 */
 
-const SUPABASE_URL =
-"PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
+const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL";
+const SUPABASE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY";
 
-const SUPABASE_ANON_KEY =
-"PASTE_YOUR_SUPABASE_ANON_OR_PUBLISHABLE_KEY_HERE";
+let supabaseClient = null;
 
-
-const categories = [
-  {id:"news", title:"Latest News", kicker:"STAY INFORMED"},
-  {id:"showbiz", title:"Showbiz", kicker:"MUSIC & ENTERTAINMENT"},
-  {id:"sports", title:"Sports & Formula 1", kicker:"SPORTS WORLD"},
-  {id:"films", title:"Films", kicker:"MOVIES & SERIES"},
-  {id:"technology", title:"Technology", kicker:"INNOVATION"},
-  {id:"trending", title:"Trending", kicker:"WHAT'S TRENDING"}
-];
-
-
-// AMAFOTO Y'ICYITEGEREREZO
-// Amafoto akurwa kuri Unsplash kandi akenera internet.
-
-const photos = {
-  news: [
-    "photo-1495020689067-958852a7765e",
-    "photo-1504711434969-e33886168f5c",
-    "photo-1529107386315-e1a2ed48a620",
-    "photo-1523240795612-9a054b0db644"
-  ],
-
-  showbiz: [
-    "photo-1516280440614-37939bbacd81",
-    "photo-1501386761578-eac5c94b800a",
-    "photo-1492684223066-81342ee5ff30",
-    "photo-1514525253161-7a46d19cd819"
-  ],
-
-  sports: [
-    "photo-1522778119026-d647f0596c20",
-    "photo-1503736334956-4c8f8e92946d",
-    "photo-1461896836934-ffe607ba8211",
-    "photo-1517466787929-bc90951d0974"
-  ],
-
-  films: [
-    "photo-1489599849927-2ee91cede3ba",
-    "photo-1522869635100-9f4c5e86aa37",
-    "photo-1485846234645-a62644f84728",
-    "photo-1440404653325-ab127d49abc1"
-  ],
-
-  technology: [
-    "photo-1518770660439-4636190af475",
-    "photo-1677442136019-21780ecad995",
-    "photo-1511707171634-5f897ff02aa9",
-    "photo-1519389950473-47ba0277781c"
-  ],
-
-  trending: [
-    "photo-1492684223066-81342ee5ff30",
-    "photo-1535223289827-42f1e9919769",
-    "photo-1529139574466-a303027c1d8b",
-    "photo-1516321318423-f06f85e504b3"
-  ]
-};
+if (
+  window.supabase &&
+  SUPABASE_URL.startsWith("https://") &&
+  !SUPABASE_URL.includes("PASTE_") &&
+  SUPABASE_KEY &&
+  !SUPABASE_KEY.includes("PASTE_")
+) {
+  supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+}
 
 
-const demoTitles = {
-  news: [
-    "World News",
-    "Rwanda News",
-    "Business News",
-    "Education Updates"
-  ],
+/* --------------------------------
+   LIVE CLOCK
+--------------------------------- */
 
-  showbiz: [
-    "Music and Artists",
-    "Celebrity Interviews",
-    "Entertainment Events",
-    "Behind the Scenes"
-  ],
-
-  sports: [
-    "Football Highlights",
-    "Formula 1",
-    "Athlete Stories",
-    "Match Day"
-  ],
-
-  films: [
-    "New Film Releases",
-    "Series to Watch",
-    "Film Making",
-    "Cinema Culture"
-  ],
-
-  technology: [
-    "Technology News",
-    "AI and Innovation",
-    "Phones and Gadgets",
-    "Digital Life"
-  ],
-
-  trending: [
-    "Trending Conversations",
-    "Viral Moments",
-    "What's Popular",
-    "Fresh Discoveries"
-  ]
-};
-
-
-// ISAAHA N'ITARIKI
+const clockElement = document.getElementById("clock");
 
 function updateClock() {
   const now = new Date();
 
-  document.getElementById("clockTime").textContent =
-    now.toLocaleTimeString("en-GB", {
-      hour12: false
-    });
+  const time = now.toLocaleTimeString("en-GB", {
+    hour12: true,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
 
-  document.getElementById("clockDate").textContent =
-    now.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric"
-    });
+  const date = now.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  });
+
+  if (clockElement) {
+    clockElement.textContent = `${date} | ${time}`;
+  }
 
   document.getElementById("year").textContent =
     now.getFullYear();
 }
 
 updateClock();
-
 setInterval(updateClock, 1000);
 
 
-// MENU YA TELEFONI
+/* --------------------------------
+   MOBILE NAVIGATION
+--------------------------------- */
 
-document.getElementById("menuToggle")
-.addEventListener("click", () => {
-  document.getElementById("mainNav")
-  .classList.toggle("open");
+const menuToggle = document.getElementById("menuToggle");
+const navigation = document.getElementById("navigation");
+
+menuToggle.addEventListener("click", () => {
+  navigation.classList.toggle("open");
 });
 
-document.querySelectorAll("#mainNav a").forEach(link => {
+navigation.querySelectorAll("a").forEach(link => {
   link.addEventListener("click", () => {
-    document.getElementById("mainNav")
-    .classList.remove("open");
+    navigation.classList.remove("open");
   });
 });
 
 
-// HERO SLIDESHOW
+/* --------------------------------
+   DEFAULT SLIDESHOW CONTENT
 
-const heroSlides = [
-  {
-    title: "Stories that keep you informed.",
-    description: "News, entertainment, technology and sports.",
-    image: "photo-1495020689067-958852a7765e"
-  },
+   Four slides per category.
+   Slides change every four seconds.
+--------------------------------- */
 
-  {
-    title: "The World of Entertainment.",
-    description: "Music, films and showbiz stories.",
-    image: "photo-1501386761578-eac5c94b800a"
-  },
+const fallbackContent = {
+  films: [
+    {
+      title: "Discover Trending Movies",
+      description: "Explore movies and discover where to watch them.",
+      image:
+        "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.netflix.com/"
+    },
+    {
+      title: "Cinema & Entertainment",
+      description: "Discover stories from the world of cinema.",
+      image:
+        "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.youtube.com/"
+    },
+    {
+      title: "Movie Night",
+      description: "Explore movie trailers and entertainment.",
+      image:
+        "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.netflix.com/"
+    },
+    {
+      title: "Your Next Favourite Film",
+      description: "Search for films that interest you.",
+      image:
+        "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.youtube.com/results?search_query=movie+trailers"
+    }
+  ],
 
-  {
-    title: "Stay Close to the Action.",
-    description: "Sports, Formula 1 and unforgettable moments.",
-    image: "photo-1503736334956-4c8f8e92946d"
-  },
+  sports: [
+    {
+      title: "Football World",
+      description: "Explore football news and highlights.",
+      image:
+        "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.fifa.com/"
+    },
+    {
+      title: "Formula 1",
+      description: "Discover motorsport and racing stories.",
+      image:
+        "https://images.unsplash.com/photo-1504707748692-419802cf939d?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.formula1.com/"
+    },
+    {
+      title: "Basketball",
+      description: "Explore basketball news and highlights.",
+      image:
+        "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.nba.com/"
+    },
+    {
+      title: "Sports Action",
+      description: "Discover sports from around the world.",
+      image:
+        "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1600&q=85",
+      link: "https://olympics.com/"
+    }
+  ],
 
-  {
-    title: "Discover What's Next.",
-    description: "Technology, innovation and trending stories.",
-    image: "photo-1518770660439-4636190af475"
+  technology: [
+    {
+      title: "Technology Today",
+      description: "Discover digital innovation and new technology.",
+      image:
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=85",
+      link: "https://techcrunch.com/"
+    },
+    {
+      title: "Artificial Intelligence",
+      description: "Explore AI and the future of technology.",
+      image:
+        "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.technologyreview.com/"
+    },
+    {
+      title: "Computers & Innovation",
+      description: "Discover computers, hardware and digital tools.",
+      image:
+        "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.theverge.com/"
+    },
+    {
+      title: "The Digital Future",
+      description: "Explore the latest technology developments.",
+      image:
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=85",
+      link: "https://techcrunch.com/"
+    }
+  ],
+
+  showbiz: [
+    {
+      title: "African Entertainment",
+      description: "Discover African music and entertainment.",
+      image:
+        "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.youtube.com/results?search_query=African+music"
+    },
+    {
+      title: "Live Music",
+      description: "Explore concerts, artists and live performances.",
+      image:
+        "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1600&q=85",
+      link: "https://open.spotify.com/"
+    },
+    {
+      title: "Music & Artists",
+      description: "Discover trending artists and songs.",
+      image:
+        "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.youtube.com/"
+    },
+    {
+      title: "Entertainment News",
+      description: "Explore entertainment from Africa and America.",
+      image:
+        "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=85",
+      link: "https://www.billboard.com/"
+    }
+  ]
+};
+
+
+/* --------------------------------
+   SAFE LINK VALIDATION
+--------------------------------- */
+
+function safeExternalUrl(value, fallback) {
+  try {
+    const url = new URL(value || fallback);
+
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      return fallback;
+    }
+
+    return url.href;
+  } catch {
+    return fallback;
   }
-];
-
-let heroIndex = 0;
-let heroTimer;
-
-
-function imageURL(photo) {
-  return "https://images.unsplash.com/" +
-    photo +
-    "?auto=format&fit=crop&w=1600&q=90";
 }
 
 
-function renderHero() {
-  const slide = heroSlides[heroIndex];
+/* --------------------------------
+   SLIDESHOW ENGINE
+--------------------------------- */
 
-  document.getElementById("heroImage")
-    .style.backgroundImage =
-    `url("${imageURL(slide.image)}")`;
+function createSlider(sliderElement, items) {
+  const slidesContainer = sliderElement.querySelector(".slides");
+  const dotsContainer = sliderElement.querySelector(".slider-dots");
+  const previousButton = sliderElement.querySelector(".previous");
+  const nextButton = sliderElement.querySelector(".next");
 
-  document.getElementById("heroTitle")
-    .textContent = slide.title;
+  let currentIndex = 0;
+  let timer = null;
 
-  document.getElementById("heroDescription")
-    .textContent = slide.description;
+  slidesContainer.replaceChildren();
+  dotsContainer.replaceChildren();
 
-  document.getElementById("heroDots").innerHTML =
-    heroSlides.map((slide, index) => `
-      <button
-        class="dot ${index === heroIndex ? "active" : ""}"
-        data-index="${index}"
-        aria-label="Go to slide ${index + 1}">
-      </button>
-    `).join("");
+  const validItems = items.slice(0, 4);
 
-  document.querySelectorAll("#heroDots .dot")
-    .forEach(button => {
-      button.addEventListener("click", () => {
-        heroIndex = Number(button.dataset.index);
-        renderHero();
-        restartHero();
-      });
-    });
-}
+  validItems.forEach((item, index) => {
+    const slide = document.createElement("article");
+    slide.className = "slide";
 
+    const img = document.createElement("img");
 
-function restartHero() {
-  clearInterval(heroTimer);
+    img.src = item.image;
+    img.alt = item.title;
+    img.loading = index === 0 ? "eager" : "lazy";
+    img.decoding = "async";
 
-  heroTimer = setInterval(() => {
-    heroIndex = (heroIndex + 1) % heroSlides.length;
-    renderHero();
-  }, 4000);
-}
-
-
-document.getElementById("heroPrev")
-.addEventListener("click", () => {
-  heroIndex =
-    (heroIndex - 1 + heroSlides.length) %
-    heroSlides.length;
-
-  renderHero();
-  restartHero();
-});
-
-
-document.getElementById("heroNext")
-.addEventListener("click", () => {
-  heroIndex =
-    (heroIndex + 1) % heroSlides.length;
-
-  renderHero();
-  restartHero();
-});
-
-
-renderHero();
-restartHero();
-
-
-// CONTENT CARDS
-
-function escapeHTML(value = "") {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
-
-
-function renderSections(storiesByCategory) {
-  const root = document.getElementById("contentSections");
-
-  root.innerHTML = categories.map(category => {
-    const stories = storiesByCategory[category.id] || [];
-
-    const cards = stories.map(story => `
-      <article class="story-card">
-
-        <img
-          loading="lazy"
-          src="${escapeHTML(story.image_url)}"
-          alt="${escapeHTML(story.title)}">
-
-        <div class="story-body">
-
-          <span class="story-tag">
-            ${escapeHTML(category.title)}
-          </span>
-
-          <h3>${escapeHTML(story.title)}</h3>
-
-          <p>
-            ${escapeHTML(story.summary || "")}
-          </p>
-
-          ${
-            story.external_url
-            ? `<a class="read-more"
-                href="${escapeHTML(story.external_url)}"
-                target="_blank"
-                rel="noopener">Read more ↗</a>`
-            : ""
-          }
-
-        </div>
-
-      </article>
-    `).join("");
-
-    return `
-      <section class="content-section" id="${category.id}">
-
-        <div class="section-heading">
-
-          <div>
-            <p class="eyebrow">${category.kicker}</p>
-            <h2>${category.title}</h2>
-          </div>
-
-          <div class="section-controls">
-
-            <button
-              data-scroll="${category.id}"
-              data-dir="-1"
-              aria-label="Previous story">‹</button>
-
-            <button
-              data-scroll="${category.id}"
-              data-dir="1"
-              aria-label="Next story">›</button>
-
-          </div>
-
-        </div>
-
-        <div class="story-track" id="track-${category.id}">
-          ${cards}
-        </div>
-
-      </section>
-    `;
-  }).join("");
-
-
-  // NEXT / PREVIOUS BUTTONS
-
-  root.querySelectorAll("[data-scroll]")
-    .forEach(button => {
-      button.addEventListener("click", () => {
-
-        const track = document.getElementById(
-          "track-" + button.dataset.scroll
-        );
-
-        track.scrollBy({
-          left:
-            Number(button.dataset.dir) *
-            Math.max(260, track.clientWidth * 0.8),
-
-          behavior: "smooth"
-        });
-      });
+    img.addEventListener("error", () => {
+      img.alt = "Image unavailable";
+      img.style.background = "#252525";
     });
 
+    const caption = document.createElement("div");
+    caption.className = "slide-caption";
 
-  // AUTOMATIC SLIDESHOW FOR EVERY CATEGORY
+    const title = document.createElement("h3");
+    title.textContent = item.title;
 
-  categories.forEach(category => {
-    const track = document.getElementById(
-      "track-" + category.id
-    );
+    const description = document.createElement("p");
+    description.textContent = item.description || "";
 
-    if (!track || track.dataset.started) return;
+    const link = document.createElement("a");
 
-    track.dataset.started = "yes";
+    link.href = safeExternalUrl(item.link, "https://www.google.com/");
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Explore More ↗";
 
-    let pausedUntil = 0;
+    caption.append(title, description, link);
+    slide.append(img, caption);
+    slidesContainer.appendChild(slide);
 
-    ["mouseenter", "touchstart", "pointerdown"]
-      .forEach(eventName => {
-        track.addEventListener(eventName, () => {
-          pausedUntil = Date.now() + 8000;
-        }, { passive: true });
-      });
+    const dot = document.createElement("button");
 
-    setInterval(() => {
+    dot.type = "button";
+    dot.className = "slider-dot";
+    dot.setAttribute("aria-label", `Show slide ${index + 1}`);
 
-      if (Date.now() < pausedUntil) return;
+    dot.addEventListener("click", () => {
+      showSlide(index);
+      restartTimer();
+    });
 
-      if (track.scrollWidth <= track.clientWidth + 5) {
-        return;
-      }
-
-      if (
-        track.scrollLeft + track.clientWidth >=
-        track.scrollWidth - 10
-      ) {
-        track.scrollTo({
-          left: 0,
-          behavior: "smooth"
-        });
-      } else {
-        track.scrollBy({
-          left: Math.max(260, track.clientWidth * 0.8),
-          behavior: "smooth"
-        });
-      }
-
-    }, 4000);
-
+    dotsContainer.appendChild(dot);
   });
+
+  const slideElements = [...slidesContainer.children];
+  const dotElements = [...dotsContainer.children];
+
+  function showSlide(index) {
+    currentIndex =
+      (index + slideElements.length) % slideElements.length;
+
+    slideElements.forEach((slide, i) => {
+      slide.classList.toggle("active", i === currentIndex);
+    });
+
+    dotElements.forEach((dot, i) => {
+      dot.classList.toggle("active", i === currentIndex);
+    });
+  }
+
+  function nextSlide() {
+    showSlide(currentIndex + 1);
+  }
+
+  function previousSlide() {
+    showSlide(currentIndex - 1);
+  }
+
+  function startTimer() {
+    stopTimer();
+
+    if (slideElements.length > 1) {
+      timer = setInterval(nextSlide, 4000);
+    }
+  }
+
+  function stopTimer() {
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  function restartTimer() {
+    startTimer();
+  }
+
+  nextButton.addEventListener("click", () => {
+    nextSlide();
+    restartTimer();
+  });
+
+  previousButton.addEventListener("click", () => {
+    previousSlide();
+    restartTimer();
+  });
+
+  sliderElement.addEventListener("mouseenter", stopTimer);
+  sliderElement.addEventListener("mouseleave", startTimer);
+
+  showSlide(0);
+  startTimer();
+
+  return {
+    update(items) {
+      createSlider(sliderElement, items);
+    }
+  };
 }
 
 
-// SAMPLE CONTENT
+/* --------------------------------
+   INITIALISE ALL FOUR SLIDESHOWS
+--------------------------------- */
 
-function createDemoContent() {
-  const content = {};
+const sliders = {};
 
-  categories.forEach(category => {
+document.querySelectorAll(".slider").forEach(slider => {
+  const category = slider.dataset.category;
 
-    content[category.id] = photos[category.id].map(
-      (photo, index) => ({
-        title: demoTitles[category.id][index],
-
-        summary:
-          "Discover the latest stories and updates on CKAVOX.",
-
-        image_url: imageURL(photo),
-
-        external_url: ""
-      })
-    );
-
-  });
-
-  return content;
-}
-
-
-renderSections(createDemoContent());
-
-
-// SUPABASE ACCOUNT SYSTEM
-
-let supabaseClient = null;
-
-const configured =
-  SUPABASE_URL.startsWith("https://") &&
-  !SUPABASE_URL.includes("PASTE_") &&
-  !SUPABASE_ANON_KEY.includes("PASTE_");
-
-
-if (configured && window.supabase) {
-
-  supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
+  sliders[category] = createSlider(
+    slider,
+    fallbackContent[category] || []
   );
+});
 
-  loadPublishedContent();
-  restoreSession();
 
-} else {
+/* --------------------------------
+   NEWS DISPLAY
+--------------------------------- */
 
-  document.getElementById("authStatus").textContent =
-    "Supabase setup is required to activate accounts.";
+const newsGrid = document.getElementById("newsGrid");
 
+function renderNews(items) {
+  newsGrid.replaceChildren();
+
+  if (!items || items.length === 0) {
+    const message = document.createElement("p");
+    message.className = "loading";
+    message.textContent =
+      "No news has been published yet. Check back soon.";
+
+    newsGrid.appendChild(message);
+    return;
+  }
+
+  items.forEach(item => {
+    const article = document.createElement("article");
+    article.className = "news-card";
+
+    const img = document.createElement("img");
+    img.src = item.image;
+    img.alt = item.title;
+    img.loading = "lazy";
+
+    const content = document.createElement("div");
+    content.className = "news-card-content";
+
+    const title = document.createElement("h3");
+    title.textContent = item.title;
+
+    const description = document.createElement("p");
+    description.textContent = item.description || "";
+
+    const link = document.createElement("a");
+
+    link.href = safeExternalUrl(
+      item.link,
+      "https://www.google.com/"
+    );
+
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Read More ↗";
+
+    content.append(title, description, link);
+    article.append(img, content);
+    newsGrid.appendChild(article);
+  });
 }
 
 
-async function loadPublishedContent() {
+/* --------------------------------
+   AUTHENTICATION
+--------------------------------- */
+
+const authForm = document.getElementById("authForm");
+const authMessage = document.getElementById("authMessage");
+const signUpButton = document.getElementById("signUpButton");
+const signOutButton = document.getElementById("signOutButton");
+
+const userDashboard = document.getElementById("userDashboard");
+const userEmail = document.getElementById("userEmail");
+
+const adminSection = document.getElementById("admin");
+
+let currentUser = null;
+let currentIsAdmin = false;
+
+function showAuthMessage(message) {
+  authMessage.textContent = message;
+}
+
+function validateSupabaseSetup() {
+  if (!supabaseClient) {
+    showAuthMessage(
+      "Authentication setup is incomplete. Configure your Supabase URL and publishable key in script.js."
+    );
+
+    return false;
+  }
+
+  return true;
+}
+
+async function handleSignUp() {
+  if (!validateSupabaseSetup()) return;
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (password.length < 8) {
+    showAuthMessage("Use a password with at least 8 characters.");
+    return;
+  }
+
+  signUpButton.disabled = true;
+  showAuthMessage("Creating your account...");
 
   try {
-
-    const { data, error } = await supabaseClient
-      .from("stories")
-      .select(
-        "id,category,title,summary,image_url,external_url,created_at"
-      )
-      .eq("published", true)
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password
+    });
 
     if (error) throw error;
 
-    if (data && data.length) {
-
-      const grouped = {};
-
-      categories.forEach(category => {
-        grouped[category.id] = [];
-      });
-
-      data.forEach(story => {
-        if (grouped[story.category]) {
-          grouped[story.category].push(story);
-        }
-      });
-
-      renderSections(grouped);
+    if (data.session) {
+      showAuthMessage("Account created successfully!");
+    } else {
+      showAuthMessage(
+        "Account created. Check your email to confirm your account, then sign in."
+      );
     }
 
   } catch (error) {
-    console.error("Content loading error:", error.message);
+    showAuthMessage(error.message || "Unable to create account.");
+  } finally {
+    signUpButton.disabled = false;
   }
-
 }
 
-
-async function restoreSession() {
-
-  const { data: { session } } =
-    await supabaseClient.auth.getSession();
-
-  if (session) {
-    showSignedIn(session.user);
-  }
-
-  supabaseClient.auth.onAuthStateChange(
-    (_event, session) => {
-
-      if (session) {
-        showSignedIn(session.user);
-      } else {
-        showSignedOut();
-      }
-
-    }
-  );
-
-}
-
-
-function showSignedIn(user) {
-
-  document.getElementById("authForm").hidden = true;
-
-  document.getElementById("signedInPanel").hidden = false;
-
-  document.getElementById("signedInEmail").textContent =
-    "Signed in as " + user.email;
-
-  document.getElementById("accountHeading").textContent =
-    "My CKAVOX Account";
-
-  document.getElementById("accountMessage").textContent =
-    "Welcome to your CKAVOX account.";
-
-  checkAdmin(user);
-}
-
-
-function showSignedOut() {
-
-  document.getElementById("authForm").hidden = false;
-
-  document.getElementById("signedInPanel").hidden = true;
-
-  document.getElementById("adminLink").hidden = true;
-
-  document.getElementById("accountHeading").textContent =
-    "Join the Community";
-
-  document.getElementById("accountMessage").textContent =
-    "Create an account or sign in to access your account.";
-
-}
-
-
-async function checkAdmin(user) {
-
-  try {
-
-    const { data, error } = await supabaseClient
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    document.getElementById("adminLink").hidden =
-      !!error || !data?.is_admin;
-
-  } catch {
-    document.getElementById("adminLink").hidden = true;
-  }
-
-}
-
-
-function setAuthStatus(message) {
-  document.getElementById("authStatus").textContent = message;
-}
-
-
-// SIGN IN
-
-document.getElementById("authForm")
-.addEventListener("submit", async event => {
-
+async function handleSignIn(event) {
   event.preventDefault();
 
-  if (!supabaseClient) {
-    setAuthStatus("Please configure Supabase first.");
-    return;
-  }
+  if (!validateSupabaseSetup()) return;
 
-  setAuthStatus("Signing in...");
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-  const email =
-    document.getElementById("email").value.trim();
+  showAuthMessage("Signing in...");
 
-  const password =
-    document.getElementById("password").value;
-
-  const { data, error } =
-    await supabaseClient.auth.signInWithPassword({
+  try {
+    const { error } = await supabaseClient.auth.signInWithPassword({
       email,
       password
     });
 
-  if (error) {
-    setAuthStatus(error.message);
-  } else {
-    showSignedIn(data.user);
-    setAuthStatus("Signed in successfully.");
-  }
+    if (error) throw error;
 
-});
+    showAuthMessage("Signed in successfully.");
 
+    await refreshAccount();
 
-// SIGN UP
-
-document.getElementById("signUpBtn")
-.addEventListener("click", async () => {
-
-  if (!supabaseClient) {
-    setAuthStatus("Please configure Supabase first.");
-    return;
-  }
-
-  const email =
-    document.getElementById("email").value.trim();
-
-  const password =
-    document.getElementById("password").value;
-
-  if (!email || password.length < 6) {
-    setAuthStatus(
-      "Enter your email and a password of at least 6 characters."
-    );
-    return;
-  }
-
-  setAuthStatus("Creating your account...");
-
-  const { data, error } =
-    await supabaseClient.auth.signUp({
-      email,
-      password
+    document.getElementById("account").scrollIntoView({
+      behavior: "smooth"
     });
 
-  if (error) {
-    setAuthStatus(error.message);
-  } else if (data.session) {
-    showSignedIn(data.user);
-    setAuthStatus("Account created successfully.");
-  } else {
-    setAuthStatus(
-      "Account created. Check your email if confirmation is required."
-    );
+  } catch (error) {
+    showAuthMessage(error.message || "Unable to sign in.");
   }
+}
 
-});
+signUpButton.addEventListener("click", handleSignUp);
+authForm.addEventListener("submit", handleSignIn);
 
-
-// SIGN OUT
-
-document.getElementById("signOutBtn")
-.addEventListener("click", async () => {
-
+signOutButton.addEventListener("click", async () => {
   if (!supabaseClient) return;
 
-  const { error } =
-    await supabaseClient.auth.signOut();
+  const { error } = await supabaseClient.auth.signOut();
 
   if (error) {
-    setAuthStatus(error.message);
-  } else {
-    showSignedOut();
-    setAuthStatus("You have signed out.");
+    showAuthMessage(error.message);
+    return;
   }
 
+  currentUser = null;
+  currentIsAdmin = false;
+
+  await refreshAccount();
+  showAuthMessage("You have signed out.");
 });
+
+
+/* --------------------------------
+   ADMIN ROLE CHECK
+--------------------------------- */
+
+async function checkAdminRole(userId) {
+  if (!supabaseClient || !userId) return false;
+
+  const { data, error } = await supabaseClient
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Admin verification failed:", error.message);
+    return false;
+  }
+
+  return Boolean(data);
+}
+
+
+/* --------------------------------
+   ACCOUNT STATE
+--------------------------------- */
+
+async function refreshAccount() {
+  if (!supabaseClient) {
+    adminSection.hidden = true;
+    return;
+  }
+
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  currentUser = user || null;
+
+  if (!currentUser) {
+    currentIsAdmin = false;
+
+    userDashboard.hidden = true;
+    authForm.hidden = false;
+    adminSection.hidden = true;
+
+    document.getElementById("accountHeading").textContent =
+      "Join the Community";
+
+    document.getElementById("accountDescription").textContent =
+      "Create an account or sign in to access your account.";
+
+    return;
+  }
+
+  authForm.hidden = true;
+  userDashboard.hidden = false;
+
+  userEmail.textContent = currentUser.email || "";
+
+  document.getElementById("accountHeading").textContent =
+    "Welcome to CKAVOX";
+
+  document.getElementById("accountDescription").textContent =
+    "Your account is signed in.";
+
+  currentIsAdmin = await checkAdminRole(currentUser.id);
+
+  adminSection.hidden = !currentIsAdmin;
+
+  if (currentIsAdmin) {
+    await loadAdminContent();
+  }
+
+  await loadPublishedContent();
+}
+
+
+/* --------------------------------
+   PUBLISHED CONTENT
+--------------------------------- */
+
+async function loadPublishedContent() {
+  if (!supabaseClient) return;
+
+  const { data, error } = await supabaseClient
+    .from("content")
+    .select("id,title,category,image_url,description,link_url,created_at")
+    .eq("published", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Unable to load content:", error.message);
+    return;
+  }
+
+  const items = (data || []).map(row => ({
+    id: row.id,
+    title: row.title,
+    description: row.description || "",
+    image: row.image_url,
+    link: row.link_url || "https://www.google.com/",
+    category: row.category
+  }));
+
+  ["films", "sports", "technology", "showbiz"].forEach(category => {
+    const categoryItems = items.filter(
+      item => item.category === category
+    );
+
+    const combinedItems = [
+      ...categoryItems,
+      ...(fallbackContent[category] || [])
+    ].slice(0, 4);
+
+    if (sliders[category]) {
+      sliders[category].update(combinedItems);
+    }
+  });
+
+  const news = items.filter(item => item.category === "news");
+
+  renderNews(news);
+}
+
+
+/* --------------------------------
+   ADMIN: PUBLISH CONTENT
+--------------------------------- */
+
+const contentForm = document.getElementById("contentForm");
+
+contentForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (!supabaseClient || !currentUser || !currentIsAdmin) {
+    alert("Only an authorized administrator can publish content.");
+    return;
+  }
+
+  const title = document.getElementById("contentTitle").value.trim();
+  const category = document.getElementById("contentCategory").value;
+  const imageUrl = document.getElementById("contentImage").value.trim();
+  const linkUrl = document.getElementById("contentLink").value.trim();
+  const description = document.getElementById("contentDescription").value.trim();
+
+  const safeImage = safeExternalUrl(imageUrl, "");
+
+  if (!safeImage) {
+    alert("Enter a valid image URL.");
+    return;
+  }
+
+  if (linkUrl && !safeExternalUrl(linkUrl, "")) {
+    alert("Enter a valid article or video URL.");
+    return;
+  }
+
+  const submitButton = contentForm.querySelector('button[type="submit"]');
+
+  submitButton.disabled = true;
+
+  try {
+    const { error } = await supabaseClient
+      .from("content")
+      .insert({
+        title,
+        category,
+        image_url: safeImage,
+        link_url: linkUrl || null,
+        description,
+        published: true,
+        created_by: currentUser.id
+      });
+
+    if (error) throw error;
+
+    contentForm.reset();
+
+    alert("Content published successfully!");
+
+    await loadPublishedContent();
+    await loadAdminContent();
+
+  } catch (error) {
+    alert(error.message || "Unable to publish content.");
+  } finally {
+    submitButton.disabled = false;
+  }
+});
+
+
+/* --------------------------------
+   ADMIN: LIST AND DELETE CONTENT
+--------------------------------- */
+
+async function loadAdminContent() {
+  if (!supabaseClient || !currentIsAdmin) return;
+
+  const list = document.getElementById("adminContentList");
+
+  list.replaceChildren();
+
+  const { data, error } = await supabaseClient
+    .from("content")
+    .select("id,title,category")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    const message = document.createElement("p");
+    message.textContent = "Unable to load admin content.";
+    list.appendChild(message);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    const message = document.createElement("p");
+    message.textContent = "No content published yet.";
+    list.appendChild(message);
+    return;
+  }
+
+  data.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "admin-item";
+
+    const label = document.createElement("span");
+
+    label.textContent = `${item.category.toUpperCase()} — ${item.title}`;
+
+    const deleteButton = document.createElement("button");
+
+    deleteButton.type = "button";
+    deleteButton.textContent = "Delete";
+
+    deleteButton.addEventListener("click", async () => {
+      if (!currentIsAdmin) {
+        alert("Administrator access required.");
+        return;
+      }
+
+      const confirmed = confirm(
+        `Are you sure you want to delete "${item.title}"?`
+      );
+
+      if (!confirmed) return;
+
+      const { error: deleteError } = await supabaseClient
+        .from("content")
+        .delete()
+        .eq("id", item.id);
+
+      if (deleteError) {
+        alert(deleteError.message);
+        return;
+      }
+
+      await loadPublishedContent();
+      await loadAdminContent();
+    });
+
+    row.append(label, deleteButton);
+    list.appendChild(row);
+  });
+}
+
+
+/* --------------------------------
+   AUTH STATE LISTENER
+--------------------------------- */
+
+async function initialiseAccount() {
+  if (!supabaseClient) {
+    renderNews([]);
+    return;
+  }
+
+  await refreshAccount();
+
+  supabaseClient.auth.onAuthStateChange(() => {
+    setTimeout(() => {
+      refreshAccount();
+    }, 0);
+  });
+}
+
+initialiseAccount();
