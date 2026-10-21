@@ -1,9 +1,17 @@
-// CKAVOX Supabase Configuration
+ 
+const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
 
-const SUPABASE_URL = "SHYIRAMO_PROJECT_URL_YAWE";
-const SUPABASE_ANON_KEY = "SHYIRAMO_PUBLISHABLE_KEY_YAWE";
+let supabaseClient = null;
 
-const supabaseClient = window.supabase.createClient(
+if (
+  window.supabase &&
+  SUPABASE_URL.startsWith("https://") &&
+  SUPABASE_URL.includes(".supabase.co") &&
+  !SUPABASE_ANON_KEY.startsWith("YOUR_")
+) {
+  supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
-);
+  );
+}
