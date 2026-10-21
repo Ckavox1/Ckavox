@@ -1,103 +1,206 @@
-// CKAVOX Authentication
+ 
+/* CKAVOX AUTHENTICATION */
 
-const loginForm = document.getElementById("loginForm");
-const signupButton = document.getElementById("signupButton");
-const forgotPassword = document.getElementById("forgotPassword");
-const authMessage = document.getElementById("authMessage");
+const form = document.getElementById("authForm");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const nameInput = document.getElementById("displayName");
 
-function showMessage(message, isError = false) {
-    if (!authMessage) return;
+const nameField = document.getElementById("nameField");
+const signInButton = document.getElementById("signInButton");
+const signUpButton = document.getElementById("signUpButton");
+const signOutButton = document.getElementById("signOutButton");
 
-    authMessage.textContent = message;
-    authMessage.style.color = isError ? "#ff7070" : "#f5c400";
+const messageBox = document.getElementById("authMessage");
+const userArea = document.getElementById("userArea");
+const userName = document.getElementById("userName");
+const userEmail = document.getElementById("userEmail");
+const adminLink = document.getElementById("adminLink");
+
+const formTitle = document.getElementById("formTitle");
+const formDescription = document.getElementById("formDescription");
+
+let mode = "signin";
+
+function showMessage(text, error = false) {
+  messageBox.textContent = text;
+  messageBox.style.color = error ? "#ff7777" : "#ffc928";
 }
 
-// Sign in
-if (loginForm) {
-    loginForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
+function getClient() {
+  if (typeof supabaseClient === "undefined" || !supabaseClient) {
+    showMessage(
+      "Supabase is not configured. Check supabase-config.js.",
+      true
+    );
+    return null;
+  }
+  return supabaseClient;
+}
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
+function setMode(nextMode) {
+  mode = nextMode;
+  const signingUp = mode === "signup";
 
-        showMessage("Signing in...");
+  nameField.hidden = !signingUp;
+  nameInput.required = signingUp;
+  passwordInput.autocomplete =
+    signingUp ? "new-password" : "current-password";
 
-        const { error } = await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-        });
+  signInButton.hidden = signingUp;
+  signUpButton.textContent = signingUp ? "Create Account" : "Sign Up";
 
-        if (error) {
-            showMessage(error.message, true);
-            return;
-        }
+  formTitle.textContent =
+    signingUp ? "Create Your Account" : "Welcome Back";
 
-        window.location.href = "index.html";
+  formDescription.textContent = signingUp
+    ? "Join the CKAVOX community."
+    : "Sign in with your email and password.";
+
+  showMessage("");
+}
+
+signUpButton.addEventListener("click", async () => {
+  if (mode !== "signup") {
+    setMode("signup");
+    return;
+  }
+
+  const client = getClient();
+  if (!client) return;
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  const displayName = nameInput.value.trim();
+
+  if (!displayName || !email || password.length < 8) {
+    showMessage(
+      "Enter your name, a valid email, and a password of at least 8 characters.",
+      true
+    );
+    return;
+  }
+
+  signUpButton.disabled = true;
+
+  try {
+    const { data, error } = await client.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { display_name: displayName }
+      }
     });
-}
 
-// Create account
-if (signupButton) {
-    signupButton.addEventListener("click", async () => {
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
+    if (error) throw error;
 
-        if (!email || password.length < 8) {
-            showMessage(
-                "Enter your email and a password with at least 8 characters.",
-                true
-            );
-            return;
-        }
+    if (data.session) {
+      showMessage("Account created successfully.");
+      await refreshAccount();
+    } else {
+      showMessage(
+        "Account created. Check your email to confirm it, then sign in."
+      );
+      setMode("signin");
+    }
+  } catch (error) {
+    showMessage(error.message || "Sign-up failed.", true);
+  } finally {
+    signUpButton.disabled = false;
+  }
+});
 
-        showMessage("Creating account...");
+form.addEventListener("submit", async event => {
+  event.preventDefault();
 
-        const { error } = await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: {
-                emailRedirectTo: window.location.origin + "/login.html"
-            }
-        });
+  if (mode === "signup") return;
 
-        if (error) {
-            showMessage(error.message, true);
-            return;
-        }
+  const client = getClient();
+  if (!client) return;
 
-        showMessage(
-            "Account request received. Check your email if confirmation is required."
-        );
+  signInButton.disabled = true;
+
+  try {
+    const { error } = await client.auth.signInWithPassword({
+      email: emailInput.value.trim(),
+      password: passwordInput.value
     });
+
+    if (error) throw error;
+
+    showMessage("Signed in successfully.");
+    await refreshAccount();
+  } catch (error) {
+    showMessage(error.message || "Sign-in failed.", true);
+  } finally {
+    signInButton.disabled = false;
+  }
+});
+
+signOutButton.addEventListener("click", async () => {
+  const client = getClient();
+  if (!client) return;
+
+  const { error } = await client.auth.signOut();
+
+  if (error) {
+    showMessage(error.message || "Sign-out failed.", true);
+    return;
+  }
+
+  showMessage("You have signed out.");
+  await refreshAccount();
+});
+
+async function refreshAccount() {
+  const client = getClient();
+  if (!client) return;
+
+  const { data, error } = await client.auth.getUser();
+
+  if (error) {
+    showMessage("Could not verify your account.", true);
+    return;
+  }
+
+  const user = data.user;
+
+  if (!user) {
+    userArea.hidden = true;
+    form.hidden = false;
+    adminLink.hidden = true;
+    setMode("signin");
+    return;
+  }
+
+  form.hidden = true;
+  userArea.hidden = false;
+
+  userName.textContent =
+    "Name: " + (user.user_metadata?.display_name || "CKAVOX Member");
+
+  userEmail.textContent = "Email: " + (user.email || "");
+
+  // Check admin role in the protected database.
+  const { data: profile, error: profileError } = await client
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  adminLink.hidden =
+    !!profileError || profile?.role !== "admin";
 }
 
-// Password recovery by email
-if (forgotPassword) {
-    forgotPassword.addEventListener("click", async (event) => {
-        event.preventDefault();
+async function initializeAuth() {
+  const client = getClient();
+  if (!client) return;
 
-        const email = document.getElementById("email").value.trim();
+  await refreshAccount();
 
-        if (!email) {
-            showMessage(
-                "Enter your email address first.",
-                true
-            );
-            return;
-        }
-
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(
-            email,
-            {
-                redirectTo: window.location.origin + "/login.html"
-            }
-        );
-
-        if (error) {
-            showMessage(error.message, true);
-            return;
-        }
-
-        showMessage("If the email is registered, password recovery instructions will be sent.");
-    });
+  client.auth.onAuthStateChange(() => {
+    setTimeout(() => refreshAccount(), 0);
+  });
 }
+
+initializeAuth();
