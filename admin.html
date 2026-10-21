@@ -1,142 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
+ <!DOCTYPE html>
+<html lang="rw">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>CKAVOX Admin Dashboard</title>
-
+    <title>CKAVOX</title>
     <link rel="stylesheet" href="style.css">
-
-    <style>
-        .admin-container {
-            max-width: 850px;
-            margin: 25px auto;
-            padding: 20px;
-        }
-
-        .admin-panel {
-            padding: 20px;
-            margin-bottom: 25px;
-            background: #151515;
-            border: 1px solid #f5c400;
-            border-radius: 10px;
-        }
-
-        .admin-panel input,
-        .admin-panel select,
-        .admin-panel textarea {
-            box-sizing: border-box;
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-        }
-
-        .admin-panel button {
-            padding: 12px 18px;
-            margin: 5px 0;
-            background: #f5c400;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        #adminMessage {
-            overflow-wrap: anywhere;
-        }
-    </style>
+    <!-- Gukoresha Font Awesome ku bw'ibirango bya porogaramu -->
+    <link rel="stylesheet" href="https://cloudflare.com">
 </head>
-
 <body>
 
-<header>
-    <h1>CKAVOX ADMIN</h1>
-    <p>Manage your website content</p>
-</header>
+    <!-- UMUTWE W'IKIRENGA (HEADER) -->
+    <header>
+        <div class="logo">C<span>w</span> CKAVOX</div>
+        <div class="auth-buttons">
+            <button class="btn-signup" onclick="toggleAuthForm('signup')">Sign Up</button>
+            <button class="btn-login" onclick="toggleAuthForm('login')">Login</button>
+        </div>
+    </header>
 
-<main class="admin-container">
+    <!-- IFOMU YO KWINJIRA / KWANDIKISHA (POPUP AUTH FORM) -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAuthForm()">&times;</span>
+            <h2 id="form-title">Login</h2>
+            <form id="account-form" onsubmit="handleAuth(event)">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="user-email" required placeholder="urugero@gmail.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="user-password" required placeholder="********">
+                </div>
+                <button type="submit" class="btn-submit" id="btn-action">Log In</button>
+            </form>
+        </div>
+    </div>
 
-    <p id="adminMessage" aria-live="polite">Checking permissions...</p>
+    <!-- INYURAMYANDIKO YA MBERE (LANDING PAGE - IDAHITA YINJIRA) -->
+    <main id="main-content">
+        <!-- IGICE CY'IKORANABUHANGA (APPS SECTION) -->
+        <section class="apps-container">
+            <div class="app-card">
+                <i class="fab fa-chrome chrome-icon"></i>
+                <h3>Google Chrome</h3>
+                <p>Explore the web</p>
+            </div>
+            <div class="app-card">
+                <i class="fab fa-netflix netflix-icon"></i>
+                <h3>Netflix</h3>
+                <p>Movies and series</p>
+            </div>
+            <div class="app-card">
+                <i class="fab fa-spotify spotify-icon"></i>
+                <h3>Spotify</h3>
+                <p>Music streaming</p>
+            </div>
+            <div class="app-card">
+                <i class="fab fa-facebook facebook-icon"></i>
+                <h3>Facebook</h3>
+                <p>Connect with friends</p>
+            </div>
+            <div class="app-card">
+                <i class="fab fa-instagram instagram-icon"></i>
+                <h3>Instagram</h3>
+                <p>Share photos & stories</p>
+            </div>
+            <div class="app-card">
+                <i class="fab fa-tiktok tiktok-icon"></i>
+                <h3>TikTok</h3>
+                <p>Short-form videos</p>
+            </div>
+            <div class="app-card">
+                <i class="fab fa-x-twitter x-icon"></i>
+                <h3>X (Twitter)</h3>
+                <p>What's happening</p>
+            </div>
+        </section>
 
-    <section class="admin-panel">
-        <h2>Add Content</h2>
+        <!-- IGICE CYA FILIME (CINEMA SECTION) -->
+        <section class="cinema-section">
+            <span class="section-tag">CINEMA</span>
+            <h2>Movies & Films</h2>
+            
+            <div class="categories">
+                <span class="tag active">Action</span>
+                <span class="tag">Comedy</span>
+                <span class="tag">Superheroes</span>
+                <span class="tag">Horror</span>
+                <span class="tag">Indian</span>
+                <span class="tag">Thriller</span>
+                <span class="tag">Romance</span>
+            </div>
 
-        <form id="contentForm">
+            <!-- Urutonde rwa Filime z'ukuri (HD) ruhita rugaragara iyo umuntu yinjiye -->
+            <div id="movies-gallery" class="content-gallery locked">
+                <p class="lock-message">Ubanze winjire (Login) ngo urebe filime n'indirimbo...</p>
+            </div>
+        </section>
+    </main>
 
-            <input
-                type="text"
-                id="contentTitle"
-                placeholder="Title"
-                required
-            >
-
-            <select id="contentType" required>
-                <option value="movie">Movie / Film</option>
-                <option value="music">Music / Song</option>
-                <option value="news">News</option>
-                <option value="showbiz">Showbiz</option>
-                <option value="sports">Sports</option>
-                <option value="photo">Photos</option>
-            </select>
-
-            <input
-                type="text"
-                id="contentCategory"
-                placeholder="Category, e.g. Action, African Music, Football"
-                required
-            >
-
-            <textarea
-                id="contentDescription"
-                placeholder="Description"
-            ></textarea>
-
-            <label>Cover image</label>
-            <input type="file" id="imageFile" accept="image/*">
-
-            <label>Audio/video file (if permitted)</label>
-            <input
-                type="file"
-                id="mediaFile"
-                accept="audio/*,video/*"
-            >
-
-            <input
-                type="url"
-                id="externalUrl"
-                placeholder="Optional official/external link"
-            >
-
-            <label>
-                <input type="checkbox" id="publishContent">
-                Publish content immediately
-            </label>
-
-            <button type="submit">SAVE CONTENT</button>
-        </form>
-    </section>
-
-    <section class="admin-panel">
-        <h2>Website Statistics</h2>
-        <button id="refreshStats" type="button">REFRESH STATISTICS</button>
-        <div id="statistics">Statistics not loaded.</div>
-    </section>
-
-    <section class="admin-panel">
-        <h2>Manage Existing Content</h2>
-        <button id="loadContent" type="button">LOAD CONTENT</button>
-        <div id="contentList"></div>
-    </section>
-
-    <button id="logoutButton" type="button">SIGN OUT</button>
-
-    <p><a href="index.html">Back to website</a></p>
-
-</main>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
-<script src="admin.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>
