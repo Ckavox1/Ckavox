@@ -1,719 +1,531 @@
- "use strict";
-
-/*
-  CKAVOX WEBSITE
-
-  Demo login only.
-  Browser localStorage is not a secure authentication system.
-  Content is stored in the current browser, not shared across visitors.
-*/
-
-const ADMIN_EMAIL = "admin@ckavox.com";
-const ADMIN_PASSWORD = "adminckavox123";
-
-const CONTENT_STORAGE_KEY = "ckavox_content_v1";
-const SESSION_STORAGE_KEY = "ckavox_demo_admin_session";
-
-const CATEGORIES = [
-  "movies",
-  "music",
-  "books",
-  "news",
-  "showbiz"
-];
-
-let contents = [];
-let currentSlide = 0;
-let sliderTimer = null;
-
-
-/* -----------------------------
-   SAFE LOCAL STORAGE
------------------------------ */
-
-function readStoredContent() {
-  try {
-    const raw = localStorage.getItem(CONTENT_STORAGE_KEY);
-
-    if (!raw) {
-      return [];
-    }
-
-    const parsed = JSON.parse(raw);
-
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed.filter(item =>
-      item &&
-      typeof item.id === "string" &&
-      CATEGORIES.includes(item.category) &&
-      typeof item.title === "string"
-    );
-
-  } catch (error) {
-    console.error("Could not load saved content:", error);
-    return [];
-  }
-}
-
-
-function saveContents() {
-  try {
-    localStorage.setItem(
-      CONTENT_STORAGE_KEY,
-      JSON.stringify(contents)
-    );
-
-    return true;
-
-  } catch (error) {
-    alert(
-      "Could not save content. Your browser storage may be full or unavailable."
-    );
-
-    console.error("Could not save content:", error);
-    return false;
-  }
-}
-
-
-/* -----------------------------
-   NAVIGATION
------------------------------ */
-
-function showSection(sectionId) {
-  const requestedSection = document.getElementById(sectionId);
-
-  if (!requestedSection) {
-    return;
-  }
-
-  if (
-    sectionId === "admin-dashboard" &&
-    !isAdminLoggedIn()
-  ) {
-    openLogin();
-    return;
-  }
-
-  document.querySelectorAll(".page-section").forEach(section => {
-    section.classList.remove("active");
-  });
-
-  requestedSection.classList.add("active");
-
-  document.getElementById("navigation").classList.remove("open");
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-  if (sectionId === "home") {
-    renderFeaturedSlider();
-  }
-}
-
-
-document.getElementById("menu-button").addEventListener("click", () => {
-  document.getElementById("navigation").classList.toggle("open");
-});
-
-
-/* -----------------------------
-   ADMIN LOGIN
------------------------------ */
-
-function isAdminLoggedIn() {
-  return sessionStorage.getItem(SESSION_STORAGE_KEY) === "yes";
-}
-
-
-function openLogin() {
-  if (isAdminLoggedIn()) {
-    showSection("admin-dashboard");
-    renderAdminList();
-    return;
-  }
-
-  const modal = document.getElementById("login-modal");
-
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-
-  document.getElementById("login-error").textContent = "";
-
-  setTimeout(() => {
-    document.getElementById("admin-email").focus();
-  }, 100);
-}
-
-
-function closeLogin() {
-  const modal = document.getElementById("login-modal");
-
-  modal.classList.remove("open");
-  modal.setAttribute("aria-hidden", "true");
-
-  document.getElementById("login-form").reset();
-  document.getElementById("login-error").textContent = "";
-}
-
-
-document.getElementById("login-form").addEventListener("submit", event => {
-  event.preventDefault();
-
-  const email = document
-    .getElementById("admin-email")
-    .value
-    .trim()
-    .toLowerCase();
-
-  const password = document
-    .getElementById("admin-password")
-    .value;
-
-  if (
-    email === ADMIN_EMAIL &&
-    password === ADMIN_PASSWORD
-  ) {
-    sessionStorage.setItem(SESSION_STORAGE_KEY, "yes");
-
-    closeLogin();
-    showSection("admin-dashboard");
-    renderAdminList();
-
-  } else {
-    document.getElementById("login-error").textContent =
-      "Incorrect email or password. Please try again.";
-  }
-});
-
-
-function logout() {
-  sessionStorage.removeItem(SESSION_STORAGE_KEY);
-
-  showSection("home");
-
-  alert("You have logged out.");
-}
-
-
-/* Close modal when clicking outside the box */
-
-document.getElementById("login-modal").addEventListener("click", event => {
-  if (event.target.id === "login-modal") {
-    closeLogin();
-  }
-});
-
-
-/* Close modal with Escape */
-
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape") {
-    closeLogin();
-  }
-});
-
-
-/* -----------------------------
-   CONTENT VALIDATION
------------------------------ */
-
-function safeExternalUrl(value) {
-  if (!value) {
-    return "";
-  }
-
-  try {
-    const parsed = new URL(value);
-
-    if (
-      parsed.protocol === "https:" ||
-      parsed.protocol === "http:"
-    ) {
-      return parsed.href;
-    }
-
-    return "";
-
-  } catch {
-    return "";
-  }
-}
-
-
-function makeId() {
-  if (
-    window.crypto &&
-    typeof window.crypto.randomUUID === "function"
-  ) {
-    return window.crypto.randomUUID();
-  }
-
-  return Date.now().toString(36) +
-    Math.random().toString(36).slice(2);
-}
-
-
-/* -----------------------------
-   ADD CONTENT
------------------------------ */
-
-document.getElementById("content-form").addEventListener("submit", event => {
-  event.preventDefault();
-
-  if (!isAdminLoggedIn()) {
-    alert("Please log in as admin first.");
-    openLogin();
-    return;
-  }
-
-  const category = document
-    .getElementById("content-type")
-    .value;
-
-  const title = document
-    .getElementById("content-title")
-    .value
-    .trim();
-
-  const description = document
-    .getElementById("content-desc")
-    .value
-    .trim();
-
-  const image = safeExternalUrl(
-    document.getElementById("content-img").value.trim()
-  );
-
-  const link = safeExternalUrl(
-    document.getElementById("content-url").value.trim()
-  );
-
-  if (!CATEGORIES.includes(category)) {
-    alert("Please choose a valid category.");
-    return;
-  }
-
-  if (!title) {
-    alert("Please enter a title.");
-    return;
-  }
-
-  const newContent = {
-    id: makeId(),
-    category,
-    title,
-    description,
-    image,
-    link,
-    createdAt: new Date().toISOString()
-  };
-
-  contents.unshift(newContent);
-
-  if (!saveContents()) {
-    contents.shift();
-    return;
-  }
-
-  event.target.reset();
-
-  renderAllContent();
-  renderAdminList();
-
-  currentSlide = 0;
-  renderFeaturedSlider();
-
-  alert("Content added successfully in this browser.");
-
-  showSection("admin-dashboard");
-});
-
-
-/* -----------------------------
-   IMAGE FALLBACK
------------------------------ */
-
-function createFallbackImage() {
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
-      <rect width="100%" height="100%" fill="#171717"/>
-      <text x="50%" y="46%" fill="#f5c518"
-        font-size="48" font-family="Arial"
-        text-anchor="middle" font-weight="bold">CKAVOX</text>
-      <text x="50%" y="60%" fill="#aaaaaa"
-        font-size="18" font-family="Arial"
-        text-anchor="middle">DISCOVER MORE</text>
-    </svg>
-  `;
-
-  return "data:image/svg+xml;charset=UTF-8," +
-    encodeURIComponent(svg);
-}
-
-
-function createImage(url, className, altText) {
-  const img = document.createElement("img");
-
-  img.className = className;
-  img.alt = altText || "CKAVOX content";
-  img.loading = "lazy";
-  img.decoding = "async";
-
-  img.src = safeExternalUrl(url) || createFallbackImage();
-
-  img.addEventListener("error", () => {
-    img.onerror = null;
-    img.src = createFallbackImage();
-  });
-
-  return img;
-}
-
-
-/* -----------------------------
-   SAFE CARD CREATION
------------------------------ */
-
-function createContentCard(item) {
-  const article = document.createElement("article");
-  article.className = "content-card";
-
-  const imageWrap = document.createElement("div");
-  imageWrap.className = "card-image-wrap";
-
-  imageWrap.appendChild(
-    createImage(item.image, "card-image", item.title)
-  );
-
-  const body = document.createElement("div");
-  body.className = "card-body";
-
-  const category = document.createElement("span");
-  category.className = "card-category";
-  category.textContent = item.category;
-
-  const title = document.createElement("h3");
-  title.textContent = item.title;
-
-  const description = document.createElement("p");
-  description.textContent =
-    item.description || "Discover more on CKAVOX.";
-
-  body.append(category, title, description);
-
-  if (item.link) {
-    const link = document.createElement("a");
-
-    link.className = "card-link";
-    link.href = item.link;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.textContent = "EXPLORE MORE ↗";
-
-    body.appendChild(link);
-  }
-
-  article.append(imageWrap, body);
-
-  return article;
-}
-
-
-/* -----------------------------
-   RENDER CATEGORY CONTENT
------------------------------ */
-
-function renderCategory(category) {
-  const container = document.getElementById(category + "-grid");
-
-  if (!container) {
-    return;
-  }
-
-  container.replaceChildren();
-
-  const categoryItems = contents.filter(item =>
-    item.category === category
-  );
-
-  if (categoryItems.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "no-content";
-
-    const heading = document.createElement("h3");
-    heading.textContent = "Coming Soon";
-
-    const paragraph = document.createElement("p");
-    paragraph.textContent =
-      "New " + category + " content will appear here when published.";
-
-    empty.append(heading, paragraph);
-    container.appendChild(empty);
-
-    return;
-  }
-
-  categoryItems.forEach(item => {
-    container.appendChild(createContentCard(item));
-  });
-}
-
-
-function renderAllContent() {
-  CATEGORIES.forEach(category => {
-    renderCategory(category);
-  });
-}
-
-
-/* -----------------------------
-   AUTOMATIC FEATURED SLIDER
-   CHANGES EVERY 4 SECONDS
------------------------------ */
-
-function getFeaturedItems() {
-  return contents.slice(0, 10);
-}
-
-
-function renderFeaturedSlider() {
-  const slider = document.getElementById("featured-slider");
-  const items = getFeaturedItems();
-
-  slider.replaceChildren();
-
-  if (items.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "empty-state";
-
-    const icon = document.createElement("div");
-    icon.className = "empty-icon";
-    icon.textContent = "✦";
-
-    const title = document.createElement("h3");
-    title.textContent = "Your next favorite starts here";
-
-    const description = document.createElement("p");
-    description.textContent =
-      "Log in as admin to publish the first item.";
-
-    empty.append(icon, title, description);
-    slider.appendChild(empty);
-
-    return;
-  }
-
-  if (currentSlide >= items.length) {
-    currentSlide = 0;
-  }
-
-  if (currentSlide < 0) {
-    currentSlide = items.length - 1;
-  }
-
-  const item = items[currentSlide];
-
-  const slide = document.createElement("article");
-  slide.className = "slide-card";
-
-  const imageWrap = document.createElement("div");
-  imageWrap.className = "slide-image-wrap";
-
-  imageWrap.appendChild(
-    createImage(item.image, "slide-image", item.title)
-  );
-
-  const body = document.createElement("div");
-  body.className = "slide-content";
-
-  const tag = document.createElement("span");
-  tag.className = "slide-tag";
-  tag.textContent = item.category;
-
-  const title = document.createElement("h3");
-  title.textContent = item.title;
-
-  const description = document.createElement("p");
-  description.textContent =
-    item.description || "Discover more on CKAVOX.";
-
-  body.append(tag, title, description);
-
-  if (item.link) {
-    const link = document.createElement("a");
-
-    link.className = "primary-button";
-    link.href = item.link;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.textContent = "EXPLORE MORE ↗";
-
-    body.appendChild(link);
-  }
-
-  slide.append(imageWrap, body);
-  slider.appendChild(slide);
-}
-
-
-function moveSlide(direction) {
-  const items = getFeaturedItems();
-
-  if (items.length <= 1) {
-    return;
-  }
-
-  currentSlide =
-    (currentSlide + direction + items.length) % items.length;
-
-  renderFeaturedSlider();
-
-  restartSlider();
-}
-
-
-function startSlider() {
-  stopSlider();
-
-  sliderTimer = window.setInterval(() => {
-    const items = getFeaturedItems();
-
-    if (items.length > 1) {
-      currentSlide = (currentSlide + 1) % items.length;
-      renderFeaturedSlider();
-    }
-  }, 4000);
-}
-
-
-function stopSlider() {
-  if (sliderTimer !== null) {
-    window.clearInterval(sliderTimer);
-    sliderTimer = null;
-  }
-}
-
-
-function restartSlider() {
-  startSlider();
-}
-
-
-/* Pause slider when browser tab is hidden */
-
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    stopSlider();
-  } else {
-    startSlider();
-  }
-});
-
-
-/* -----------------------------
-   ADMIN CONTENT LIST
------------------------------ */
-
-function renderAdminList() {
-  const list = document.getElementById("admin-content-list");
-  const count = document.getElementById("content-count");
-
-  list.replaceChildren();
-
-  count.textContent =
-    contents.length + (contents.length === 1 ? " item" : " items");
-
-  if (contents.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "no-content";
-    empty.textContent = "No content published yet.";
-    list.appendChild(empty);
-    return;
-  }
-
-  contents.forEach(item => {
-    const row = document.createElement("div");
-    row.className = "admin-item";
-
-    const details = document.createElement("div");
-
-    const title = document.createElement("h3");
-    title.textContent = item.title;
-
-    const category = document.createElement("p");
-    category.textContent =
-      item.category.toUpperCase();
-
-    details.append(title, category);
-
-    const deleteButton = document.createElement("button");
-    deleteButton.type = "button";
-    deleteButton.className = "delete-button";
-    deleteButton.textContent = "DELETE";
-
-    deleteButton.addEventListener("click", () => {
-      deleteContent(item.id);
+ // ============================================
+// CKAVOX WEBSITE JAVASCRIPT
+// Slider + Live Clock + Supabase + Search
+// ============================================
+
+"use strict";
+
+// -----------------------------
+// 1. LIVE CLOCK AND DATE
+// -----------------------------
+
+function updateClock() {
+    const now = new Date();
+
+    const timeElement = document.getElementById("currentTime");
+    const dateElement = document.getElementById("currentDate");
+    const yearElement = document.getElementById("footerYear");
+
+    const timeFormatter = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Africa/Kigali",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
     });
 
-    row.append(details, deleteButton);
-    list.appendChild(row);
-  });
+    const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Africa/Kigali",
+        weekday: "long",
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+    });
+
+    if (timeElement) {
+        timeElement.textContent = timeFormatter.format(now);
+    }
+
+    if (dateElement) {
+        dateElement.textContent = dateFormatter.format(now);
+    }
+
+    if (yearElement) {
+        yearElement.textContent = new Intl.DateTimeFormat("en", {
+            timeZone: "Africa/Kigali",
+            year: "numeric"
+        }).format(now);
+    }
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+
+// -----------------------------
+// 2. HERO SLIDER
+// -----------------------------
+
+const heroSlides = Array.from(
+    document.querySelectorAll(".hero-slide")
+);
+
+const sliderDots = document.getElementById("sliderDots");
+
+let currentSlide = 0;
+let slideInterval = null;
+
+function buildSliderDots() {
+    if (!sliderDots) return;
+
+    sliderDots.replaceChildren();
+
+    heroSlides.forEach((slide, index) => {
+        const dot = document.createElement("button");
+
+        dot.className = "slider-dot";
+        dot.type = "button";
+        dot.setAttribute("aria-label", `Show slide ${index + 1}`);
+
+        dot.addEventListener("click", () => {
+            showSlide(index);
+            restartSlider();
+        });
+
+        sliderDots.appendChild(dot);
+    });
+}
+
+function showSlide(index) {
+    if (!heroSlides.length) return;
+
+    currentSlide = (index + heroSlides.length) % heroSlides.length;
+
+    heroSlides.forEach((slide, slideIndex) => {
+        slide.classList.toggle("active", slideIndex === currentSlide);
+        slide.setAttribute(
+            "aria-hidden",
+            slideIndex === currentSlide ? "false" : "true"
+        );
+    });
+
+    if (sliderDots) {
+        Array.from(sliderDots.children).forEach((dot, dotIndex) => {
+            dot.classList.toggle("active", dotIndex === currentSlide);
+        });
+    }
+}
+
+function nextSlide() {
+    showSlide(currentSlide + 1);
+}
+
+function previousSlide() {
+    showSlide(currentSlide - 1);
+}
+
+function restartSlider() {
+    if (slideInterval) {
+        clearInterval(slideInterval);
+    }
+
+    slideInterval = setInterval(nextSlide, 4000);
+}
+
+document.getElementById("nextSlide")
+    ?.addEventListener("click", () => {
+        nextSlide();
+        restartSlider();
+    });
+
+document.getElementById("prevSlide")
+    ?.addEventListener("click", () => {
+        previousSlide();
+        restartSlider();
+    });
+
+buildSliderDots();
+showSlide(0);
+restartSlider();
+
+
+// -----------------------------
+// 3. MOBILE MENU
+// -----------------------------
+
+const menuToggle = document.getElementById("menuToggle");
+const mainNav = document.getElementById("mainNav");
+
+menuToggle?.addEventListener("click", () => {
+    const isOpen = mainNav.classList.toggle("open");
+
+    menuToggle.setAttribute("aria-expanded", String(isOpen));
+});
+
+mainNav?.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+        mainNav.classList.remove("open");
+        menuToggle?.setAttribute("aria-expanded", "false");
+    });
+});
+
+
+// -----------------------------
+// 4. CKAVOX CONTENT DATABASE
+// -----------------------------
+
+let allContent = [];
+
+const categoryContainers = {
+    movie: "moviesContainer",
+    music: "musicContainer",
+    news: "newsContainer",
+    sports: "sportsContainer",
+    showbiz: "showbizContainer",
+    photo: "photosContainer"
+};
+
+function makeElement(tag, className, text) {
+    const element = document.createElement(tag);
+
+    if (className) {
+        element.className = className;
+    }
+
+    if (text !== undefined) {
+        element.textContent = text;
+    }
+
+    return element;
+}
+
+function getExternalUrl(url) {
+    if (!url) return null;
+
+    try {
+        const parsed = new URL(url);
+
+        if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+            return parsed.href;
+        }
+    } catch (error) {
+        return null;
+    }
+
+    return null;
 }
 
 
-function deleteContent(id) {
-  if (!isAdminLoggedIn()) {
-    alert("Please log in first.");
-    return;
-  }
+// -----------------------------
+// 5. RECORD CONTENT EVENTS
+// -----------------------------
 
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this content?"
-  );
+async function recordEvent(contentId, eventType) {
+    if (!window.supabaseClient) return;
 
-  if (!confirmed) {
-    return;
-  }
+    try {
+        const {
+            data: { user }
+        } = await supabaseClient.auth.getUser();
 
-  const oldContents = [...contents];
+        const { error } = await supabaseClient
+            .from("content_events")
+            .insert({
+                content_id: contentId,
+                user_id: user?.id ?? null,
+                event_type: eventType
+            });
 
-  contents = contents.filter(item => item.id !== id);
-
-  if (!saveContents()) {
-    contents = oldContents;
-    return;
-  }
-
-  currentSlide = 0;
-
-  renderAllContent();
-  renderAdminList();
-  renderFeaturedSlider();
+        if (error) {
+            console.warn("Analytics event was not saved:", error.message);
+        }
+    } catch (error) {
+        console.warn("Analytics unavailable.");
+    }
 }
 
 
-/* -----------------------------
-   INITIALIZE WEBSITE
------------------------------ */
+// -----------------------------
+// 6. CONTENT CARDS
+// -----------------------------
 
-function initializeWebsite() {
-  contents = readStoredContent();
+function createContentCard(item) {
+    const card = makeElement("article", "content-card");
 
-  document.getElementById("current-year").textContent =
-    new Date().getFullYear();
+    const image = document.createElement("img");
 
-  renderAllContent();
-  renderAdminList();
-  renderFeaturedSlider();
+    image.src = item.image_url ||
+        "https://placehold.co/800x500/151515/f5c400?text=CKAVOX";
 
-  startSlider();
+    image.alt = item.title || "CKAVOX content";
+    image.loading = "lazy";
+    image.decoding = "async";
+
+    image.onerror = () => {
+        image.onerror = null;
+        image.src =
+            "https://placehold.co/800x500/151515/f5c400?text=CKAVOX";
+    };
+
+    const title = makeElement("h3", "", item.title);
+
+    const category = makeElement(
+        "p",
+        "content-category",
+        item.category || ""
+    );
+
+    card.append(image, title, category);
+
+    if (item.description) {
+        card.appendChild(
+            makeElement("p", "", item.description)
+        );
+    }
+
+    const mediaUrl = getExternalUrl(item.media_url);
+
+    if (mediaUrl && item.type === "music") {
+        const audio = document.createElement("audio");
+
+        audio.controls = true;
+        audio.preload = "none";
+        audio.src = mediaUrl;
+
+        let recorded = false;
+
+        audio.addEventListener("play", () => {
+            if (!recorded) {
+                recorded = true;
+                recordEvent(item.id, "play");
+            }
+        });
+
+        card.appendChild(audio);
+    }
+
+    if (mediaUrl && item.type === "movie") {
+        const video = document.createElement("video");
+
+        video.controls = true;
+        video.preload = "metadata";
+        video.playsInline = true;
+        video.src = mediaUrl;
+
+        let recorded = false;
+
+        video.addEventListener("play", () => {
+            if (!recorded) {
+                recorded = true;
+                recordEvent(item.id, "play");
+            }
+        });
+
+        card.appendChild(video);
+    }
+
+    const externalUrl = getExternalUrl(item.external_url);
+
+    if (externalUrl) {
+        const link = document.createElement("a");
+
+        link.href = externalUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Watch / Read More";
+
+        card.appendChild(link);
+    }
+
+    const detailsButton = document.createElement("button");
+
+    detailsButton.type = "button";
+    detailsButton.textContent = "View Details";
+
+    detailsButton.addEventListener("click", () => {
+        recordEvent(item.id, "view");
+
+        const details = [
+            item.title,
+            item.category,
+            item.description
+        ].filter(Boolean).join("\n\n");
+
+        alert(details);
+    });
+
+    card.appendChild(detailsButton);
+
+    return card;
 }
 
 
-document.addEventListener("DOMContentLoaded", initializeWebsite);
+// -----------------------------
+// 7. RENDER CONTENT CATEGORIES
+// -----------------------------
+
+function renderCategory(type, containerId) {
+    const container = document.getElementById(containerId);
+
+    if (!container) return;
+
+    container.replaceChildren();
+
+    const items = allContent.filter(item => item.type === type);
+
+    if (!items.length) {
+        container.appendChild(
+            makeElement(
+                "p",
+                "loading-message",
+                "New CKAVOX content coming soon."
+            )
+        );
+
+        return;
+    }
+
+    items.forEach(item => {
+        container.appendChild(createContentCard(item));
+    });
+}
+
+function renderAllCategories() {
+    Object.entries(categoryContainers).forEach(([type, id]) => {
+        renderCategory(type, id);
+    });
+}
+
+
+// -----------------------------
+// 8. SEARCH
+// -----------------------------
+
+const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
+
+function searchCKAVOX(query) {
+    const normalized = query.trim().toLowerCase();
+
+    return allContent.filter(item => {
+        const searchableText = [
+            item.title,
+            item.category,
+            item.description,
+            item.type
+        ].join(" ").toLowerCase();
+
+        return searchableText.includes(normalized);
+    });
+}
+
+function renderSearchResults(query) {
+    if (!searchResults) return;
+
+    searchResults.replaceChildren();
+
+    if (!query.trim()) return;
+
+    const results = searchCKAVOX(query);
+
+    if (!results.length) {
+        searchResults.appendChild(
+            makeElement("p", "", "No matching content found.")
+        );
+
+        return;
+    }
+
+    results.forEach(item => {
+        searchResults.appendChild(createContentCard(item));
+    });
+}
+
+searchInput?.addEventListener("input", event => {
+    renderSearchResults(event.target.value);
+});
+
+
+// -----------------------------
+// 9. LOAD CONTENT FROM SUPABASE
+// -----------------------------
+
+async function loadCKAVOXContent() {
+    if (!window.supabaseClient) {
+        console.error(
+            "Supabase client missing. Check supabase-config.js."
+        );
+
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("content")
+        .select("*")
+        .eq("is_published", true)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Could not load content:", error.message);
+        return;
+    }
+
+    allContent = data || [];
+
+    renderAllCategories();
+}
+
+
+// -----------------------------
+// 10. ACCOUNT STATUS
+// -----------------------------
+
+async function updateLoginStatus() {
+    const accountArea = document.getElementById("accountArea");
+
+    if (!accountArea || !window.supabaseClient) return;
+
+    const { data: { user }, error } =
+        await supabaseClient.auth.getUser();
+
+    accountArea.replaceChildren();
+
+    if (error || !user) {
+        const signup = makeElement("a", "btn btn-yellow", "Sign Up");
+        signup.href = "login.html";
+
+        const login = makeElement("a", "btn btn-outline", "Login");
+        login.href = "login.html";
+
+        accountArea.append(signup, login);
+        return;
+    }
+
+    const email = makeElement(
+        "span",
+        "account-email",
+        user.email || "My Account"
+    );
+
+    email.style.color = "#f5c400";
+
+    const logout = makeElement("button", "btn btn-outline", "Logout");
+    logout.type = "button";
+
+    logout.addEventListener("click", async () => {
+        const { error } = await supabaseClient.auth.signOut();
+
+        if (error) {
+            alert("Could not sign out. Please try again.");
+            return;
+        }
+
+        window.location.reload();
+    });
+
+    accountArea.append(email, logout);
+}
+
+
+// -----------------------------
+// 11. START WEBSITE
+// -----------------------------
+
+document.addEventListener("DOMContentLoaded", async () => {
+    updateClock();
+
+    await Promise.all([
+        loadCKAVOXContent(),
+        updateLoginStatus()
+    ]);
+});
