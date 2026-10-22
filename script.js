@@ -1,909 +1,343 @@
- "use strict";
-const SUPABASE_URL = "https://guuppgqreghdxhvkfrqy.supabase.co";
-const SUPABASE_KEY = "sb_publishable_weWwdJqlkdK9ao7CIW0ycg_ihXXJpOL";
+ /* ===================================
+   CKAVOX MAIN JAVASCRIPT
+   =================================== */
 
-const ADMIN_EMAIL = "cedrickkayiranga354@gmail.com
-const BUCKET = "ckavox-media";
+const $ = (selector) => document.querySelector(selector);
 
-const supabaseReady =
-    SUPABASE_URL.startsWith("https://") &&
-    !SUPABASE_URL.includes("YOUR_") &&
-    !SUPABASE_KEY.includes("YOUR_");
-
-let db = null;
-let currentUser = null;
 let allPosts = [];
-let activeFilter = "All";
-let slideIndex = 0;
+let slides = [];
+let currentSlide = 0;
 let slideTimer = null;
 
-const slides = [
-    {
-        title: "Discover the latest",
-        image:
-            "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=85"
-    },
-    {
-        title: "Technology & Innovation",
-        image:
-            "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=85"
-    },
-    {
-        title: "Music & Entertainment",
-        image:
-            "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1400&q=85"
-    },
-    {
-        title: "Sports & Global News",
-        image:
-            "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1400&q=85"
-    }
-];
-
-function $(id) {
-    return document.getElementById(id);
-}
-
-
-// ------------------------------------
-// LIVE CLOCK
-// ------------------------------------
+/* ===================================
+   LIVE CLOCK - RWANDA TIME
+   =================================== */
 
 function updateClock() {
     const now = new Date();
 
-    $("clock").textContent =
-        now.toLocaleTimeString("en-GB", {
-            hour12: false,
-            timeZone: "Africa/Kigali"
-        });
+    const time = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Africa/Kigali",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    }).format(now);
 
-    $("date").textContent =
-        now.toLocaleDateString("en-GB", {
-            weekday: "short",
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-            timeZone: "Africa/Kigali"
-        });
+    const date = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Africa/Kigali",
+        weekday: "long",
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+    }).format(now);
 
-    $("year").textContent = now.getFullYear();
+    $("#clockTime").textContent = time;
+    $("#clockDate").textContent = date;
+    $("#clockZone").textContent = "Rwanda Time (CAT, UTC+2)";
+
+    $("#footerYear").textContent = new Intl.DateTimeFormat("en", {
+        timeZone: "Africa/Kigali",
+        year: "numeric"
+    }).format(now);
 }
 
 updateClock();
 setInterval(updateClock, 1000);
 
+/* ===================================
+   SAFE HTML
+   =================================== */
 
-// ------------------------------------
-// MOBILE MENU
-// ------------------------------------
-
-$("menuButton").addEventListener("click", () => {
-    $("navigation").classList.toggle("open");
-});
-
-document.querySelectorAll(".navigation a").forEach(link => {
-    link.addEventListener("click", () => {
-        $("navigation").classList.remove("open");
-    });
-});
-
-
-// ------------------------------------
-// SLIDESHOW: EVERY FOUR SECONDS
-// ------------------------------------
-
-function showSlide(index) {
-    slideIndex = (index + slides.length) % slides.length;
-
-    const slide = slides[slideIndex];
-
-    $("slideImage").src = slide.image;
-    $("slideTitle").textContent = slide.title;
-
-    $("slideIndicators").replaceChildren();
-
-    slides.forEach((item, i) => {
-        const dot = document.createElement("button");
-
-        dot.className =
-            "slide-dot" + (i === slideIndex ? " active" : "");
-
-        dot.setAttribute("aria-label", "Show slide " + (i + 1));
-
-        dot.addEventListener("click", () => {
-            showSlide(i);
-            restartSlideshow();
-        });
-
-        $("slideIndicators").appendChild(dot);
-    });
+function escapeHTML(value = "") {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[char]);
 }
 
-function restartSlideshow() {
-    clearInterval(slideTimer);
-
-    slideTimer = setInterval(() => {
-        showSlide(slideIndex + 1);
-    }, 4000);
-}
-
-$("previousSlide").addEventListener("click", () => {
-    showSlide(slideIndex - 1);
-    restartSlideshow();
-});
-
-$("nextSlide").addEventListener("click", () => {
-    showSlide(slideIndex + 1);
-    restartSlideshow();
-});
-
-showSlide(0);
-restartSlideshow();
-
-
-// ------------------------------------
-// MESSAGE HELPERS
-// ------------------------------------
-
-function setMessage(elementId, message, success = false) {
-    const el = $(elementId);
-
-    el.textContent = message;
-
-    el.className =
-        "status-message " + (success ? "success" : "error");
-}
-
-function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, character => {
-        const entities = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;"
-        };
-
-        return entities[character];
-    });
-}
-
-function validHttpUrl(value) {
-    if (!value) return true;
-
+function safeURL(value = "") {
     try {
-        const url = new URL(value);
+        const url = new URL(value, window.location.href);
 
-        return (
+        if (
             url.protocol === "https:" ||
             url.protocol === "http:"
-        );
-    } catch {
-        return false;
-    }
+        ) {
+            return url.href;
+        }
+    } catch (error) {}
+
+    return "";
 }
 
-function safeExternalLink(value) {
-    if (!value) return "";
+/* ===================================
+   SLIDESHOW
+   =================================== */
+
+async function loadSlides() {
+    const container = $("#heroSlides");
 
     try {
-        const url = new URL(value);
+        const { data, error } = await supabaseClient
+            .from("ckavox_slides")
+            .select("*")
+            .eq("active", true)
+            .order("sort_order", { ascending: true });
 
-        if (
-            url.protocol !== "https:" &&
-            url.protocol !== "http:"
-        ) {
-            return "";
+        if (error) throw error;
+
+        slides = data || [];
+
+        if (slides.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    CKAVOX highlights will appear here
+                    when the administrator publishes slides.
+                </div>
+            `;
+            return;
         }
 
-        return url.href;
-    } catch {
-        return "";
-    }
-}
+        currentSlide = 0;
+        renderSlide();
 
-function getShareUrl(post) {
-    const url = new URL(window.location.href);
+        clearInterval(slideTimer);
 
-    url.hash = "posts";
+        if (slides.length > 1) {
+            slideTimer = setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                renderSlide();
+            }, 4000);
+        }
 
-    url.searchParams.set("post", post.id);
+    } catch (error) {
+        console.error("CKAVOX slideshow error:", error);
 
-    return url.href;
-}
-
-
-// ------------------------------------
-// SUPABASE INITIALIZATION
-// ------------------------------------
-
-function initializeApp() {
-    if (!supabaseReady) {
-        $("postsGrid").innerHTML = `
+        container.innerHTML = `
             <div class="empty-state">
-                <h3>CKAVOX setup required</h3>
-                <p>
-                    Add your Supabase project URL and public
-                    publishable/anon key in script.js.
-                </p>
+                Unable to load highlights.
+                Check the Supabase configuration.
             </div>
         `;
-
-        setMessage(
-            "loginMessage",
-            "Configure Supabase before signing in."
-        );
-
-        return;
-    }
-
-    if (!window.supabase) {
-        setMessage(
-            "loginMessage",
-            "Supabase could not load. Check your internet connection."
-        );
-
-        return;
-    }
-
-    db = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-    loadPublicPosts();
-    restoreSession();
-}
-
-
-// ------------------------------------
-// ADMIN AUTHENTICATION
-// ------------------------------------
-
-$("loginForm").addEventListener("submit", async event => {
-    event.preventDefault();
-
-    if (!db) {
-        setMessage(
-            "loginMessage",
-            "Supabase is not configured."
-        );
-
-        return;
-    }
-
-    const email = $("adminEmail").value.trim().toLowerCase();
-    const password = $("adminPassword").value;
-
-    if (email !== ADMIN_EMAIL.toLowerCase()) {
-        setMessage(
-            "loginMessage",
-            "Access denied. This email is not authorized."
-        );
-
-        return;
-    }
-
-    setMessage("loginMessage", "Signing in...", true);
-
-    try {
-        const { data, error } = await db.auth.signInWithPassword({
-            email,
-            password
-        });
-
-        if (error) throw error;
-
-        if (
-            !data.user ||
-            data.user.email?.toLowerCase() !==
-                ADMIN_EMAIL.toLowerCase()
-        ) {
-            await db.auth.signOut();
-
-            throw new Error("Unauthorized administrator.");
-        }
-
-        currentUser = data.user;
-
-        showAdminDashboard();
-    } catch (error) {
-        setMessage(
-            "loginMessage",
-            error.message || "Unable to sign in."
-        );
-    }
-});
-
-
-async function restoreSession() {
-    if (!db) return;
-
-    try {
-        const { data, error } = await db.auth.getSession();
-
-        if (error) throw error;
-
-        const session = data.session;
-
-        if (
-            session?.user?.email?.toLowerCase() ===
-            ADMIN_EMAIL.toLowerCase()
-        ) {
-            currentUser = session.user;
-            showAdminDashboard();
-        } else {
-            $("adminDashboard").hidden = true;
-            $("loginCard").hidden = false;
-        }
-    } catch (error) {
-        console.error("Session restore failed:", error.message);
     }
 }
 
+function renderSlide() {
+    const container = $("#heroSlides");
+    const slide = slides[currentSlide];
 
-function showAdminDashboard() {
-    $("loginCard").hidden = true;
-    $("adminDashboard").hidden = false;
+    if (!slide) return;
 
-    $("adminIdentity").textContent =
-        "Signed in as " + currentUser.email;
+    const imageURL = safeURL(slide.image_url);
 
-    $("adminEmail").value = "";
-    $("adminPassword").value = "";
+    const content = `
+        <article class="slide-card">
+            ${
+                imageURL
+                ? `<img src="${escapeHTML(imageURL)}"
+                        alt="${escapeHTML(slide.title)}"
+                        fetchpriority="high">`
+                : ""
+            }
 
-    setMessage("loginMessage", "");
+            <div class="slide-caption">
+                <p class="eyebrow">CKAVOX EXCLUSIVE</p>
 
-    loadPublicPosts();
-}
+                <h3>${escapeHTML(slide.title)}</h3>
 
+                <p>${escapeHTML(slide.subtitle || "")}</p>
 
-// Watch for authentication changes
-function watchAuthChanges() {
-    if (!db) return;
-
-    db.auth.onAuthStateChange((event, session) => {
-        if (
-            session?.user?.email?.toLowerCase() ===
-            ADMIN_EMAIL.toLowerCase()
-        ) {
-            currentUser = session.user;
-
-            $("loginCard").hidden = true;
-            $("adminDashboard").hidden = false;
-
-            $("adminIdentity").textContent =
-                "Signed in as " + currentUser.email;
-        } else {
-            currentUser = null;
-
-            $("adminDashboard").hidden = true;
-            $("loginCard").hidden = false;
-        }
-    });
-}
-
-
-$("logoutButton").addEventListener("click", async () => {
-    if (!db) return;
-
-    const { error } = await db.auth.signOut();
-
-    if (error) {
-        alert("Unable to sign out: " + error.message);
-        return;
-    }
-
-    currentUser = null;
-
-    $("adminDashboard").hidden = true;
-    $("loginCard").hidden = false;
-
-    setMessage("loginMessage", "You have signed out.", true);
-});
-
-
-// ------------------------------------
-// LOAD PUBLIC POSTS
-// ------------------------------------
-
-async function loadPublicPosts() {
-    if (!db) return;
-
-    $("postsGrid").innerHTML = `
-        <div class="loading-card">Loading posts...</div>
+                ${
+                    safeURL(slide.link_url)
+                    ? `<a class="content-link"
+                         href="${escapeHTML(safeURL(slide.link_url))}"
+                         target="_blank"
+                         rel="noopener noreferrer">
+                         Discover more ↗
+                       </a>`
+                    : ""
+                }
+            </div>
+        </article>
     `;
 
-    const { data, error } = await db
-        .from("posts")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(100);
+    container.innerHTML = content;
+}
 
-    if (error) {
-        console.error(error);
+$("#prevSlide").addEventListener("click", () => {
+    if (slides.length < 2) return;
 
-        $("postsGrid").innerHTML = `
-            <div class="empty-state">
+    currentSlide =
+        (currentSlide - 1 + slides.length) % slides.length;
+
+    renderSlide();
+});
+
+$("#nextSlide").addEventListener("click", () => {
+    if (slides.length < 2) return;
+
+    currentSlide = (currentSlide + 1) % slides.length;
+
+    renderSlide();
+});
+
+/* ===================================
+   LOAD PUBLISHED CONTENT
+   =================================== */
+
+async function loadPosts() {
+    const container = $("#latestPosts");
+
+    container.innerHTML = `
+        <p class="loading">Loading CKAVOX posts...</p>
+    `;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("ckavox_content")
+            .select("*")
+            .eq("published", true)
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        allPosts = data || [];
+
+        renderPosts("All");
+
+    } catch (error) {
+        console.error("CKAVOX content error:", error);
+
+        container.innerHTML = `
+            <p class="empty-state">
                 Unable to load posts.
-                Check your database and internet connection.
-            </div>
+                Please check the Supabase setup.
+            </p>
         `;
-
-        return;
-    }
-
-    allPosts = data || [];
-
-    renderPosts();
-    renderAdminPosts();
-    updatePostCount();
-
-    const requestedPost =
-        new URLSearchParams(window.location.search).get("post");
-
-    if (requestedPost) {
-        setTimeout(() => {
-            const card = document.getElementById(
-                "post-" + requestedPost
-            );
-
-            if (card) {
-                card.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
-
-                card.style.borderColor = "#f5c400";
-            }
-        }, 100);
     }
 }
 
+/* ===================================
+   RENDER CONTENT CARDS
+   =================================== */
 
-// ------------------------------------
-// RENDER PUBLIC POSTS
-// ------------------------------------
+function renderPosts(category = "All") {
+    const container = $("#latestPosts");
 
-function renderPosts() {
-    const grid = $("postsGrid");
-
-    const posts = allPosts.filter(post => {
-        return (
-            activeFilter === "All" ||
-            post.category === activeFilter
+    const filtered = category === "All"
+        ? allPosts
+        : allPosts.filter(post =>
+            post.category.toLowerCase() === category.toLowerCase()
         );
-    });
 
-    if (!posts.length) {
-        grid.innerHTML = `
-            <div class="empty-state">
-                <h3>No posts yet</h3>
-                <p>Check back soon for new CKAVOX content.</p>
-            </div>
+    if (!filtered.length) {
+        container.innerHTML = `
+            <p class="empty-state">
+                No published posts in this category yet.
+            </p>
         `;
-
         return;
     }
 
-    grid.replaceChildren();
+    container.innerHTML = filtered.map(post => {
+        const image = safeURL(post.image_url);
+        const media = safeURL(post.media_url);
 
-    posts.forEach(post => {
-        const card = document.createElement("article");
+        return `
+            <article class="content-card">
 
-        card.className = "post-card";
-        card.id = "post-" + post.id;
+                ${
+                    image
+                    ? `<img
+                        src="${escapeHTML(image)}"
+                        alt="${escapeHTML(post.title)}"
+                        loading="lazy"
+                        decoding="async">`
+                    : ""
+                }
 
-        const imageUrl = safeExternalLink(post.image_url);
-        const contentUrl = safeExternalLink(post.content_url);
+                <div class="content-card-body">
 
-        const isVideo = post.category === "Video";
+                    <span class="content-category">
+                        ${escapeHTML(post.category)}
+                    </span>
 
-        const media = imageUrl
-            ? (
-                isVideo
-                    ? `
-                        <video
-                            class="post-media"
-                            src="${escapeHTML(imageUrl)}"
-                            controls
-                            preload="metadata"
-                            playsinline>
-                        </video>
-                    `
-                    : `
-                        <img
-                            class="post-media"
-                            src="${escapeHTML(imageUrl)}"
-                            alt="${escapeHTML(post.title)}"
-                            loading="lazy">
-                    `
-            )
-            : "";
+                    <h3>${escapeHTML(post.title)}</h3>
 
-        const openLink = contentUrl
-            ? `
-                <a href="${escapeHTML(contentUrl)}"
-                   target="_blank"
-                   rel="noopener noreferrer">
-                    Open Content ↗
-                </a>
-            `
-            : "";
+                    <p>${escapeHTML(post.description || "")}</p>
 
-        const formattedDate = post.created_at
-            ? new Date(post.created_at).toLocaleDateString()
-            : "";
-
-        card.innerHTML = `
-            ${media}
-
-            <div class="post-body">
-
-                <span class="post-category">
-                    ${escapeHTML(post.category)}
-                </span>
-
-                <h3>${escapeHTML(post.title)}</h3>
-
-                <p class="post-description">
-                    ${escapeHTML(post.description)}
-                </p>
-
-                <p class="post-date">
-                    ${escapeHTML(formattedDate)}
-                </p>
-
-                <div class="post-actions">
-
-                    ${openLink}
-
-                    <button
-                        type="button"
-                        class="share-button"
-                        data-share="${escapeHTML(post.id)}">
-                        Share ↗
-                    </button>
+                    ${
+                        media
+                        ? `<a class="content-link"
+                             href="${escapeHTML(media)}"
+                             target="_blank"
+                             rel="noopener noreferrer">
+                             Open content ↗
+                           </a>`
+                        : ""
+                    }
 
                 </div>
 
-            </div>
+            </article>
+        `;
+    }).join("");
+}
+
+/* ===================================
+   CATEGORY FILTERS
+   =================================== */
+
+$("#contentFilters").addEventListener("click", event => {
+    const button = event.target.closest("[data-category]");
+
+    if (!button) return;
+
+    document.querySelectorAll(".filter").forEach(item => {
+        item.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    renderPosts(button.dataset.category);
+});
+
+/* ===================================
+   START WEBSITE
+   =================================== */
+
+async function startCKAVOX() {
+    if (
+        !window.supabase ||
+        typeof SUPABASE_URL === "undefined" ||
+        typeof SUPABASE_ANON_KEY === "undefined" ||
+        SUPABASE_URL.includes("PASTE_YOUR_") ||
+        SUPABASE_ANON_KEY.includes("PASTE_YOUR_")
+    ) {
+        $("#latestPosts").innerHTML = `
+            <p class="empty-state">
+                Add your Supabase project URL and publishable key
+                to supabase-config.js.
+            </p>
         `;
 
-        grid.appendChild(card);
-    });
-
-    grid.querySelectorAll("[data-share]").forEach(button => {
-        button.addEventListener("click", () => {
-            const post = allPosts.find(
-                item => item.id === button.dataset.share
-            );
-
-            if (post) openShareDialog(post);
-        });
-    });
-}
-
-
-// ------------------------------------
-// FILTER POSTS
-// ------------------------------------
-
-document.querySelectorAll("[data-filter]").forEach(button => {
-    button.addEventListener("click", () => {
-        activeFilter = button.dataset.filter;
-
-        document.querySelectorAll("[data-filter]").forEach(item => {
-            item.classList.toggle(
-                "active",
-                item === button
-            );
-        });
-
-        renderPosts();
-    });
-});
-
-
-// ------------------------------------
-// SHARE LINKS
-// ------------------------------------
-
-function openShareDialog(post) {
-    const shareUrl = getShareUrl(post);
-
-    $("shareLink").value = shareUrl;
-
-    $("whatsappShare").href =
-        "https://wa.me/?text=" +
-        encodeURIComponent(post.title + " - " + shareUrl);
-
-    $("shareModal").hidden = false;
-}
-
-function closeShareDialog() {
-    $("shareModal").hidden = true;
-}
-
-$("closeShare").addEventListener("click", closeShareDialog);
-
-$("shareModal").addEventListener("click", event => {
-    if (event.target === $("shareModal")) {
-        closeShareDialog();
-    }
-});
-
-$("copyShareLink").addEventListener("click", async () => {
-    const link = $("shareLink").value;
-
-    try {
-        await navigator.clipboard.writeText(link);
-
-        $("copyShareLink").textContent = "Copied!";
-
-        setTimeout(() => {
-            $("copyShareLink").textContent = "Copy Link";
-        }, 2000);
-    } catch {
-        $("shareLink").focus();
-        $("shareLink").select();
-
-        const copied = document.execCommand("copy");
-
-        alert(
-            copied
-                ? "Link copied."
-                : "Copy the selected link manually."
-        );
-    }
-});
-
-
-// ------------------------------------
-// ADMIN: UPLOAD FILES
-// ------------------------------------
-
-async function uploadMedia(file) {
-    if (!file) return "";
-
-    if (!currentUser || !db) {
-        throw new Error("Admin login required.");
-    }
-
-    if (file.size > 50 * 1024 * 1024) {
-        throw new Error("File must not exceed 50 MB.");
-    }
-
-    const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-        "image/gif",
-        "video/mp4",
-        "video/webm"
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-        throw new Error("Unsupported file format.");
-    }
-
-    const safeName = file.name.replace(
-        /[^a-zA-Z0-9._-]/g,
-        "_"
-    );
-
-    const filePath =
-        Date.now() + "-" +
-        crypto.randomUUID() + "-" +
-        safeName;
-
-    const { data, error } = await db.storage
-        .from(BUCKET)
-        .upload(filePath, file, {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: file.type
-        });
-
-    if (error) throw error;
-
-    const { data: publicData } = db.storage
-        .from(BUCKET)
-        .getPublicUrl(data.path);
-
-    return publicData.publicUrl;
-}
-
-
-// ------------------------------------
-// ADMIN: PUBLISH CONTENT
-// ------------------------------------
-
-$("postForm").addEventListener("submit", async event => {
-    event.preventDefault();
-
-    if (
-        !db ||
-        !currentUser ||
-        currentUser.email?.toLowerCase() !==
-            ADMIN_EMAIL.toLowerCase()
-    ) {
-        setMessage(
-            "publishMessage",
-            "Only the authorized administrator can publish."
-        );
+        $("#heroSlides").innerHTML = `
+            <p class="empty-state">
+                Supabase configuration is required.
+            </p>
+        `;
 
         return;
     }
 
-    const title = $("postTitle").value.trim();
-
-    const category = $("postCategory").value;
-
-    const description = $("postDescription").value.trim();
-
-    const imageUrl = $("postImageUrl").value.trim();
-
-    const contentUrl = $("postContentUrl").value.trim();
-
-    const file = $("postImage").files[0];
-
-    if (!title) {
-        setMessage("publishMessage", "Enter a content title.");
-        return;
-    }
-
-    if (!validHttpUrl(imageUrl) || !validHttpUrl(contentUrl)) {
-        setMessage(
-            "publishMessage",
-            "Links must begin with https:// or http://."
-        );
-
-        return;
-    }
-
-    const button = $("publishButton");
-
-    button.disabled = true;
-    button.textContent = "Publishing...";
-
-    setMessage("publishMessage", "Publishing content...", true);
-
-    try {
-        let uploadedUrl = imageUrl;
-
-        if (file) {
-            uploadedUrl = await uploadMedia(file);
-        }
-
-        if (!uploadedUrl && !contentUrl && !description) {
-            throw new Error(
-                "Add a description, media file or content link."
-            );
-        }
-
-        const { error } = await db
-            .from("posts")
-            .insert({
-                title,
-                category,
-                description,
-                image_url: uploadedUrl,
-                content_url: contentUrl
-            });
-
-        if (error) throw error;
-
-        $("postForm").reset();
-
-        setMessage(
-            "publishMessage",
-            "Content published successfully!",
-            true
-        );
-
-        await loadPublicPosts();
-
-        $("posts").scrollIntoView({
-            behavior: "smooth"
-        });
-
-    } catch (error) {
-        console.error(error);
-
-        setMessage(
-            "publishMessage",
-            error.message || "Unable to publish content."
-        );
-    } finally {
-        button.disabled = false;
-        button.textContent = "Publish Content";
-    }
-});
-
-
-// ------------------------------------
-// ADMIN: MANAGE AND DELETE POSTS
-// ------------------------------------
-
-function renderAdminPosts() {
-    const container = $("adminPostsList");
-
-    if (!container) return;
-
-    if (!currentUser) {
-        container.textContent = "Sign in to manage posts.";
-        return;
-    }
-
-    if (!allPosts.length) {
-        container.textContent = "No published posts yet.";
-        return;
-    }
-
-    container.replaceChildren();
-
-    allPosts.forEach(post => {
-        const row = document.createElement("div");
-
-        row.className = "admin-post-row";
-
-        const info = document.createElement("div");
-
-        const title = document.createElement("h4");
-        title.textContent = post.title;
-
-        const category = document.createElement("p");
-        category.textContent = post.category;
-
-        info.append(title, category);
-
-        const deleteButton = document.createElement("button");
-
-        deleteButton.type = "button";
-        deleteButton.className = "delete-button";
-        deleteButton.textContent = "Delete";
-
-        deleteButton.addEventListener("click", async () => {
-            const confirmed = confirm(
-                'Delete "' + post.title + '"?'
-            );
-
-            if (!confirmed) return;
-
-            deleteButton.disabled = true;
-
-            try {
-                const { error } = await db
-                    .from("posts")
-                    .delete()
-                    .eq("id", post.id);
-
-                if (error) throw error;
-
-                await loadPublicPosts();
-
-            } catch (error) {
-                alert("Delete failed: " + error.message);
-                deleteButton.disabled = false;
-            }
-        });
-
-        row.append(info, deleteButton);
-
-        container.appendChild(row);
-    });
+    await Promise.all([
+        loadSlides(),
+        loadPosts()
+    ]);
 }
 
-
-function updatePostCount() {
-    $("postCount").textContent = String(allPosts.length);
-}
-
-
-// ------------------------------------
-// START APP
-// ------------------------------------
-
-initializeApp();
+startCKAVOX();
