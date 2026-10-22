@@ -1,529 +1,637 @@
  <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-  <title>CKAVOX | News, Films, Sports & Technology</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="description"
-    content="Welcome to CKAVOX. Discover trending news, films, sports, music, showbiz and technology."
-  >
+    <meta name="theme-color" content="#090909">
 
-  <meta name="theme-color" content="#080808">
+    <meta name="description"
+          content="CKAVOX - Trending news, films, music,
+          sports, technology and entertainment.">
 
-  <link rel="stylesheet" href="style.css">
+    <title>CKAVOX | News, Entertainment & Technology</title>
 
-  <link rel="preconnect" href="https://images.unsplash.com">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="style.css">
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
+    <link rel="icon"
+          href="https://www.google.com/s2/favicons?domain=ckavox.vercel.app&sz=64">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+            defer></script>
+
+    <script src="script.js" defer></script>
 </head>
 
 <body>
 
-  <!-- HEADER -->
-  <header class="header">
+<header class="top-header">
 
     <a href="#home" class="brand">
-      <span class="logo">C</span>
-      <span>CKA<span class="yellow">VOX</span></span>
+        <span class="brand-mark">C</span>
+        <span>CKAVOX</span>
     </a>
 
-    <div class="clock" id="clock">
-      Loading time...
+    <div class="clock-box">
+        <div id="clock">00:00:00</div>
+        <small id="date">Loading date...</small>
     </div>
 
-    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
-      ☰
+    <button class="menu-button"
+            id="menuButton"
+            aria-label="Open menu">
+        ☰
     </button>
 
-    <nav class="navigation" id="navigation">
-      <a href="#home">Home</a>
-      <a href="#films">Films</a>
-      <a href="#sports">Sports</a>
-      <a href="#technology">Technology</a>
-      <a href="#showbiz">Showbiz</a>
-      <a href="#news">Trending News</a>
-      <a href="#music">Music</a>
-      <a href="#account">My Account</a>
-    </nav>
+</header>
 
-  </header>
+<nav class="navigation" id="navigation">
 
+    <a href="#home">Home</a>
+    <a href="#platforms">Platforms</a>
+    <a href="#posts">Latest Posts</a>
+    <a href="#films">Films</a>
+    <a href="#music">Music</a>
+    <a href="#sports">Sports</a>
+    <a href="#technology">Technology</a>
+    <a href="#news">News</a>
+    <a href="#my-account">My Account</a>
 
-  <main>
+</nav>
 
-    <!-- HOME -->
+<main>
+
+    <!-- HERO -->
+
     <section class="hero" id="home">
 
-      <div class="hero-content">
+        <div class="hero-content">
 
-        <span class="eyebrow">WELCOME TO CKAVOX WEBSITE</span>
+            <span class="eyebrow">
+                NEWS • ENTERTAINMENT • DIGITAL LIFE
+            </span>
 
-        <h1>
-          Discover What's <span class="yellow">Trending.</span>
-        </h1>
+            <h1>
+                WELCOME TO <span>CKAVOX</span>
+            </h1>
 
-        <p>
-          Your destination for films, sports, music, technology,
-          entertainment and the latest news.
-        </p>
+            <h2>Discover What's Trending.</h2>
 
-        <div class="hero-buttons">
-          <a href="#news" class="button primary">Explore News</a>
-          <a href="#showbiz" class="button secondary">Explore Showbiz</a>
+            <p>
+                Your destination for trending news, films,
+                music, sports, technology and entertainment.
+            </p>
+
+            <a class="primary-button" href="#posts">
+                Explore Latest Posts →
+            </a>
+
         </div>
 
-      </div>
+    </section>
+
+
+    <!-- SLIDESHOW -->
+
+    <section class="section">
+
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">DISCOVER</span>
+                <h2>CKAVOX Highlights</h2>
+            </div>
+
+            <div class="slide-controls">
+                <button id="previousSlide"
+                        aria-label="Previous slide">❮</button>
+
+                <button id="nextSlide"
+                        aria-label="Next slide">❯</button>
+            </div>
+        </div>
+
+        <div class="slideshow" id="slideshow">
+
+            <img id="slideImage"
+                 src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=85"
+                 alt="Entertainment highlights">
+
+            <div class="slide-overlay">
+                <span>CKAVOX EXCLUSIVE</span>
+                <h3 id="slideTitle">Discover the latest</h3>
+                <p>News, music, technology and entertainment.</p>
+            </div>
+
+            <div class="slide-indicators" id="slideIndicators">
+            </div>
+
+        </div>
 
     </section>
 
 
-    <!-- SOCIAL LINKS -->
-    <section class="social-section">
+    <!-- SOCIAL PLATFORMS -->
 
-      <div class="section-heading">
-        <span class="eyebrow">EXPLORE YOUR FAVOURITES</span>
-        <h2>Popular Platforms</h2>
-      </div>
+    <section class="section" id="platforms">
 
-      <div class="platform-grid">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">YOUR FAVOURITE APPS</span>
+                <h2>Explore Popular Platforms</h2>
+            </div>
+        </div>
 
-        <a href="https://www.netflix.com/"
-           target="_blank" rel="noopener noreferrer"
-           class="platform-card">
-          <span class="platform-icon">N</span>
-          <span>Netflix</span>
-          <small>Watch movies</small>
-        </a>
+        <div class="platform-grid">
 
-        <a href="https://www.youtube.com/"
-           target="_blank" rel="noopener noreferrer"
-           class="platform-card">
-          <span class="platform-icon">▶</span>
-          <span>YouTube</span>
-          <small>Watch videos</small>
-        </a>
+            <a class="platform-card"
+               href="https://www.netflix.com/"
+               target="_blank" rel="noopener noreferrer">
 
-        <a href="https://www.instagram.com/"
-           target="_blank" rel="noopener noreferrer"
-           class="platform-card">
-          <span class="platform-icon">◎</span>
-          <span>Instagram</span>
-          <small>Explore photos</small>
-        </a>
+                <img src="https://cdn.simpleicons.org/netflix/E50914"
+                     alt="Netflix logo">
 
-        <a href="https://www.tiktok.com/"
-           target="_blank" rel="noopener noreferrer"
-           class="platform-card">
-          <span class="platform-icon">♪</span>
-          <span>TikTok</span>
-          <small>Trending videos</small>
-        </a>
+                <h3>Netflix</h3>
+                <p>Explore movies and series.</p>
+                <span>Open platform ↗</span>
+            </a>
 
-        <a href="https://www.facebook.com/"
-           target="_blank" rel="noopener noreferrer"
-           class="platform-card">
-          <span class="platform-icon">f</span>
-          <span>Facebook</span>
-          <small>Connect</small>
-        </a>
 
-        <a href="https://x.com/"
-           target="_blank" rel="noopener noreferrer"
-           class="platform-card">
-          <span class="platform-icon">X</span>
-          <span>X / Twitter</span>
-          <small>Latest updates</small>
-        </a>
+            <a class="platform-card"
+               href="https://www.youtube.com/"
+               target="_blank" rel="noopener noreferrer">
 
-        <a href="https://www.google.com/"
-           target="_blank" rel="noopener noreferrer"
-           class="platform-card">
-          <span class="platform-icon">G</span>
-          <span>Google</span>
-          <small>Search the web</small>
-        </a>
+                <img src="https://cdn.simpleicons.org/youtube/FF0033"
+                     alt="YouTube logo">
 
-        <a href="https://open.spotify.com/"
-           target="_blank" rel="noopener noreferrer"
-           class="platform-card">
-          <span class="platform-icon">♫</span>
-          <span>Spotify</span>
-          <small>Listen to music</small>
-        </a>
+                <h3>YouTube</h3>
+                <p>Watch videos and music.</p>
+                <span>Open platform ↗</span>
+            </a>
 
-      </div>
+
+            <a class="platform-card"
+               href="https://www.tiktok.com/"
+               target="_blank" rel="noopener noreferrer">
+
+                <img src="https://cdn.simpleicons.org/tiktok/FFFFFF"
+                     alt="TikTok logo">
+
+                <h3>TikTok</h3>
+                <p>Discover trending videos.</p>
+                <span>Open platform ↗</span>
+            </a>
+
+
+            <a class="platform-card"
+               href="https://www.facebook.com/"
+               target="_blank" rel="noopener noreferrer">
+
+                <img src="https://cdn.simpleicons.org/facebook/1877F2"
+                     alt="Facebook logo">
+
+                <h3>Facebook</h3>
+                <p>Connect and share.</p>
+                <span>Open platform ↗</span>
+            </a>
+
+
+            <a class="platform-card"
+               href="https://x.com/"
+               target="_blank" rel="noopener noreferrer">
+
+                <img src="https://cdn.simpleicons.org/x/FFFFFF"
+                     alt="X logo">
+
+                <h3>X / Twitter</h3>
+                <p>Discover news and updates.</p>
+                <span>Open platform ↗</span>
+            </a>
+
+
+            <a class="platform-card"
+               href="https://www.instagram.com/"
+               target="_blank" rel="noopener noreferrer">
+
+                <img src="https://cdn.simpleicons.org/instagram/E4405F"
+                     alt="Instagram logo">
+
+                <h3>Instagram</h3>
+                <p>Explore photos and reels.</p>
+                <span>Open platform ↗</span>
+            </a>
+
+
+            <a class="platform-card"
+               href="https://open.spotify.com/"
+               target="_blank" rel="noopener noreferrer">
+
+                <img src="https://cdn.simpleicons.org/spotify/1ED760"
+                     alt="Spotify logo">
+
+                <h3>Spotify</h3>
+                <p>Discover music and artists.</p>
+                <span>Open platform ↗</span>
+            </a>
+
+
+            <a class="platform-card"
+               href="https://www.google.com/chrome/"
+               target="_blank" rel="noopener noreferrer">
+
+                <img src="https://cdn.simpleicons.org/googlechrome/4285F4"
+                     alt="Google Chrome logo">
+
+                <h3>Chrome</h3>
+                <p>Browse the web.</p>
+                <span>Open platform ↗</span>
+            </a>
+
+        </div>
+
+        <p class="small-note">
+            These buttons open the official platforms.
+            Signing in to those services may be required.
+        </p>
 
     </section>
 
 
-    <!-- FILMS -->
-    <section class="content-section" id="films">
+    <!-- LATEST POSTS -->
 
-      <div class="section-heading">
+    <section class="section" id="posts">
+
+        <div class="section-heading">
+
+            <div>
+                <span class="eyebrow">UPDATED CONTENT</span>
+                <h2>Latest from CKAVOX</h2>
+                <p>Discover photos, stories and videos published by CKAVOX.</p>
+            </div>
+
+        </div>
+
+        <div class="filter-bar">
+
+            <button class="filter-button active"
+                    data-filter="All">All</button>
+
+            <button class="filter-button"
+                    data-filter="News">News</button>
+
+            <button class="filter-button"
+                    data-filter="Photo">Photos</button>
+
+            <button class="filter-button"
+                    data-filter="Video">Videos</button>
+
+            <button class="filter-button"
+                    data-filter="Music">Music</button>
+
+            <button class="filter-button"
+                    data-filter="Sports">Sports</button>
+
+            <button class="filter-button"
+                    data-filter="Technology">Technology</button>
+
+            <button class="filter-button"
+                    data-filter="Entertainment">Entertainment</button>
+
+        </div>
+
+        <div id="postsGrid" class="posts-grid">
+
+            <div class="loading-card">
+                Loading CKAVOX posts...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CATEGORY SECTIONS -->
+
+    <section class="section category-strip" id="films">
         <span class="eyebrow">MOVIES & ENTERTAINMENT</span>
         <h2>Trending Films</h2>
         <p>Discover movies and explore where to watch them.</p>
-      </div>
-
-      <div class="slider"
-           data-category="films"
-           data-title="Trending Films">
-
-        <div class="slides"></div>
-
-        <button class="slider-button previous"
-                aria-label="Previous film">❮</button>
-
-        <button class="slider-button next"
-                aria-label="Next film">❯</button>
-
-        <div class="slider-dots"></div>
-
-      </div>
-
-      <div class="section-action">
         <a href="https://www.netflix.com/"
-           target="_blank" rel="noopener noreferrer"
-           class="button primary">
-          Explore Netflix
+           target="_blank"
+           rel="noopener noreferrer"
+           class="secondary-button">
+            Explore Netflix ↗
         </a>
-      </div>
-
     </section>
 
 
-    <!-- SPORTS -->
-    <section class="content-section" id="sports">
+    <section class="section category-strip" id="music">
+        <span class="eyebrow">AFRICA & THE WORLD</span>
+        <h2>Trending Music</h2>
+        <p>Discover African and American music.</p>
+        <a href="https://www.youtube.com/"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="secondary-button">
+            Explore YouTube ↗
+        </a>
+    </section>
 
-      <div class="section-heading">
+
+    <section class="section category-strip" id="sports">
         <span class="eyebrow">SPORTS WORLD</span>
         <h2>Sports & Formula 1</h2>
         <p>Discover sports, racing and trending sporting stories.</p>
-      </div>
-
-      <div class="slider"
-           data-category="sports"
-           data-title="Sports">
-
-        <div class="slides"></div>
-
-        <button class="slider-button previous"
-                aria-label="Previous sports story">❮</button>
-
-        <button class="slider-button next"
-                aria-label="Next sports story">❯</button>
-
-        <div class="slider-dots"></div>
-
-      </div>
-
     </section>
 
 
-    <!-- TECHNOLOGY -->
-    <section class="content-section" id="technology">
-
-      <div class="section-heading">
+    <section class="section category-strip" id="technology">
         <span class="eyebrow">INNOVATION & DIGITAL LIFE</span>
         <h2>Technology Trending</h2>
-        <p>Explore technology, artificial intelligence and digital news.</p>
-      </div>
-
-      <div class="slider"
-           data-category="technology"
-           data-title="Technology">
-
-        <div class="slides"></div>
-
-        <button class="slider-button previous"
-                aria-label="Previous technology story">❮</button>
-
-        <button class="slider-button next"
-                aria-label="Next technology story">❯</button>
-
-        <div class="slider-dots"></div>
-
-      </div>
-
+        <p>Explore technology, AI and digital news.</p>
     </section>
 
 
-    <!-- SHOWBIZ -->
-    <section class="content-section" id="showbiz">
-
-      <div class="section-heading">
-        <span class="eyebrow">MUSIC & ENTERTAINMENT</span>
-        <h2>Showbiz</h2>
-        <p>Discover music, artists, celebrities and entertainment news.</p>
-      </div>
-
-      <div class="slider"
-           data-category="showbiz"
-           data-title="Showbiz">
-
-        <div class="slides"></div>
-
-        <button class="slider-button previous"
-                aria-label="Previous showbiz story">❮</button>
-
-        <button class="slider-button next"
-                aria-label="Next showbiz story">❯</button>
-
-        <div class="slider-dots"></div>
-
-      </div>
-
-    </section>
-
-
-    <!-- NEWS -->
-    <section class="content-section" id="news">
-
-      <div class="section-heading">
+    <section class="section category-strip" id="news">
         <span class="eyebrow">STAY INFORMED</span>
-        <h2>Latest News</h2>
-      </div>
-
-      <div id="newsGrid" class="news-grid">
-        <p class="loading">Loading news...</p>
-      </div>
-
+        <h2>News & Showbiz</h2>
+        <p>Read the latest stories published on CKAVOX.</p>
+        <a href="#posts" class="secondary-button">
+            Read Latest Posts →
+        </a>
     </section>
 
 
-    <!-- MUSIC -->
-    <section class="content-section music-section" id="music">
+    <!-- ADMIN LOGIN -->
 
-      <div class="section-heading">
-        <span class="eyebrow">AFRICA & THE WORLD</span>
-        <h2>Trending Music</h2>
-        <p>Discover music from Africa and America.</p>
-      </div>
+    <section class="section admin-section" id="my-account">
 
-      <div class="music-grid">
+        <div class="admin-intro">
+            <span class="eyebrow">AUTHORIZED ACCESS ONLY</span>
 
-        <a href="https://www.youtube.com/results?search_query=trending+African+music"
-           target="_blank" rel="noopener noreferrer"
-           class="music-card">
-          <span>🌍</span>
-          <h3>African Music</h3>
-          <p>Discover trending African songs on YouTube.</p>
-          <strong>Explore Music ↗</strong>
-        </a>
+            <h2>CKAVOX Admin</h2>
 
-        <a href="https://www.youtube.com/results?search_query=trending+American+music"
-           target="_blank" rel="noopener noreferrer"
-           class="music-card">
-          <span>🎤</span>
-          <h3>American Music</h3>
-          <p>Explore trending American music.</p>
-          <strong>Explore Music ↗</strong>
-        </a>
-
-        <a href="https://open.spotify.com/"
-           target="_blank" rel="noopener noreferrer"
-           class="music-card">
-          <span>🎧</span>
-          <h3>Listen on Spotify</h3>
-          <p>Search for your favourite songs and artists.</p>
-          <strong>Open Spotify ↗</strong>
-        </a>
-
-      </div>
-
-    </section>
+            <p>
+                Sign in with the authorized CKAVOX administrator
+                account to publish and manage website content.
+            </p>
+        </div>
 
 
-    <!-- ACCOUNT -->
-    <section class="account-section" id="account">
+        <div class="login-card" id="loginCard">
 
-      <div class="account-box">
+            <h3>Admin Login</h3>
 
-        <span class="eyebrow">YOUR CKAVOX ACCOUNT</span>
+            <form id="loginForm">
 
-        <h2 id="accountHeading">Join the Community</h2>
+                <label for="adminEmail">Admin Email</label>
 
-        <p id="accountDescription">
-          Create an account or sign in to access your account.
-        </p>
+                <input
+                    id="adminEmail"
+                    type="email"
+                    autocomplete="username"
+                    placeholder="Enter admin email"
+                    required>
 
-        <form id="authForm">
+                <label for="adminPassword">Password</label>
 
-          <label for="email">Email address</label>
+                <input
+                    id="adminPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    placeholder="Enter password"
+                    required>
 
-          <input
-            id="email"
-            type="email"
-            placeholder="Enter your email"
-            autocomplete="email"
-            required
-          >
+                <button type="submit"
+                        class="primary-button full-width">
+                    Sign In
+                </button>
 
-          <label for="password">Password</label>
+            </form>
 
-          <input
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            autocomplete="current-password"
-            minlength="8"
-            required
-          >
+            <p class="small-note">
+                Access is restricted to the authorized administrator.
+            </p>
 
-          <div class="auth-buttons">
-            <button type="submit" id="signInButton"
-                    class="button primary">
-              Sign In
-            </button>
-
-            <button type="button" id="signUpButton"
-                    class="button secondary">
-              Sign Up
-            </button>
-          </div>
-
-          <p id="authMessage" class="message" aria-live="polite"></p>
-
-        </form>
-
-        <div id="userDashboard" hidden>
-
-          <h3>My Account</h3>
-
-          <p id="userEmail"></p>
-
-          <button id="signOutButton" class="button secondary">
-            Sign Out
-          </button>
+            <p id="loginMessage" class="status-message"></p>
 
         </div>
 
-      </div>
+
+        <!-- ADMIN DASHBOARD -->
+
+        <div id="adminDashboard" class="admin-dashboard" hidden>
+
+            <div class="dashboard-header">
+
+                <div>
+                    <span class="eyebrow">CONTROL CENTRE</span>
+                    <h3>My Account / Admin Dashboard</h3>
+                    <p id="adminIdentity"></p>
+                </div>
+
+                <button id="logoutButton"
+                        class="secondary-button">
+                    Sign Out
+                </button>
+
+            </div>
+
+
+            <div class="dashboard-stats">
+
+                <div class="stat-card">
+                    <span>Published Posts</span>
+                    <strong id="postCount">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Account</span>
+                    <strong>Admin</strong>
+                </div>
+
+            </div>
+
+
+            <div class="editor-card">
+
+                <h3>Publish New Content</h3>
+
+                <form id="postForm">
+
+                    <label for="postTitle">Content Title</label>
+
+                    <input
+                        id="postTitle"
+                        type="text"
+                        maxlength="180"
+                        placeholder="Enter title"
+                        required>
+
+
+                    <label for="postCategory">Category</label>
+
+                    <select id="postCategory" required>
+
+                        <option value="News">News / Story</option>
+                        <option value="Photo">Photo</option>
+                        <option value="Video">Video</option>
+                        <option value="Music">Music</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Entertainment">Entertainment</option>
+
+                    </select>
+
+
+                    <label for="postDescription">Description</label>
+
+                    <textarea
+                        id="postDescription"
+                        rows="4"
+                        maxlength="5000"
+                        placeholder="Write your story or description..."
+                    ></textarea>
+
+
+                    <label for="postImage">
+                        Upload Photo or Video File
+                    </label>
+
+                    <input
+                        id="postImage"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm">
+
+                    <p class="small-note">
+                        Maximum file size: 50 MB.
+                        Supported formats include JPG, PNG, WebP,
+                        GIF, MP4 and WebM.
+                    </p>
+
+
+                    <label for="postImageUrl">
+                        Or Image URL (Optional)
+                    </label>
+
+                    <input
+                        id="postImageUrl"
+                        type="url"
+                        placeholder="https://example.com/image.jpg">
+
+
+                    <label for="postContentUrl">
+                        Article, Video or External Link (Optional)
+                    </label>
+
+                    <input
+                        id="postContentUrl"
+                        type="url"
+                        placeholder="https://example.com/article">
+
+
+                    <button type="submit"
+                            class="primary-button full-width"
+                            id="publishButton">
+                        Publish Content
+                    </button>
+
+                </form>
+
+                <p id="publishMessage" class="status-message"></p>
+
+            </div>
+
+
+            <div class="editor-card">
+
+                <h3>Manage Published Posts</h3>
+
+                <div id="adminPostsList">
+                    Loading posts...
+                </div>
+
+            </div>
+
+        </div>
 
     </section>
 
-
-    <!-- ADMIN -->
-    <section class="admin-section" id="admin" hidden>
-
-      <div class="admin-box">
-
-        <span class="eyebrow">AUTHORIZED ACCESS ONLY</span>
-
-        <h2>CKAVOX Admin Dashboard</h2>
-
-        <p>
-          Publish or remove content from your website.
-        </p>
-
-        <form id="contentForm">
-
-          <label for="contentTitle">Content title</label>
-
-          <input
-            id="contentTitle"
-            type="text"
-            placeholder="Enter title"
-            required
-          >
-
-          <label for="contentCategory">Category</label>
-
-          <select id="contentCategory" required>
-            <option value="films">Films</option>
-            <option value="sports">Sports</option>
-            <option value="technology">Technology</option>
-            <option value="showbiz">Showbiz</option>
-            <option value="news">Trending News</option>
-          </select>
-
-          <label for="contentImage">Image URL</label>
-
-          <input
-            id="contentImage"
-            type="url"
-            placeholder="https://example.com/image.jpg"
-            required
-          >
-
-          <label for="contentLink">Article or video URL</label>
-
-          <input
-            id="contentLink"
-            type="url"
-            placeholder="https://example.com/article"
-          >
-
-          <label for="contentDescription">Description</label>
-
-          <textarea
-            id="contentDescription"
-            placeholder="Write a short description"
-            rows="3"
-          ></textarea>
-
-          <button type="submit" class="button primary">
-            Publish Content
-          </button>
-
-        </form>
-
-        <h3>Published Content</h3>
-
-        <div id="adminContentList"></div>
-
-      </div>
-
-    </section>
-
-  </main>
+</main>
 
 
-  <!-- FOOTER -->
-  <footer class="footer">
+<!-- WHATSAPP CHANNEL -->
 
-    <a href="#home" class="brand footer-brand">
-      <span class="logo">C</span>
-      <span>CKA<span class="yellow">VOX</span></span>
+<a class="whatsapp-float"
+   href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
+   target="_blank"
+   rel="noopener noreferrer">
+
+    <span class="whatsapp-dot">●</span>
+    Follow CKAVOX Channel
+
+</a>
+
+
+<footer class="footer">
+
+    <a href="#home" class="brand">
+        <span class="brand-mark">C</span>
+        <span>CKAVOX</span>
     </a>
 
-    <p>News. Entertainment. Technology. Sports.</p>
+    <p>
+        News. Entertainment. Technology. Sports.
+    </p>
 
     <p>© <span id="year"></span> CKAVOX. All rights reserved.</p>
 
     <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
        target="_blank"
-       rel="noopener noreferrer"
-       class="whatsapp-button">
-      ● Follow CKAVOX on WhatsApp
+       rel="noopener noreferrer">
+        🟢 Follow CKAVOX on WhatsApp
     </a>
 
-  </footer>
+</footer>
 
 
-  <!-- WHATSAPP FLOATING BUTTON -->
-  <a
-    href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="whatsapp-float"
-    aria-label="Follow CKAVOX on WhatsApp"
-  >
-    ● Follow CKAVOX on WhatsApp
-  </a>
+<!-- SHARE DIALOG -->
 
+<div class="share-modal"
+     id="shareModal"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="shareTitle"
+     hidden>
 
-  <!-- Supabase library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div class="share-box">
 
-  <script src="script.js"></script>
+        <button class="close-modal"
+                id="closeShare"
+                aria-label="Close share window">×</button>
+
+        <h3 id="shareTitle">Share CKAVOX Post</h3>
+
+        <p>Send this post to friends and family.</p>
+
+        <input id="shareLink" readonly>
+
+        <button class="primary-button full-width"
+                id="copyShareLink">
+            Copy Link
+        </button>
+
+        <a id="whatsappShare"
+           class="secondary-button full-width"
+           target="_blank"
+           rel="noopener noreferrer">
+            Share on WhatsApp
+        </a>
+
+    </div>
+
+</div>
 
 </body>
 </html>
