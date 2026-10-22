@@ -1,10 +1,8 @@
  "use strict";
+const SUPABASE_URL = "https://guuppgqreghdxhvkfrqy.supabase.co";
+const SUPABASE_KEY = "sb_publishable_weWwdJqlkdK9ao7CIW0ycg_ihXXJpOL";
 
-const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
-const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
-
-const ADMIN_EMAIL = "cedrickkayiranga354@gmail.com";
-
+const ADMIN_EMAIL = "cedrickkayiranga354@gmail.com
 const BUCKET = "ckavox-media";
 
 const supabaseReady =
