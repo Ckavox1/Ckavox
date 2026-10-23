@@ -1,107 +1,256 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-  <title>CKAVOX Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="style.css">
+    <meta name="robots" content="noindex, nofollow">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="admin.js" defer></script>
+    <title>CKAVOX Admin Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="admin.js" defer></script>
 </head>
 
 <body>
 
-<header class="header">
-  <a href="index.html" class="brand">
-    <span class="brand-symbol">C</span>
-    <span>CKA<span class="gold">VOX</span></span>
-  </a>
+<header class="topbar">
+    <a class="logo" href="index.html">
+        CKAVOX<span>.</span>
+    </a>
 
-  <a href="index.html" class="outline-button">View Website</a>
+    <a class="admin-link" href="index.html">
+        View Website
+    </a>
 </header>
 
 <main class="section">
 
-  <div class="account-box">
-    <span class="eyebrow">CONTENT MANAGEMENT</span>
-    <h1>CKAVOX Admin Dashboard</h1>
+    <section id="loginPanel">
 
-    <p class="muted">
-      Only authorized administrators can publish and manage stories.
-    </p>
+        <p class="eyebrow">AUTHORIZED ACCESS ONLY</p>
 
-    <div id="adminStatus" role="status">Checking permissions...</div>
+        <h1>CKAVOX Admin</h1>
 
-    <form id="postForm" hidden>
+        <p>
+            Sign in with the authorized CKAVOX administrator account
+            to publish and manage website content.
+        </p>
 
-      <label for="title">Story title</label>
-      <input id="title" maxlength="200" required>
+        <form id="loginForm">
 
-      <label for="category">Category</label>
-      <select id="category"
-              style="width:100%;padding:12px;background:#090909;color:white"
-              required>
-        <option value="trending">Trending</option>
-        <option value="news">Trending News</option>
-        <option value="showbiz">Showbiz</option>
-        <option value="sports">Sports / Formula 1</option>
-        <option value="technology">Technology</option>
-      </select>
+            <label for="email">Admin Email</label>
 
-      <label for="summary">Short summary</label>
-      <textarea id="summary" maxlength="500" rows="3"
-                style="width:100%;padding:12px;background:#090909;color:white"
-                required></textarea>
+            <input
+                id="email"
+                type="email"
+                placeholder="Enter admin email"
+                autocomplete="username"
+                required
+            >
 
-      <label for="content">Full story (optional)</label>
-      <textarea id="content" rows="6"
-                style="width:100%;padding:12px;background:#090909;color:white"></textarea>
+            <label for="password">Password</label>
 
-      <label for="imageUrl">HD image URL</label>
-      <input id="imageUrl" type="url"
-             placeholder="https://example.com/image.jpg">
+            <input
+                id="password"
+                type="password"
+                placeholder="Enter password"
+                autocomplete="current-password"
+                required
+            >
 
-      <label for="externalUrl">Source / Read More URL (optional)</label>
-      <input id="externalUrl" type="url"
-             placeholder="https://example.com/article">
+            <button class="primary-button" type="submit">
+                Sign In
+            </button>
 
-      <label>
-        <input type="checkbox" id="published" checked
-               style="width:auto">
-        Publish immediately
-      </label>
+        </form>
 
-      <button type="submit" class="gold-button">
-        Publish Story
-      </button>
+        <p id="loginMessage" role="status"></p>
 
-    </form>
+        <p class="notice">
+            Access is restricted to the authorized administrator.
+        </p>
 
-    <div id="adminMessage" role="status"></div>
+    </section>
 
-  </div>
+    <section id="dashboard" hidden>
 
-  <section style="max-width:900px;margin:35px auto">
+        <p class="eyebrow">CONTENT CONTROL CENTER</p>
 
-    <h2>Manage Stories</h2>
+        <h1>CKAVOX Dashboard</h1>
 
-    <div id="adminPosts" class="content-grid"></div>
+        <p>
+            Signed in as
+            <strong id="adminEmail"></strong>
+        </p>
 
-  </section>
+        <button id="logoutButton" class="primary-button">
+            Sign Out
+        </button>
+
+        <hr>
+
+        <h2>Manage Content</h2>
+
+        <form id="contentForm">
+
+            <input type="hidden" id="contentId">
+
+            <label for="title">Content Title</label>
+            <input id="title" required maxlength="200">
+
+            <label for="description">Description</label>
+            <textarea id="description" rows="4"></textarea>
+
+            <label for="category">Category</label>
+
+            <select id="category">
+                <option>News</option>
+                <option>Photos</option>
+                <option>Videos</option>
+                <option>Music</option>
+                <option>Sports</option>
+                <option>Technology</option>
+                <option>Entertainment</option>
+            </select>
+
+            <label for="contentType">Content Type</label>
+
+            <select id="contentType">
+                <option value="article">Article</option>
+                <option value="photo">Photo</option>
+                <option value="video">Video</option>
+                <option value="music">Music</option>
+            </select>
+
+            <label for="contentImage">Upload Image</label>
+
+            <input
+                id="contentImage"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+            >
+
+            <label for="imageURL">Or Image URL</label>
+            <input
+                id="imageURL"
+                type="url"
+                placeholder="https://example.com/image.jpg"
+            >
+
+            <label for="mediaURL">Content URL</label>
+
+            <input
+                id="mediaURL"
+                type="url"
+                placeholder="https://example.com/video-or-article"
+            >
+
+            <label>
+                <input type="checkbox" id="published">
+                Publish this content
+            </label>
+
+            <button class="primary-button" type="submit">
+                Save Content
+            </button>
+
+            <button type="button" id="cancelEdit">
+                Cancel Edit
+            </button>
+
+        </form>
+
+        <p id="contentMessage" role="status"></p>
+
+        <hr>
+
+        <h2>Manage Slideshow</h2>
+
+        <form id="slideForm">
+
+            <input type="hidden" id="slideId">
+
+            <label for="slideTitle">Slide Title</label>
+            <input id="slideTitle" required maxlength="200">
+
+            <label for="slideSubtitle">Slide Description</label>
+            <textarea id="slideSubtitle" rows="3"></textarea>
+
+            <label for="slideImage">Upload Slide Image</label>
+
+            <input
+                id="slideImage"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+            >
+
+            <label for="slideImageURL">Or Image URL</label>
+
+            <input
+                id="slideImageURL"
+                type="url"
+                placeholder="https://example.com/image.jpg"
+            >
+
+            <label for="slideLink">Destination URL</label>
+
+            <input
+                id="slideLink"
+                type="url"
+                placeholder="https://example.com"
+            >
+
+            <label for="slideOrder">Display Order</label>
+
+            <input
+                id="slideOrder"
+                type="number"
+                value="0"
+            >
+
+            <label>
+                <input type="checkbox" id="slideActive" checked>
+                Show this slide
+            </label>
+
+            <button class="primary-button" type="submit">
+                Save Slide
+            </button>
+
+            <button type="button" id="cancelSlideEdit">
+                Cancel Edit
+            </button>
+
+        </form>
+
+        <p id="slideMessage" role="status"></p>
+
+        <hr>
+
+        <h2>Published & Draft Content</h2>
+
+        <div id="adminContentList">
+            Loading content...
+        </div>
+
+        <hr>
+
+        <h2>Slideshow Items</h2>
+
+        <div id="adminSlideList">
+            Loading slides...
+        </div>
+
+    </section>
 
 </main>
-
-<footer class="footer">
-  <p>CKAVOX Admin Dashboard</p>
-  <a href="https://whatsapp.com/channel/0029VbECV9QADTOBu1T2nU3d"
-     target="_blank" rel="noopener noreferrer">
-    Follow CKAVOX on WhatsApp
-  </a>
-</footer>
 
 </body>
 </html>
