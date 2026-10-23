@@ -1,221 +1,670 @@
-const statusBox = document.getElementById("adminStatus");
-const messageBox = document.getElementById("adminMessage");
-const postForm = document.getElementById("postForm");
-const adminPosts = document.getElementById("adminPosts");
+ /* ===================================
+   CKAVOX ADMIN DASHBOARD
+   =================================== */
 
-let authorizedAdmin = false;
+const byId = id => document.getElementById(id);
 
-function showAdminMessage(text, isError = false) {
-  messageBox.textContent = text;
-  messageBox.style.color = isError ? "#ff7777" : "#ffc928";
+const loginPanel = byId("loginPanel");
+const dashboard = byId("dashboard");
+
+const loginForm = byId("loginForm");
+const contentForm = byId("contentForm");
+const slideForm = byId("slideForm");
+
+let currentAdmin = null;
+let contentCache = [];
+let slideCache = [];
+
+function setMessage(id, message) {
+    byId(id).textContent = message;
 }
 
-function validHttpUrl(value) {
-  if (!value) return null;
-
-  try {
-    const url = new URL(value);
-
-    if (url.protocol === "https:" || url.protocol === "http:") {
-      return url.href;
-    }
-  } catch (_) {}
-
-  return null;
+function html(value = "") {
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[char]);
 }
 
+function validURL(value = "") {
+    try {
+        const url = new URL(value);
 
-// Verify the signed-in user AND their database role.
+        if (
+            url.protocol === "https:" ||
+            url.protocol === "http:"
+        ) {
+            return url.href;
+        }
+    } catch (error) {}
+
+    return "";
+}
+
+/* ===================================
+   AUTHORIZATION
+   =================================== */
 
 async function checkAdmin() {
-  if (!supabaseClient) {
-    statusBox.textContent = "Supabase configuration is missing.";
-    return;
-  }
+    const { data, error } =
+        await supabaseClient.auth.getSession();
 
-  const { data: { user }, error } =
-    await supabaseClient.auth.getUser();
+    if (error || !data.session) {
+        showLogin();
+        return;
+    }
 
-  if (error || !user) {
-    statusBox.textContent =
-      "Access denied. Sign in through the main CKAVOX website first.";
-    return;
-  }
+    const user = data.session.user;
 
-  const { data: profile, error: profileError } =
-    await supabaseClient
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .maybeSingle();
+    if (
+        !user.email ||
+        user.email.toLowerCase() !==
+        CKAVOX_ADMIN_EMAIL.toLowerCase()
+    ) {
+        await supabaseClient.auth.signOut();
 
-  if (profileError || profile?.role !== "admin") {
-    statusBox.textContent =
-      "Access denied. Your account is not an administrator.";
-    return;
-  }
+        setMessage(
+            "loginMessage",
+            "Access denied: this account is not authorized."
+        );
 
-  authorizedAdmin = true;
-  statusBox.textContent = `Administrator verified: ${user.email}`;
+        showLogin();
+        return;
+    }
 
-  postForm.hidden = false;
+    currentAdmin = user;
 
-  await loadAdminPosts();
+    byId("adminEmail").textContent = user.email;
+
+    showDashboard();
+
+    await refreshDashboard();
 }
 
+function showLogin() {
+    loginPanel.hidden = false;
+    dashboard.hidden = true;
+}
 
-// Create a new story.
+function showDashboard() {
+    loginPanel.hidden = true;
+    dashboard.hidden = false;
+}
 
-postForm.addEventListener("submit", async event => {
-  event.preventDefault();
+/* ===================================
+   LOGIN
+   =================================== */
 
-  if (!authorizedAdmin) {
-    showAdminMessage("Administrator permission is required.", true);
-    return;
-  }
+loginForm.addEventListener("submit", async event => {
+    event.preventDefault();
 
-  const title = document.getElementById("title").value.trim();
-  const category = document.getElementById("category").value;
-  const summary = document.getElementById("summary").value.trim();
-  const content = document.getElementById("content").value.trim();
+    setMessage("loginMessage", "Signing in...");
 
-  const imageInput = document.getElementById("imageUrl").value.trim();
-  const externalInput = document.getElementById("externalUrl").value.trim();
+    const email = byId("email").value.trim();
+    const password = byId("password").value;
 
-  const imageUrl = validHttpUrl(imageInput);
-  const externalUrl = validHttpUrl(externalInput);
+    if (
+        email.toLowerCase() !==
+        CKAVOX_ADMIN_EMAIL.toLowerCase()
+    ) {
+        setMessage(
+            "loginMessage",
+            "This email is not authorized."
+        );
+        return;
+    }
 
-  if (imageInput && !imageUrl) {
-    showAdminMessage("Enter a valid HTTP or HTTPS image URL.", true);
-    return;
-  }
+    const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
 
-  if (externalInput && !externalUrl) {
-    showAdminMessage("Enter a valid HTTP or HTTPS source URL.", true);
-    return;
-  }
+    if (error) {
+        setMessage(
+            "loginMessage",
+            "Login failed. Check your password and Supabase Auth setup."
+        );
+        return;
+    }
 
-  const published = document.getElementById("published").checked;
+    if (
+        data.user.email.toLowerCase() !==
+        CKAVOX_ADMIN_EMAIL.toLowerCase()
+    ) {
+        await supabaseClient.auth.signOut();
 
-  const { data: { user } } =
-    await supabaseClient.auth.getUser();
+        setMessage("loginMessage", "Access denied.");
 
-  const { error } = await supabaseClient
-    .from("posts")
-    .insert({
-      title,
-      category,
-      summary,
-      content: content || null,
-      image_url: imageUrl,
-      external_url: externalUrl,
-      published,
-      author_id: user.id
-    });
+        return;
+    }
 
-  if (error) {
-    showAdminMessage("Could not save story: " + error.message, true);
-    return;
-  }
+    currentAdmin = data.user;
 
-  showAdminMessage(
-    published
-      ? "Story published successfully."
-      : "Story saved as a draft."
-  );
+    setMessage("loginMessage", "Login successful.");
 
-  postForm.reset();
-
-  await loadAdminPosts();
+    await checkAdmin();
 });
 
+/* ===================================
+   LOGOUT
+   =================================== */
 
-// Display all stories to the authorized admin.
+byId("logoutButton").addEventListener("click", async () => {
+    await supabaseClient.auth.signOut();
 
-async function loadAdminPosts() {
-  if (!authorizedAdmin) return;
+    currentAdmin = null;
 
-  const { data, error } = await supabaseClient
-    .from("posts")
-    .select("id, title, category, published, created_at")
-    .order("created_at", { ascending: false })
-    .limit(100);
+    showLogin();
+});
 
-  adminPosts.replaceChildren();
+/* ===================================
+   ADMIN SESSION CHANGES
+   =================================== */
 
-  if (error) {
-    showAdminMessage("Could not load stories.", true);
-    return;
-  }
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT") {
+        currentAdmin = null;
+        showLogin();
+    }
+});
 
-  if (!data || data.length === 0) {
-    adminPosts.textContent = "No stories have been added yet.";
-    return;
-  }
+/* ===================================
+   UPLOAD IMAGE
+   =================================== */
 
-  data.forEach(post => {
-    const card = document.createElement("article");
-    card.className = "post-card";
+async function uploadImage(file) {
+    if (!file) return "";
 
-    const body = document.createElement("div");
-    body.className = "post-body";
+    if (!currentAdmin) {
+        throw new Error("Admin login required.");
+    }
 
-    const heading = document.createElement("h3");
-    heading.textContent = post.title;
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif"
+    ];
 
-    const category = document.createElement("p");
-    category.textContent =
-      `${post.category} · ${post.published ? "Published" : "Draft"}`;
+    if (!allowedTypes.includes(file.type)) {
+        throw new Error("Unsupported image type.");
+    }
 
-    const toggle = document.createElement("button");
-    toggle.className = "outline-button";
-    toggle.textContent = post.published ? "Unpublish" : "Publish";
+    if (file.size > 10 * 1024 * 1024) {
+        throw new Error("Image must be 10 MB or smaller.");
+    }
 
-    toggle.addEventListener("click", async () => {
-      if (!authorizedAdmin) return;
+    const safeName = file.name.replace(
+        /[^a-zA-Z0-9._-]/g,
+        "_"
+    );
 
-      const { error } = await supabaseClient
-        .from("posts")
-        .update({ published: !post.published })
-        .eq("id", post.id);
+    const path =
+        `${currentAdmin.id}/${Date.now()}-${safeName}`;
 
-      if (error) {
-        showAdminMessage("Could not update story.", true);
-        return;
-      }
+    const { error } = await supabaseClient
+        .storage
+        .from("ckavox-media")
+        .upload(path, file, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type
+        });
 
-      showAdminMessage("Story status updated.");
-      await loadAdminPosts();
-    });
+    if (error) throw error;
 
-    const remove = document.createElement("button");
-    remove.className = "outline-button";
-    remove.style.marginLeft = "8px";
-    remove.textContent = "Delete";
+    const { data } = supabaseClient
+        .storage
+        .from("ckavox-media")
+        .getPublicUrl(path);
 
-    remove.addEventListener("click", async () => {
-      if (!authorizedAdmin) return;
-
-      if (!confirm("Delete this story permanently?")) return;
-
-      const { error } = await supabaseClient
-        .from("posts")
-        .delete()
-        .eq("id", post.id);
-
-      if (error) {
-        showAdminMessage("Could not delete story.", true);
-        return;
-      }
-
-      showAdminMessage("Story deleted.");
-      await loadAdminPosts();
-    });
-
-    body.append(heading, category, toggle, remove);
-    card.appendChild(body);
-    adminPosts.appendChild(card);
-  });
+    return data.publicUrl;
 }
 
-checkAdmin();
+/* ===================================
+   SAVE CONTENT
+   =================================== */
+
+contentForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!currentAdmin) return;
+
+    setMessage("contentMessage", "Saving content...");
+
+    try {
+        const id = byId("contentId").value;
+
+        const file = byId("contentImage").files[0];
+
+        let imageURL = byId("imageURL").value.trim();
+
+        if (file) {
+            imageURL = await uploadImage(file);
+        }
+
+        if (imageURL && !validURL(imageURL)) {
+            throw new Error("Enter a valid image URL.");
+        }
+
+        const mediaURL = byId("mediaURL").value.trim();
+
+        if (mediaURL && !validURL(mediaURL)) {
+            throw new Error("Enter a valid content URL.");
+        }
+
+        const record = {
+            title: byId("title").value.trim(),
+            description: byId("description").value.trim(),
+            category: byId("category").value,
+            content_type: byId("contentType").value,
+            image_url: imageURL,
+            media_url: mediaURL,
+            published: byId("published").checked,
+            updated_at: new Date().toISOString()
+        };
+
+        if (!record.title) {
+            throw new Error("A title is required.");
+        }
+
+        if (id) {
+            const { error } = await supabaseClient
+                .from("ckavox_content")
+                .update(record)
+                .eq("id", id);
+
+            if (error) throw error;
+
+            setMessage("contentMessage", "Content updated.");
+        } else {
+            const { error } = await supabaseClient
+                .from("ckavox_content")
+                .insert(record);
+
+            if (error) throw error;
+
+            setMessage("contentMessage", "Content created.");
+        }
+
+        contentForm.reset();
+
+        byId("contentId").value = "";
+
+        await refreshDashboard();
+
+    } catch (error) {
+        console.error(error);
+
+        setMessage(
+            "contentMessage",
+            error.message || "Unable to save content."
+        );
+    }
+});
+
+/* ===================================
+   SAVE SLIDES
+   =================================== */
+
+slideForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!currentAdmin) return;
+
+    setMessage("slideMessage", "Saving slide...");
+
+    try {
+        const id = byId("slideId").value;
+
+        const file = byId("slideImage").files[0];
+
+        let imageURL = byId("slideImageURL").value.trim();
+
+        if (file) {
+            imageURL = await uploadImage(file);
+        }
+
+        if (!validURL(imageURL)) {
+            throw new Error("A valid slide image URL is required.");
+        }
+
+        const link = byId("slideLink").value.trim();
+
+        if (link && !validURL(link)) {
+            throw new Error("Enter a valid destination URL.");
+        }
+
+        const record = {
+            title: byId("slideTitle").value.trim(),
+            subtitle: byId("slideSubtitle").value.trim(),
+            image_url: imageURL,
+            link_url: link,
+            sort_order: Number(byId("slideOrder").value) || 0,
+            active: byId("slideActive").checked
+        };
+
+        if (!record.title) {
+            throw new Error("Slide title is required.");
+        }
+
+        let error;
+
+        if (id) {
+            ({ error } = await supabaseClient
+                .from("ckavox_slides")
+                .update(record)
+                .eq("id", id));
+        } else {
+            ({ error } = await supabaseClient
+                .from("ckavox_slides")
+                .insert(record));
+        }
+
+        if (error) throw error;
+
+        setMessage("slideMessage", "Slide saved successfully.");
+
+        slideForm.reset();
+
+        byId("slideId").value = "";
+        byId("slideActive").checked = true;
+        byId("slideOrder").value = 0;
+
+        await refreshDashboard();
+
+    } catch (error) {
+        console.error(error);
+
+        setMessage(
+            "slideMessage",
+            error.message || "Unable to save slide."
+        );
+    }
+});
+
+/* ===================================
+   EDIT CONTENT
+   =================================== */
+
+function editContent(id) {
+    const item = contentCache.find(
+        entry => String(entry.id) === String(id)
+    );
+
+    if (!item) return;
+
+    byId("contentId").value = item.id;
+    byId("title").value = item.title;
+    byId("description").value = item.description || "";
+    byId("category").value = item.category;
+    byId("contentType").value = item.content_type;
+    byId("imageURL").value = item.image_url || "";
+    byId("mediaURL").value = item.media_url || "";
+    byId("published").checked = item.published;
+
+    window.scrollTo({
+        top: contentForm.offsetTop,
+        behavior: "smooth"
+    });
+}
+
+/* ===================================
+   DELETE CONTENT
+   =================================== */
+
+async function deleteContent(id) {
+    if (!currentAdmin) return;
+
+    if (!confirm("Delete this CKAVOX content?")) return;
+
+    const { error } = await supabaseClient
+        .from("ckavox_content")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        alert("Unable to delete content.");
+        console.error(error);
+        return;
+    }
+
+    await refreshDashboard();
+}
+
+/* ===================================
+   EDIT SLIDE
+   =================================== */
+
+function editSlide(id) {
+    const item = slideCache.find(
+        entry => String(entry.id) === String(id)
+    );
+
+    if (!item) return;
+
+    byId("slideId").value = item.id;
+    byId("slideTitle").value = item.title;
+    byId("slideSubtitle").value = item.subtitle || "";
+    byId("slideImageURL").value = item.image_url;
+    byId("slideLink").value = item.link_url || "";
+    byId("slideOrder").value = item.sort_order;
+    byId("slideActive").checked = item.active;
+
+    window.scrollTo({
+        top: slideForm.offsetTop,
+        behavior: "smooth"
+    });
+}
+
+/* ===================================
+   DELETE SLIDE
+   =================================== */
+
+async function deleteSlide(id) {
+    if (!currentAdmin) return;
+
+    if (!confirm("Delete this slideshow item?")) return;
+
+    const { error } = await supabaseClient
+        .from("ckavox_slides")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        alert("Unable to delete slide.");
+        console.error(error);
+        return;
+    }
+
+    await refreshDashboard();
+}
+
+/* ===================================
+   RENDER ADMIN LISTS
+   =================================== */
+
+function renderAdminContent() {
+    const container = byId("adminContentList");
+
+    if (!contentCache.length) {
+        container.textContent = "No content added yet.";
+        return;
+    }
+
+    container.innerHTML = contentCache.map(item => `
+        <article class="app-card">
+
+            <h3>${html(item.title)}</h3>
+
+            <p>${html(item.category)}</p>
+
+            <p>
+                Status:
+                ${item.published ? "Published" : "Draft"}
+            </p>
+
+            <button
+                class="primary-button"
+                data-edit-content="${html(item.id)}">
+                Edit
+            </button>
+
+            <button
+                data-delete-content="${html(item.id)}">
+                Delete
+            </button>
+
+        </article>
+    `).join("");
+}
+
+function renderAdminSlides() {
+    const container = byId("adminSlideList");
+
+    if (!slideCache.length) {
+        container.textContent = "No slides added yet.";
+        return;
+    }
+
+    container.innerHTML = slideCache.map(item => `
+        <article class="app-card">
+
+            <h3>${html(item.title)}</h3>
+
+            <p>
+                Status:
+                ${item.active ? "Active" : "Hidden"}
+            </p>
+
+            <p>Order: ${html(item.sort_order)}</p>
+
+            <button
+                class="primary-button"
+                data-edit-slide="${html(item.id)}">
+                Edit
+            </button>
+
+            <button
+                data-delete-slide="${html(item.id)}">
+                Delete
+            </button>
+
+        </article>
+    `).join("");
+}
+
+/* ===================================
+   ACTION BUTTONS
+   =================================== */
+
+byId("adminContentList").addEventListener("click", event => {
+    const editButton = event.target.closest("[data-edit-content]");
+    const deleteButton = event.target.closest("[data-delete-content]");
+
+    if (editButton) {
+        editContent(editButton.dataset.editContent);
+    }
+
+    if (deleteButton) {
+        deleteContent(deleteButton.dataset.deleteContent);
+    }
+});
+
+byId("adminSlideList").addEventListener("click", event => {
+    const editButton = event.target.closest("[data-edit-slide]");
+    const deleteButton = event.target.closest("[data-delete-slide]");
+
+    if (editButton) {
+        editSlide(editButton.dataset.editSlide);
+    }
+
+    if (deleteButton) {
+        deleteSlide(deleteButton.dataset.deleteSlide);
+    }
+});
+
+/* ===================================
+   CANCEL EDITING
+   =================================== */
+
+byId("cancelEdit").addEventListener("click", () => {
+    contentForm.reset();
+    byId("contentId").value = "";
+});
+
+byId("cancelSlideEdit").addEventListener("click", () => {
+    slideForm.reset();
+    byId("slideId").value = "";
+    byId("slideActive").checked = true;
+    byId("slideOrder").value = 0;
+});
+
+/* ===================================
+   LOAD DASHBOARD DATA
+   =================================== */
+
+async function refreshDashboard() {
+    if (!currentAdmin) return;
+
+    const [contentResult, slideResult] = await Promise.all([
+        supabaseClient
+            .from("ckavox_content")
+            .select("*")
+            .order("created_at", { ascending: false }),
+
+        supabaseClient
+            .from("ckavox_slides")
+            .select("*")
+            .order("sort_order", { ascending: true })
+    ]);
+
+    if (contentResult.error || slideResult.error) {
+        console.error(
+            contentResult.error,
+            slideResult.error
+        );
+
+        setMessage(
+            "contentMessage",
+            "Unable to load dashboard data. Check database permissions."
+        );
+
+        return;
+    }
+
+    contentCache = contentResult.data || [];
+    slideCache = slideResult.data || [];
+
+    renderAdminContent();
+    renderAdminSlides();
+}
+
+/* ===================================
+   START ADMIN
+   =================================== */
+
+async function startAdmin() {
+    if (
+        !window.supabase ||
+        typeof SUPABASE_URL === "undefined" ||
+        typeof SUPABASE_ANON_KEY === "undefined" ||
+        SUPABASE_URL.includes("PASTE_YOUR_") ||
+        SUPABASE_ANON_KEY.includes("PASTE_YOUR_")
+    ) {
+        setMessage(
+            "loginMessage",
+            "Configure Supabase before using the admin dashboard."
+        );
+
+        return;
+    }
+
+    await checkAdmin();
+}
+
+startAdmin();
