@@ -1,206 +1,68 @@
- 
-/* CKAVOX AUTHENTICATION */
+ // Authentication Control workflows
+const requestBtn = document.getElementById('request-token-btn');
+const otpArea = document.getElementById('otp-verification-area');
+const loginForm = document.getElementById('login-flow-form');
 
-const form = document.getElementById("authForm");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const nameInput = document.getElementById("displayName");
+// 1. Dispatch secure OTP login token request to primary administrator account email
+if (requestBtn) {
+    requestBtn.addEventListener('click', async () => {
+        const email = "cedrickkayiranga354@gmail.com";
+        
+        requestBtn.textContent = "Sending Token...";
+        requestBtn.disabled = true;
 
-const nameField = document.getElementById("nameField");
-const signInButton = document.getElementById("signInButton");
-const signUpButton = document.getElementById("signUpButton");
-const signOutButton = document.getElementById("signOutButton");
+        const { error } = await supabase.auth.signInWithOtp({
+            email: email,
+            options: {
+                shouldCreateUser: false // Strictly lock registry mutations
+            }
+        });
 
-const messageBox = document.getElementById("authMessage");
-const userArea = document.getElementById("userArea");
-const userName = document.getElementById("userName");
-const userEmail = document.getElementById("userEmail");
-const adminLink = document.getElementById("adminLink");
-
-const formTitle = document.getElementById("formTitle");
-const formDescription = document.getElementById("formDescription");
-
-let mode = "signin";
-
-function showMessage(text, error = false) {
-  messageBox.textContent = text;
-  messageBox.style.color = error ? "#ff7777" : "#ffc928";
-}
-
-function getClient() {
-  if (typeof supabaseClient === "undefined" || !supabaseClient) {
-    showMessage(
-      "Supabase is not configured. Check supabase-config.js.",
-      true
-    );
-    return null;
-  }
-  return supabaseClient;
-}
-
-function setMode(nextMode) {
-  mode = nextMode;
-  const signingUp = mode === "signup";
-
-  nameField.hidden = !signingUp;
-  nameInput.required = signingUp;
-  passwordInput.autocomplete =
-    signingUp ? "new-password" : "current-password";
-
-  signInButton.hidden = signingUp;
-  signUpButton.textContent = signingUp ? "Create Account" : "Sign Up";
-
-  formTitle.textContent =
-    signingUp ? "Create Your Account" : "Welcome Back";
-
-  formDescription.textContent = signingUp
-    ? "Join the CKAVOX community."
-    : "Sign in with your email and password.";
-
-  showMessage("");
-}
-
-signUpButton.addEventListener("click", async () => {
-  if (mode !== "signup") {
-    setMode("signup");
-    return;
-  }
-
-  const client = getClient();
-  if (!client) return;
-
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-  const displayName = nameInput.value.trim();
-
-  if (!displayName || !email || password.length < 8) {
-    showMessage(
-      "Enter your name, a valid email, and a password of at least 8 characters.",
-      true
-    );
-    return;
-  }
-
-  signUpButton.disabled = true;
-
-  try {
-    const { data, error } = await client.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { display_name: displayName }
-      }
+        if (error) {
+            alert("Error sending authentication code: " + error.message);
+            requestBtn.textContent = "Send Authentication Code";
+            requestBtn.disabled = false;
+        } else {
+            alert("Success! Check your email (cedrickkayiranga354@gmail.com) for your secure access token.");
+            requestBtn.classList.add('hidden');
+            otpArea.classList.remove('hidden');
+        }
     });
+}
 
-    if (error) throw error;
+// 2. Process token inputs to establish system user sessions
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = "cedrickkayiranga354@gmail.com";
+        const token = document.getElementById('otp-token').value.trim();
 
-    if (data.session) {
-      showMessage("Account created successfully.");
-      await refreshAccount();
+        if(!token) return alert("Please supply verification token.");
+
+        const { data, error } = await supabase.auth.verifyOtp({
+            email,
+            token,
+            type: 'magiclink'
+        });
+
+        if (error) {
+            alert("Token verification failed: " + error.message);
+        } else if (data.session) {
+            window.location.href = "admin.html";
+        }
+    });
+}
+
+// 3. Password Recovery fallback handler functions
+window.triggerPasswordRecovery = async function() {
+    const email = "cedrickkayiranga354@gmail.com";
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/admin.html',
+    });
+    
+    if (error) {
+        alert("Recovery process encounter: " + error.message);
     } else {
-      showMessage(
-        "Account created. Check your email to confirm it, then sign in."
-      );
-      setMode("signin");
+        alert("Recovery workflow fired! Verification link sent to " + email);
     }
-  } catch (error) {
-    showMessage(error.message || "Sign-up failed.", true);
-  } finally {
-    signUpButton.disabled = false;
-  }
-});
-
-form.addEventListener("submit", async event => {
-  event.preventDefault();
-
-  if (mode === "signup") return;
-
-  const client = getClient();
-  if (!client) return;
-
-  signInButton.disabled = true;
-
-  try {
-    const { error } = await client.auth.signInWithPassword({
-      email: emailInput.value.trim(),
-      password: passwordInput.value
-    });
-
-    if (error) throw error;
-
-    showMessage("Signed in successfully.");
-    await refreshAccount();
-  } catch (error) {
-    showMessage(error.message || "Sign-in failed.", true);
-  } finally {
-    signInButton.disabled = false;
-  }
-});
-
-signOutButton.addEventListener("click", async () => {
-  const client = getClient();
-  if (!client) return;
-
-  const { error } = await client.auth.signOut();
-
-  if (error) {
-    showMessage(error.message || "Sign-out failed.", true);
-    return;
-  }
-
-  showMessage("You have signed out.");
-  await refreshAccount();
-});
-
-async function refreshAccount() {
-  const client = getClient();
-  if (!client) return;
-
-  const { data, error } = await client.auth.getUser();
-
-  if (error) {
-    showMessage("Could not verify your account.", true);
-    return;
-  }
-
-  const user = data.user;
-
-  if (!user) {
-    userArea.hidden = true;
-    form.hidden = false;
-    adminLink.hidden = true;
-    setMode("signin");
-    return;
-  }
-
-  form.hidden = true;
-  userArea.hidden = false;
-
-  userName.textContent =
-    "Name: " + (user.user_metadata?.display_name || "CKAVOX Member");
-
-  userEmail.textContent = "Email: " + (user.email || "");
-
-  // Check admin role in the protected database.
-  const { data: profile, error: profileError } = await client
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  adminLink.hidden =
-    !!profileError || profile?.role !== "admin";
-}
-
-async function initializeAuth() {
-  const client = getClient();
-  if (!client) return;
-
-  await refreshAccount();
-
-  client.auth.onAuthStateChange(() => {
-    setTimeout(() => refreshAccount(), 0);
-  });
-}
-
-initializeAuth();
+};
