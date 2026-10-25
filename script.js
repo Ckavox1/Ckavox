@@ -1,343 +1,152 @@
- /* ===================================
-   CKAVOX MAIN JAVASCRIPT
-   =================================== */
-
-const $ = (selector) => document.querySelector(selector);
-
-let allPosts = [];
-let slides = [];
-let currentSlide = 0;
-let slideTimer = null;
-
-/* ===================================
-   LIVE CLOCK - RWANDA TIME
-   =================================== */
-
-function updateClock() {
-    const now = new Date();
-
-    const time = new Intl.DateTimeFormat("en-GB", {
-        timeZone: "Africa/Kigali",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-    }).format(now);
-
-    const date = new Intl.DateTimeFormat("en-GB", {
-        timeZone: "Africa/Kigali",
-        weekday: "long",
-        day: "2-digit",
-        month: "long",
-        year: "numeric"
-    }).format(now);
-
-    $("#clockTime").textContent = time;
-    $("#clockDate").textContent = date;
-    $("#clockZone").textContent = "Rwanda Time (CAT, UTC+2)";
-
-    $("#footerYear").textContent = new Intl.DateTimeFormat("en", {
-        timeZone: "Africa/Kigali",
-        year: "numeric"
-    }).format(now);
+ // 1. Live 24/7 Clock Display Engine
+function runLiveClock() {
+    const clockElement = document.getElementById('live-clock');
+    if (!clockElement) return;
+    
+    setInterval(() => {
+        const now = new Date();
+        let hours = now.getHours();
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Handle midnight
+        const formattedHours = String(hours).padStart(2, '0');
+        
+        clockElement.textContent = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
+    }, 1000);
 }
 
-updateClock();
-setInterval(updateClock, 1000);
+// 2. Local State Management for Slideshow Collections
+const slideshowStates = {};
 
-/* ===================================
-   SAFE HTML
-   =================================== */
+// Default Placeholder HD Resolution Visuals if Database entries are empty
+const fallbackImages = [
+    "https://unsplash.com", // Sports Default
+    "https://unsplash.com", // Film Default
+    "https://unsplash.com", // Tech Default
+    "https://unsplash.com"  // General Trending Default
+];
 
-function escapeHTML(value = "") {
-    return String(value).replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-    })[char]);
-}
-
-function safeURL(value = "") {
-    try {
-        const url = new URL(value, window.location.href);
-
-        if (
-            url.protocol === "https:" ||
-            url.protocol === "http:"
-        ) {
-            return url.href;
-        }
-    } catch (error) {}
-
-    return "";
-}
-
-/* ===================================
-   SLIDESHOW
-   =================================== */
-
-async function loadSlides() {
-    const container = $("#heroSlides");
+// 3. Main Data Fetching and Carousel Generation
+async function loadCKAVOXContent() {
+    const container = document.getElementById('categories-container');
+    if (!container) return;
 
     try {
-        const { data, error } = await supabaseClient
-            .from("ckavox_slides")
-            .select("*")
-            .eq("active", true)
-            .order("sort_order", { ascending: true });
+        // Query category posts from Supabase database table
+        const { data: posts, error } = await supabase
+            .from('ckavox_content')
+            .select('*')
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        slides = data || [];
+        // Group individual records by category name fields
+        const categories = {};
+        const nativeTypes = ['sports', 'film', 'technology', 'trending', 'news'];
+        
+        // Initialize default arrays to enforce presence of all requested sectors
+        nativeTypes.forEach(type => { categories[type] = []; });
 
-        if (slides.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    CKAVOX highlights will appear here
-                    when the administrator publishes slides.
-                </div>
-            `;
-            return;
+        if (posts && posts.length > 0) {
+            posts.forEach(post => {
+                const cat = post.category ? post.category.toLowerCase().trim() : 'news';
+                if (!categories[cat]) categories[cat] = [];
+                categories[cat].push(post);
+            });
         }
 
-        currentSlide = 0;
-        renderSlide();
+        container.innerHTML = ''; // Strip existing template skeletal elements
 
-        clearInterval(slideTimer);
-
-        if (slides.length > 1) {
-            slideTimer = setInterval(() => {
-                currentSlide = (currentSlide + 1) % slides.length;
-                renderSlide();
-            }, 4000);
-        }
-
-    } catch (error) {
-        console.error("CKAVOX slideshow error:", error);
-
-        container.innerHTML = `
-            <div class="empty-state">
-                Unable to load highlights.
-                Check the Supabase configuration.
-            </div>
-        `;
-    }
-}
-
-function renderSlide() {
-    const container = $("#heroSlides");
-    const slide = slides[currentSlide];
-
-    if (!slide) return;
-
-    const imageURL = safeURL(slide.image_url);
-
-    const content = `
-        <article class="slide-card">
-            ${
-                imageURL
-                ? `<img src="${escapeHTML(imageURL)}"
-                        alt="${escapeHTML(slide.title)}"
-                        fetchpriority="high">`
-                : ""
+        // Loop over parsed content matrices and render structural components
+        Object.keys(categories).forEach(catName => {
+            const items = categories[catName];
+            
+            // Build array of 4 guaranteed image strings
+            let imagesArray = [];
+            for (let i = 0; i < 4; i++) {
+                if (items[i] && items[i].image_url) {
+                    imagesArray.push(items[i].image_url);
+                } else {
+                    imagesArray.push(fallbackImages[i % fallbackImages.length]);
+                }
             }
 
-            <div class="slide-caption">
-                <p class="eyebrow">CKAVOX EXCLUSIVE</p>
+            slideshowStates[catName] = { currentIndex: 0, total: 4 };
 
-                <h3>${escapeHTML(slide.title)}</h3>
+            // Generate template wrappers with controls
+            const cardHtml = `
+                <div class="bg-[#1f2833]/60 rounded-2xl border border-gray-800 overflow-hidden shadow-xl p-5 flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-black uppercase tracking-widest text-[#00ffff]">${catName} Section</h3>
+                        <span class="text-xs bg-[#8a2be2]/40 text-purple-200 font-mono px-3 py-1 rounded-full uppercase tracking-wider">HD Loop</span>
+                    </div>
 
-                <p>${escapeHTML(slide.subtitle || "")}</p>
+                    <!-- Visual Slider Window Container -->
+                    <div class="relative h-56 w-full bg-[#0b0c10] rounded-xl overflow-hidden group">
+                        ${imagesArray.map((img, idx) => `
+                            <img src="${img}" class="slide-item slide-${catName} absolute inset-0 w-full h-full object-cover ${idx === 0 ? 'active' : ''}" data-index="${idx}" alt="${catName} slide">
+                        `).join('')}
 
-                ${
-                    safeURL(slide.link_url)
-                    ? `<a class="content-link"
-                         href="${escapeHTML(safeURL(slide.link_url))}"
-                         target="_blank"
-                         rel="noopener noreferrer">
-                         Discover more ↗
-                       </a>`
-                    : ""
-                }
-            </div>
-        </article>
-    `;
+                        <!-- Left Control Button -->
+                        <button onclick="changeManualSlide('${catName}', -1)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-[#8a2be2] text-white w-9 h-9 rounded-full flex items-center justify-center font-bold transition-all opacity-80 group-hover:opacity-100 z-10">❮</button>
+                        
+                        <!-- Right Control Button -->
+                        <button onclick="changeManualSlide('${catName}', 1)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-[#8a2be2] text-white w-9 h-9 rounded-full flex items-center justify-center font-bold transition-all opacity-80 group-hover:opacity-100 z-10">❯</button>
+                    </div>
 
-    container.innerHTML = content;
-}
-
-$("#prevSlide").addEventListener("click", () => {
-    if (slides.length < 2) return;
-
-    currentSlide =
-        (currentSlide - 1 + slides.length) % slides.length;
-
-    renderSlide();
-});
-
-$("#nextSlide").addEventListener("click", () => {
-    if (slides.length < 2) return;
-
-    currentSlide = (currentSlide + 1) % slides.length;
-
-    renderSlide();
-});
-
-/* ===================================
-   LOAD PUBLISHED CONTENT
-   =================================== */
-
-async function loadPosts() {
-    const container = $("#latestPosts");
-
-    container.innerHTML = `
-        <p class="loading">Loading CKAVOX posts...</p>
-    `;
-
-    try {
-        const { data, error } = await supabaseClient
-            .from("ckavox_content")
-            .select("*")
-            .eq("published", true)
-            .order("created_at", { ascending: false });
-
-        if (error) throw error;
-
-        allPosts = data || [];
-
-        renderPosts("All");
-
-    } catch (error) {
-        console.error("CKAVOX content error:", error);
-
-        container.innerHTML = `
-            <p class="empty-state">
-                Unable to load posts.
-                Please check the Supabase setup.
-            </p>
-        `;
-    }
-}
-
-/* ===================================
-   RENDER CONTENT CARDS
-   =================================== */
-
-function renderPosts(category = "All") {
-    const container = $("#latestPosts");
-
-    const filtered = category === "All"
-        ? allPosts
-        : allPosts.filter(post =>
-            post.category.toLowerCase() === category.toLowerCase()
-        );
-
-    if (!filtered.length) {
-        container.innerHTML = `
-            <p class="empty-state">
-                No published posts in this category yet.
-            </p>
-        `;
-        return;
-    }
-
-    container.innerHTML = filtered.map(post => {
-        const image = safeURL(post.image_url);
-        const media = safeURL(post.media_url);
-
-        return `
-            <article class="content-card">
-
-                ${
-                    image
-                    ? `<img
-                        src="${escapeHTML(image)}"
-                        alt="${escapeHTML(post.title)}"
-                        loading="lazy"
-                        decoding="async">`
-                    : ""
-                }
-
-                <div class="content-card-body">
-
-                    <span class="content-category">
-                        ${escapeHTML(post.category)}
-                    </span>
-
-                    <h3>${escapeHTML(post.title)}</h3>
-
-                    <p>${escapeHTML(post.description || "")}</p>
-
-                    ${
-                        media
-                        ? `<a class="content-link"
-                             href="${escapeHTML(media)}"
-                             target="_blank"
-                             rel="noopener noreferrer">
-                             Open content ↗
-                           </a>`
-                        : ""
-                    }
-
+                    <div class="mt-4 text-xs text-gray-500 font-medium flex justify-between items-center">
+                        <span class="uppercase tracking-widest">Automatic Loop: 4s Intervals</span>
+                        <span class="font-mono text-[#00ffff]" id="indicator-${catName}">Slide: 1 / 4</span>
+                    </div>
                 </div>
+            `;
+            container.innerHTML += cardHtml;
+        });
 
-            </article>
-        `;
-    }).join("");
-}
+        // Fire automated slideshow interval timers
+        startAutomatedLoops();
 
-/* ===================================
-   CATEGORY FILTERS
-   =================================== */
-
-$("#contentFilters").addEventListener("click", event => {
-    const button = event.target.closest("[data-category]");
-
-    if (!button) return;
-
-    document.querySelectorAll(".filter").forEach(item => {
-        item.classList.remove("active");
-    });
-
-    button.classList.add("active");
-
-    renderPosts(button.dataset.category);
-});
-
-/* ===================================
-   START WEBSITE
-   =================================== */
-
-async function startCKAVOX() {
-    if (
-        !window.supabase ||
-        typeof SUPABASE_URL === "undefined" ||
-        typeof SUPABASE_ANON_KEY === "undefined" ||
-        SUPABASE_URL.includes("PASTE_YOUR_") ||
-        SUPABASE_ANON_KEY.includes("PASTE_YOUR_")
-    ) {
-        $("#latestPosts").innerHTML = `
-            <p class="empty-state">
-                Add your Supabase project URL and publishable key
-                to supabase-config.js.
-            </p>
-        `;
-
-        $("#heroSlides").innerHTML = `
-            <p class="empty-state">
-                Supabase configuration is required.
-            </p>
-        `;
-
-        return;
+    } catch (err) {
+        console.error("Critical rendering error:", err.message);
+        container.innerHTML = `<p class="text-red-400 text-xs text-center col-span-2 uppercase font-mono">Failed to sync live data updates safely.</p>`;
     }
-
-    await Promise.all([
-        loadSlides(),
-        loadPosts()
-    ]);
 }
 
-startCKAVOX();
+// 4. Manual Carousel Navigational Actions
+window.changeManualSlide = function(category, direction) {
+    const state = slideshowStates[category];
+    if (!state) return;
+
+    const slides = document.querySelectorAll(`.slide-${category}`);
+    if (slides.length === 0) return;
+
+    slides[state.currentIndex].classList.remove('active');
+
+    state.currentIndex += direction;
+    if (state.currentIndex >= state.total) state.currentIndex = 0;
+    if (state.currentIndex < 0) state.currentIndex = state.total - 1;
+
+    slides[state.currentIndex].classList.add('active');
+
+    // Update index trackers
+    const indicator = document.getElementById(`indicator-${category}`);
+    if (indicator) indicator.textContent = `Slide: ${state.currentIndex + 1} / 4`;
+};
+
+// 5. Automated Interval Engines (Every 4 Seconds)
+function startAutomatedLoops() {
+    Object.keys(slideshowStates).forEach(category => {
+        setInterval(() => {
+            changeManualSlide(category, 1);
+        }, 4000);
+    });
+}
+
+// Initialization Hooks
+document.addEventListener('DOMContentLoaded', () => {
+    runLiveClock();
+    loadCKAVOXContent();
+});
