@@ -1,256 +1,73 @@
  <!DOCTYPE html>
-<html lang="en">
+<html lang="rw">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKAVOX | Central Admin Terminal</title>
+    <script src="https://jsdelivr.net"></script>
+    <script src="https://tailwindcss.com"></script>
+</head>
+<body class="bg-[#0b0c10] text-white min-h-screen font-sans">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Dashboard Top Header Bar -->
+        <div class="flex justify-between items-center mb-10 border-b border-gray-800 pb-4">
+            <div>
+                <h1 class="text-2xl font-black uppercase tracking-wider bg-gradient-to-r from-[#8a2be2] to-[#00ffff] bg-clip-text text-transparent">CKAVOX Engine</h1>
+                <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mt-1">Logged as: cedrickkayiranga354@gmail.com</p>
+            </div>
+            <div class="flex gap-4">
+                <a href="index.html" target="_blank" class="text-xs bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg font-bold uppercase tracking-wider flex items-center">View Website</a>
+                <button id="logout-action" class="text-xs bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg font-bold uppercase tracking-wider">Log out</button>
+            </div>
+        </div>
 
-    <meta name="robots" content="noindex, nofollow">
+        <!-- Management Forms Section Layout Grid -->
+        <div class="grid md:grid-cols-3 gap-8">
+            
+            <!-- Left inputs column: Operations Interface -->
+            <div class="md:col-span-1 bg-[#1f2833] p-6 rounded-xl border border-gray-800 h-fit space-y-6">
+                <h2 class="text-sm font-black uppercase tracking-wider text-[#00ffff] border-b border-gray-700 pb-2">Publish / Edit Content</h2>
+                
+                <form id="admin-publish-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase text-gray-400 font-bold mb-2">Target Section</label>
+                        <select id="post-category" class="w-full bg-[#0b0c10] border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-[#8a2be2]">
+                            <option value="sports">Sports</option>
+                            <option value="film">Film</option>
+                            <option value="technology">Technology</option>
+                            <option value="trending">Trending</option>
+                            <option value="news">News</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase text-gray-400 font-bold mb-2">Item Title Label</label>
+                        <input type="text" id="post-title" required placeholder="e.g. F1 Updates" class="w-full bg-[#0b0c10] border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase text-gray-400 font-bold mb-2">HD Image URL Link</label>
+                        <input type="url" id="post-image" required placeholder="https://unsplash.com..." class="w-full bg-[#0b0c10] border border-gray-700 rounded-lg p-2.5 text-xs text-gray-300 font-mono focus:outline-none">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-[#8a2be2] to-[#00ffff] text-white text-xs font-black py-3 rounded-lg uppercase tracking-wider transition">
+                        Push to Slideshow Loop
+                    </button>
+                </form>
+            </div>
 
-    <title>CKAVOX Admin Dashboard</title>
+            <!-- Right list column: Live Database View with modifications actions -->
+            <div class="md:col-span-2 bg-[#1f2833] p-6 rounded-xl border border-gray-800 space-y-4">
+                <h2 class="text-sm font-black uppercase tracking-wider text-[#8a2be2] border-b border-gray-700 pb-2">Active Live Slideshow Elements</h2>
+                
+                <div id="admin-items-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+                    <!-- Javascript runtime feeds record modules here -->
+                    <p class="text-gray-500 font-mono text-xs text-center py-6">Connecting to database tables...</p>
+                </div>
+            </div>
 
-    <link rel="stylesheet" href="style.css">
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        </div>
+    </div>
 
     <script src="supabase-config.js"></script>
-
-    <script src="admin.js" defer></script>
-</head>
-
-<body>
-
-<header class="topbar">
-    <a class="logo" href="index.html">
-        CKAVOX<span>.</span>
-    </a>
-
-    <a class="admin-link" href="index.html">
-        View Website
-    </a>
-</header>
-
-<main class="section">
-
-    <section id="loginPanel">
-
-        <p class="eyebrow">AUTHORIZED ACCESS ONLY</p>
-
-        <h1>CKAVOX Admin</h1>
-
-        <p>
-            Sign in with the authorized CKAVOX administrator account
-            to publish and manage website content.
-        </p>
-
-        <form id="loginForm">
-
-            <label for="email">Admin Email</label>
-
-            <input
-                id="email"
-                type="email"
-                placeholder="Enter admin email"
-                autocomplete="username"
-                required
-            >
-
-            <label for="password">Password</label>
-
-            <input
-                id="password"
-                type="password"
-                placeholder="Enter password"
-                autocomplete="current-password"
-                required
-            >
-
-            <button class="primary-button" type="submit">
-                Sign In
-            </button>
-
-        </form>
-
-        <p id="loginMessage" role="status"></p>
-
-        <p class="notice">
-            Access is restricted to the authorized administrator.
-        </p>
-
-    </section>
-
-    <section id="dashboard" hidden>
-
-        <p class="eyebrow">CONTENT CONTROL CENTER</p>
-
-        <h1>CKAVOX Dashboard</h1>
-
-        <p>
-            Signed in as
-            <strong id="adminEmail"></strong>
-        </p>
-
-        <button id="logoutButton" class="primary-button">
-            Sign Out
-        </button>
-
-        <hr>
-
-        <h2>Manage Content</h2>
-
-        <form id="contentForm">
-
-            <input type="hidden" id="contentId">
-
-            <label for="title">Content Title</label>
-            <input id="title" required maxlength="200">
-
-            <label for="description">Description</label>
-            <textarea id="description" rows="4"></textarea>
-
-            <label for="category">Category</label>
-
-            <select id="category">
-                <option>News</option>
-                <option>Photos</option>
-                <option>Videos</option>
-                <option>Music</option>
-                <option>Sports</option>
-                <option>Technology</option>
-                <option>Entertainment</option>
-            </select>
-
-            <label for="contentType">Content Type</label>
-
-            <select id="contentType">
-                <option value="article">Article</option>
-                <option value="photo">Photo</option>
-                <option value="video">Video</option>
-                <option value="music">Music</option>
-            </select>
-
-            <label for="contentImage">Upload Image</label>
-
-            <input
-                id="contentImage"
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-            >
-
-            <label for="imageURL">Or Image URL</label>
-            <input
-                id="imageURL"
-                type="url"
-                placeholder="https://example.com/image.jpg"
-            >
-
-            <label for="mediaURL">Content URL</label>
-
-            <input
-                id="mediaURL"
-                type="url"
-                placeholder="https://example.com/video-or-article"
-            >
-
-            <label>
-                <input type="checkbox" id="published">
-                Publish this content
-            </label>
-
-            <button class="primary-button" type="submit">
-                Save Content
-            </button>
-
-            <button type="button" id="cancelEdit">
-                Cancel Edit
-            </button>
-
-        </form>
-
-        <p id="contentMessage" role="status"></p>
-
-        <hr>
-
-        <h2>Manage Slideshow</h2>
-
-        <form id="slideForm">
-
-            <input type="hidden" id="slideId">
-
-            <label for="slideTitle">Slide Title</label>
-            <input id="slideTitle" required maxlength="200">
-
-            <label for="slideSubtitle">Slide Description</label>
-            <textarea id="slideSubtitle" rows="3"></textarea>
-
-            <label for="slideImage">Upload Slide Image</label>
-
-            <input
-                id="slideImage"
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-            >
-
-            <label for="slideImageURL">Or Image URL</label>
-
-            <input
-                id="slideImageURL"
-                type="url"
-                placeholder="https://example.com/image.jpg"
-            >
-
-            <label for="slideLink">Destination URL</label>
-
-            <input
-                id="slideLink"
-                type="url"
-                placeholder="https://example.com"
-            >
-
-            <label for="slideOrder">Display Order</label>
-
-            <input
-                id="slideOrder"
-                type="number"
-                value="0"
-            >
-
-            <label>
-                <input type="checkbox" id="slideActive" checked>
-                Show this slide
-            </label>
-
-            <button class="primary-button" type="submit">
-                Save Slide
-            </button>
-
-            <button type="button" id="cancelSlideEdit">
-                Cancel Edit
-            </button>
-
-        </form>
-
-        <p id="slideMessage" role="status"></p>
-
-        <hr>
-
-        <h2>Published & Draft Content</h2>
-
-        <div id="adminContentList">
-            Loading content...
-        </div>
-
-        <hr>
-
-        <h2>Slideshow Items</h2>
-
-        <div id="adminSlideList">
-            Loading slides...
-        </div>
-
-    </section>
-
-</main>
-
+    <script src="admin.js"></script>
 </body>
 </html>
